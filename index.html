@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Numapura</title>
+<link rel="icon" type="image/png" href="numapura.jpg">
+<style>
+body {
+  margin: 0;
+  overflow: hidden;
+  background-color: black;
+}
+#titleScreen {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+#titleScreen h1 {
+  font-size: 60px;
+}
+
+#titleScreen button {
+  font-size: 24px;
+  padding: 10px 30px;
+  cursor: pointer;
+}
+#helpScreen {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;  /* ←これ重要 */
+  background: black;
+  color: white;
+  padding: 20px;
+}
+img{
+  width: 200px;
+  height: 180px;
+}
+#oneortwo{
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  font-size: 200px;
+
+}
+</style>
+</head>
+
+<body>
+<div id="titleScreen">
+  <h1>ヌマッシュプラザーズ</h1>
+  <button onclick="startGameFromMenu()">Game Start</button>
+  <button onclick="showHelp()">キャラ説明</button>
+
+</div>
+<div id="oneortwo" style="display: none">
+<button onclick="startSingle()">1人プレイ</button>
+<button onclick="startMulti()">2人プレイ</button>
+</div>
+<div id="helpScreen" style="display:none;">
+  <h1>操作方法</h1>
+  <p>p1: wでジャンプ、 aで左、dで右、fで近接、gで遠距離、qで必殺技</p>
+  <p>p2: 矢印の上、左、右でそれぞれの方向、/で近接、,で遠距離、下矢印で必殺技</p>
+  <br>
+  <h1>キャラ説明</h1>
+  <h2>博麗霊夢</h2>
+  <img src="reimu.png">
+  <p>攻撃力、移動速度、復帰力など全てにおいて平均的なキャラ。</p>
+  <h3>攻撃</h3>
+  <p>近接攻撃: 博麗のお札;  射程は短め</p>
+  <p>必殺技: 夢想封印;  自身を中心とした範囲技。自身の蓄積ダメージによって攻撃範囲と吹っ飛ばし力が変化する。</p>
+  <br>
+  <h2>霧雨魔理沙</h2>
+  <img src="marisa.png">
+  <p>攻撃力と射程がトップクラスのキャラ。機動力はかなり低い重戦車タイプ。</p>
+  <h3>攻撃</h3>
+  <p>近接攻撃: ノンディレクショナルレーザー;  射程、火力ともに優秀だが吹っ飛ばしはそこそこ。</p>
+  <p>必殺技: マスタースパーク;  ステージの端から端まで届くほどの長射程で、火力もトップクラス。しかし相手と同じ高さにいないと当たらない。</p>
+  <br>
+  <h2>魂魄妖夢</h2>
+  <img src="youmu.png">
+  <p>移動速度が高く、技の回転も速いが火力は低め。逆境に強い。</p>
+  <h3>攻撃</h3>
+  <p>近接攻撃: 断命斬;  射程は短めだが吹っ飛ばしが強い<p>
+  <p>必殺技: 斬れぬものなどあんまりない！; 相手のところに瞬間移動し斬りつける。火力は出ないがクールダウンが短い。</p>
+  <p>必殺技α: 待宵反射衛星斬; 蓄積ダメージが400%を超えると必殺技が変化、全方向を超火力で斬りつける。クールダウンがとても長いので実質一発技。</p>
+  <br>
+  <h2>東風谷早苗</h2>
+  <img src="sanae.png">
+  <p>ジャンプがとても多く、空中機動力を生かして戦う。</p>
+  <h3>攻撃</h3>
+  <p>近接攻撃: 大地の力; 火力、吹っ飛ばし、射程ともにかなり高めの攻撃だが、他キャラと違い少しクールタイムがついている。</p>
+  <p>必殺技: 奇跡の力; 火力は全くないが、ふっとばしがとても高い。スカイツリーくらい高い。</p>
+  <br>
+  <h2>十六夜咲夜</h2>
+  <img src="sakuya.png">
+  <p>火力が低いが、コンボしやすいキャラ。なんか他より立ち絵がでかい気がする。</p>
+  <h3>攻撃</h3>
+  <p>近接攻撃: ナイフ投擲; 投擲と言っているが飛ばさず殴るだけである。投げるのは危ないもんね。</p>
+  <p>必殺技: ザ・ワールド; 某漫画から東方が直々にパクった技。自分がパクったわけじゃないです。<br>
+    効果は知っての通り時(この場合は相手の動き)を止めるが、疲れる技なので使う度に40ダメージをくらい、<br>また400%以上で使うと撃墜された判定になる。いつもお疲れ様です。</p>
+  <p>必殺技α: デフレーションワールド; 相手の時が止まっている時に技が変化する。 一切吹っ飛ばないが、かなり高いダメージを与える。</p>
+  <br>
+  <h2>レミリア・スカーレット</h2>
+  <img src="remiria.png">
+  <p>我らがかりちゅま。基本的な身体能力が高く、全体的に強い。多分一番強い。バランス調整ミスりましたね。</p>
+  <h3>攻撃</h3>
+  <p>近接攻撃: スピア・ザ・グングニル; 射程が長く、ふっとばしもある。しかし前にいる相手にしか当たらない。</p>
+  <p>必殺技: レッドブラッド・ムーンナイト; 10秒間自身がゾーン状態になり、近接攻撃の性能が大幅アップする。</p>
+  <p>必殺技α: 紅魔崩壊霧; ゾーン状態の時に必殺技が変化、前方広範囲に火力、ふっとばしの高い攻撃を出す。</p>
+  <br>
+  <h2>フランドール・スカーレット</h2>
+  <img src="huran.png">
+  <p>破壊の限りを尽くす吸血鬼の魔法少女にしてレミリアの妹。属性多すぎ。</p>
+  <h3>攻撃</h3>
+  <p>近接攻撃: デビルブラスト; 火力はある技。実際のフランのスペカとは見た目がかけ離れているので名前考えるのが一番大変だった。</p>
+  <p>必殺技: カゴメカゴメ; 自身にエネルギー弾をまとい、それに敵が触れたらダメージ。もう一度必殺技入力で相手の方に飛んでいくが、オート追尾はしない。<br>飛ばした後必殺技連打で追尾っぽくはできる。</p>
+  <p>必殺技α: 破壊; 蓄積ダメージが200を超えると必殺技が変化、範囲内の敵に必中する爆破で攻撃する。 <br>火力は一級品というわけではないが、クールダウンが短いのとやはり必中なのが強い。</p>
+  <h2>その他のゲーム仕様</h2>
+  <p>一人プレイ、二人プレイ: GameStartを押すと左上にボタンが現れるので、好きな方を選んで下さい。二人は普通に二人で、<br>一人の方は自身が2pとして選んだキャラがCPUになります。一人プレイの場合は必ず自分が1pになるので、操作もwasdの方です。</p>
+  <p>撃墜: 基本的にスマブラと同様で、上・横・下のボーダーラインを超えると撃墜判定となる。</p>
+  <p>クールダウン: 主に必殺技を打った後に発生する、スタン状態のようなもの。ジャンプ以外できなくなる。スタン中は頭にピヨピヨがでます。<br>
+    最後の行動が固定されるので、移動しながら必殺技打ったりすると何もできずに落ちていきます。時間経過か相手からの攻撃を受ける事で解除されます。</p>
+  <p>ガード: そんなもんはねぇよ～♪ ジャンプを駆使して全部避けてください。気が向いたらアプデで入れるかもです。</p>
+  <p>ステージ: ジャンプを使えば下からでも入り込めます。高いところから降って来た際にすり抜けて落ちていく事がありますが、それはバグではなく上方向の撃墜ボーダーラインを超えた時に起きうる演出なので仕様です。</p>
+  <button onclick="backToTitle()">タイトルに戻る</button>
+  <br>
+  <br>
+  <br>
+  <br>
+  
+</div>
+<div id="selectUI" style="display:none; text-align:center; color:white;">
+
+  <h1>キャラ選択</h1>
+
+  <p>P1: 1=霊夢 2=魔理沙 3=妖夢 4=早苗 5=咲夜 q=レミリア w=フラン</p>
+  <p>P2: 6=霊夢 7=魔理沙 8=妖夢 9=早苗 0=咲夜 p=レミリア o=フラン</p>
+
+  <h2>ストック数</h2>
+
+  <select id="stockSelect">
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3" selected>3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+  </select>
+
+  <p>※キャラを選ぶとゲーム開始</p>
+
+</div>
+<canvas id="game" style="display: none"></canvas>
+
+<img src="reimu.png" id="player1" style="display:none">
+<img src="marisa.png" id="player2" style="display:none">
+<img src="hit.png" id="hitEffect" style="display:none">
+<img src="hit2.png" id="hitEffect2" style="display:none">
+<img src="hit4.png" id="hitEffect4" style="display:none">
+<img src="hit5.png" id="hitEffect5" style="display:none">
+<img src="special1.png" id="spEffect1" style="display:none">
+<img src="special2.png" id="spEffect2" style="display: none">
+<img src="youmu.png" id="player3" style="display: none">
+<img src="special3.png" id="spEffect3" style="display: none">
+<img src="special3.2.png" id="spEffect3.2" style="display: none">
+<img src="sanae.png" id="player4" style="display: none">
+<img src="special4.png" id="spEffect4" style="display: none"> 
+<img src="sakuya.png" id="player5" style="display: none">
+<img src="special5.png" id="spEffect5" style="display: none">
+<img src="special5.2.png" id="spEffect5.2" style="display: none">
+<img src="remiria.png" id="player6" style="display: none">
+<img src="hit6.png" id="hitEffect6" style="display: none">
+<img src="special6.png" id="spEffect6" style="display: none">
+<img src="special6.2.png" id="spEffect6.2" style="display: none"> 
+<img src="hit3.png" id="hitEffect3" style="display: none">
+<img src="stun.png" id="stunEffect" style="display: none">
+<img src="huran.png" id="player7" style="display: none">
+<img src="special7.png" id="spEffect7" style="display: none">
+<img src="hit7.png" id="hitEffect7" style="display: none">
+
+
+<canvas id="game"></canvas>
+<script>
+  // =========================
+  // 初期設定
+  // =========================
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  
+  canvas.width = 1300;
+  canvas.height = 1000;
+  
+  const img1 = document.getElementById('player1');
+  const img2 = document.getElementById('player2');
+  const img3 = document.getElementById('player3');
+  const img4 = document.getElementById('player4');
+  const img5 = document.getElementById('player5');
+  const img6 = document.getElementById('player6');
+  const img7 = document.getElementById('player7');
+  const hitImg = document.getElementById('hitEffect');
+  const hitImg2 = document.getElementById('hitEffect2');
+  const hitImg3 = document.getElementById('hitEffect3');
+  const hitImg4 = document.getElementById('hitEffect4');
+  const hitImg5 = document.getElementById('hitEffect5');
+  const hitImg6 = document.getElementById('hitEffect6');
+  const hitImg7 = document.getElementById('hitEffect7');
+  const spImg1 = document.getElementById('spEffect1');
+  const spImg2 = document.getElementById('spEffect2');
+  const spImg3 = document.getElementById('spEffect3');
+  const spImg32 = document.getElementById('spEffect3.2');
+  const spImg4 = document.getElementById('spEffect4');
+  const spImg5 = document.getElementById('spEffect5');
+  const spImg52 = document.getElementById('spEffect5.2');
+  const spImg6 = document.getElementById('spEffect6');
+  const spImg62 = document.getElementById('spEffect6.2');
+  const spImg7 = document.getElementById('spEffect7');
+  const stunImg = document.getElementById('stunEffect');
+  const gravity = 0.5
+  
+  let gameState = "select";
+  let p1Choice = null;
+  let p2Choice = null;
+  
+  let p1 = null;
+  let p2 = null;
+  
+  const keys = {};
+  let effects = [];
+  let bgColor = "#87ceeb";  
+  let bgActive = false;   
+  let bgTimer = 0;  
+  function startGameFromMenu() {
+  document.getElementById("titleScreen").style.display = "none";
+  document.getElementById('oneortwo').style.display = "block"; 
+}           
+function showHelp() {
+  document.getElementById("titleScreen").style.display = "none";
+  document.getElementById("helpScreen").style.display = "block";
+}
+
+function backToTitle() {
+  document.getElementById("helpScreen").style.display = "none";
+  document.getElementById("titleScreen").style.display = "flex";
+}
+let gameMode = "multi"; // デフォルト
+
+function startSingle() {
+  gameMode = "single";
+  gameState = "select";
+  document.getElementById("selectUI").style.display = "block";
+  document.getElementById('oneortwo').style.display = "none";
+}
+
+function startMulti() {
+  gameMode = "multi";
+  gameState = "select";
+  document.getElementById("selectUI").style.display = "block";
+  document.getElementById('oneortwo').style.display = "none";
+}
+  
+  // =========================
+  // ステージ
+  // =========================
+  const stage = {
+    width: 800,
+    height: 20,
+    x: canvas.width / 2 - 400,
+    y: canvas.height / 2 - 150
+  };
+  
+  // =========================
+  // キャラデータ
+  // =========================
+  const characters = {
+  reimu: {
+    image: img1,
+    maxJumps : 3,
+    speed: 8,
+    spOffsetX: 0,
+    spOffsetY: 0,
+    spStun: 300,
+    jumpPower: 10,
+    color: "red",
+at: (self,enemy) =>{
+  if (!self || !enemy) return;
+
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+
+  if (dx < 60 && dy < 50) {
+    enemy.damage += 5;
+
+    const angle = 20 + enemy.damage * 0.2;
+    const powerup = 5 + self.damage / 60;
+    applyKnockback(enemy, self.x, powerup, angle);
+  
+    const effectX = self.x + Math.abs(self.direction * 50);
+    const effectY = self.y + Math.abs(self.direction * 20);
+
+effects.push(
+  new Effect(effectX, effectY, hitImg3, self.direction, 60, 60)
+);
+  }
+},
+sp: (self, enemy) => {
+
+self.stun = 300;
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+const powerup = 7 + self.damage / 50;
+
+if (dx < 250 + self.damage && dy < 250 + self.damage) {
+  enemy.damage += 70;
+  applyKnockback(enemy, self.x, powerup, 45);
+}
+
+const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
+const effectY = self.y + self.height / 2 + self.spOffsetY;
+
+effects.push(
+  new Effect(effectX, effectY, spImg1, self.direction, 750 + self.damage * 3, 750 + self.damage * 3)
+);
+}
+  },
+
+  marisa: {
+  image: img2,
+  maxJumps: 2,
+  speed: 5,
+  spOffsetX: 400,
+  spOffsetY: 0,
+  jumpPower: 12,
+  spStun: 375,
+  color: "yellow",
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+
+  if (dx < 150 && dy < 20 && isFront) {
+    enemy.damage += 12;
+
+    const angle = 20 + enemy.damage * 0.2;
+    applyKnockback(enemy, self.x, 6, angle);
+  
+    const effectX = self.x + self.direction * 100;
+    const effectY = self.y + Math.abs(self.direction * 20);
+
+effects.push(
+  new Effect(effectX, effectY, hitImg2, self.direction, 200, 120)
+);
+  }
+},
+
+  sp: (self, enemy) => {
+
+self.stun = 375;
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+
+const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+
+if (dx < 800 && dy < 10 && isFront) {
+  enemy.damage += 180;
+  applyKnockback(enemy, self.x, 8, 45);
+}
+
+const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
+const effectY = self.y + self.height / 2 + self.spOffsetY;
+
+effects.push(
+  new Effect(effectX, effectY, spImg2, self.direction, 800, 150)
+);
+}
+},
+youmu: {
+  image: img3,
+  maxJumps: 2,
+  speed: 10,
+  spOffsetX: 0,
+  spOffsetY: -30,
+  jumpPower: 7,
+  color: "white",
+
+  spStun: 100,
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+
+  if (dx < 60 && dy < 50) {
+    enemy.damage += 7;
+
+    const angle = 20 + enemy.damage * 0.2;
+    applyKnockback(enemy, self.x, 7, angle);
+  
+    const effectX = self.x + self.direction * 20;
+    const effectY = self.y + self.direction * 0;
+
+effects.push(
+  new Effect(effectX, effectY, hitImg, self.direction, 60, 60)
+);
+  }
+},
+
+  sp: (self, enemy) => {
+    if (self.damage <= 400){
+
+    self.stun = 100;
+
+    const dx = Math.abs(self.x - enemy.x);
+    const dy = Math.abs(self.y - enemy.y);
+
+    const isFront =
+      (self.direction === 1 && enemy.x > self.x) ||
+      (self.direction === -1 && enemy.x < self.x);
+
+    if (dx < 600 && dy < 500 && isFront) {
+
+      self.isWarping = true;
+
+      const dir = enemy.x > self.x ? -1 : 1;
+
+      // ★「ワープ先」だけ別で保持
+      const warpX = enemy.x + dir * 50;
+      const warpY = enemy.y;
+
+      // 移動（瞬間移動）
+      self.x = warpX;
+      self.y = warpY;
+
+      // 攻撃
+      enemy.damage += 25;
+      applyKnockback(enemy, self.x, 2, 30);
+
+      // ★強制的に離脱（ここが重要）
+      self.vx = -dir * 8;
+      self.vy = -2;
+
+      setTimeout(() => {
+        self.isWarping = false;
+      }, 200);
+    }
+
+    const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
+    const effectY = self.y + self.height / 2 + self.spOffsetY;
+
+    effects.push(
+      new Effect(effectX, effectY, spImg3, self.direction, 400, 200)
+    );}
+    else{
+      self.stun = 1000;
+
+    const dx = Math.abs(self.x - enemy.x);
+    const dy = Math.abs(self.y - enemy.y);
+
+    if (dx < 2000 && dy < 1600) {
+      enemy.damage += 100;
+      applyKnockback(enemy, self.x, 18, 30);
+    }
+
+    const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
+    const effectY = self.y + self.height / 2 + self.spOffsetY;
+
+    effects.push(
+      new Effect(effectX, effectY, spImg32, self.direction, 2000, 1600)
+  )
+    }
+  }
+},
+sanae: {
+  image: img4,
+  maxJumps: 10,
+  speed: 5,
+  spOffsetX: 0,
+  spOffsetY: 0,
+  jumpPower: 9,
+  color: "green",
+
+  spStun: 375,
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+  self.stun = 30;
+
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+      (self.direction === 1 && enemy.x > self.x) ||
+      (self.direction === -1 && enemy.x < self.x);
+
+  if (dx < 200 && dy < 100 && isFront) {
+    enemy.damage += 20;
+
+    const angle = 20 + enemy.damage * 0.2;
+    applyKnockback(enemy, self.x, 6, angle);
+  
+    const effectX = self.x + self.direction * 80;
+    const effectY = self.y + self.direction * 0;
+
+effects.push(
+  new Effect(effectX, effectY, hitImg4, self.direction, 200, 90)
+);
+  }
+},
+
+  sp: (self, enemy) => {
+
+self.stun = 375;
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+
+const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+
+if (dx < 400 && dy < 400) {
+  enemy.damage += 1;
+  applyKnockback(enemy, self.x, 15, 45);
+}
+
+const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
+const effectY = self.y + self.height / 2 + self.spOffsetY;
+
+effects.push(
+  new Effect(effectX, effectY, spImg4, self.direction, 400, 400)
+);
+}
+},
+sakuya: {
+  image: img5,
+  maxJumps: 2,
+  speed: 8,
+  spOffsetX: 0,
+  spOffsetY: 0,
+  jumpPower: 11,
+  color: "gray",
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+
+  if (dx < 60 && dy < 60) {
+    enemy.damage += 8;
+
+    const angle = 20 + enemy.damage * 0.2;
+    applyKnockback(enemy, self.x, 4, angle);
+  
+    const effectX = self.x + self.direction * 30;
+    const effectY = self.y + Math.abs(self.direction * 20);
+
+effects.push(
+  new Effect(effectX, effectY, hitImg5, self.direction, 80, 60)
+);
+  }
+},
+
+  sp: (self, enemy) => {
+    if (enemy.stun <= 0){
+self.damage += 40;
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+
+if (dx < 1000 && dy < 1000) {
+  enemy.damage += 1;
+  enemy.stun = 150;
+  applyKnockback(enemy, self.x, 0, 0);
+}
+if(self.damage >= 400){
+  self.stock--;
+  self.reset();
+}
+  
+
+
+const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
+const effectY = self.y + self.height / 2 + self.spOffsetY;
+
+effects.push(
+  new Effect(effectX, effectY, spImg5, self.direction, 400, 400)
+)}
+else{
+  self.stun = 150;
+  const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+
+if (dx < 400 && dy < 400) {
+  enemy.damage += 80;
+  applyKnockback(enemy, self.x, 0, 0);
+}
+
+const effectX = enemy.x + enemy.width / 2;
+const effectY = enemy.y + enemy.height / 2;
+
+effects.push(
+  new Effect(effectX, effectY, spImg52, self.direction, 200, 200)
+);
+}
+},
+
+  
+
+},
+remiria: {
+  image: img6,
+  maxJumps: 4,
+  speed: 8,
+  spOffsetX: 400,
+  spOffsetY: 0,
+  jumpPower: 12,
+  spStun: 375,
+  color: "purple",
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+
+  if (dx < 150 && dy < 20 && isFront && bgTimer <= 0) {
+    enemy.damage += 8;
+
+    const angle = 20 + enemy.damage * 0.2;
+    applyKnockback(enemy, self.x, 6, angle);
+  
+    const effectX = self.x + self.direction * 100;
+    const effectY = self.y + Math.abs(self.direction * 20);
+
+effects.push(
+  new Effect(effectX, effectY, hitImg6, self.direction, 200, 120)
+);
+  }
+  if (dx < 300 && dy < 50 && isFront && bgTimer > 0){
+    enemy.damage += 20;
+    const angle = 20 + enemy.damage * 0.2;
+    applyKnockback(enemy, self.x, 12, angle);
+    const effectX = self.x + self.direction * 100;
+    const effectY = self.y + Math.abs(self.direction * 20);
+  
+
+effects.push(
+  new Effect(effectX, effectY, hitImg6, self.direction, 400, 240)
+)
+  }
+},
+
+  sp: (self, enemy) => {
+    if(bgTimer <= 0){
+self.damage += 50;      
+bgColor = spImg6;
+bgActive = true;
+bgTimer = 600;
+    }
+    else{
+      self.stun = 300;
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+
+if(dx < 800 && dy < 200 && isFront){
+  enemy.damage += 90;
+  applyKnockback(enemy, self.x, 10, 45)
+
+}
+
+const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
+const effectY = self.y + self.height / 2 + self.spOffsetY;
+
+effects.push(
+  new Effect(effectX, effectY, spImg62, self.direction, 800, 200)
+);
+    }
+}
+},
+huran: {
+  image: img7,
+  maxJumps: 3,
+  speed: 7,
+  spOffsetX: 200,
+  spOffsetY: 0,
+  jumpPower: 10,
+  spStun: 375,
+  color: "crimson",
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+
+  if (dx < 80 && dy < 60 && isFront) {
+    enemy.damage += 12;
+
+    const angle = 20 + enemy.damage * 0.2;
+    applyKnockback(enemy, self.x, 6, angle);
+  
+    const effectX = self.x + self.direction * 100;
+    const effectY = self.y + Math.abs(self.direction * 20);
+
+effects.push(
+  new Effect(effectX, effectY, hitImg7, self.direction, 80, 60)
+);
+  }
+},
+
+sp: (self, enemy) => {
+if(self.damage < 200){
+// ① まだ出てないなら生成
+if (self.orbs.length === 0) {
+  for (let i = 0; i < 5 + 2 * (5 - self.stock); i++) {
+    self.orbs.push(new Orb(self, i * (Math.PI * 2 / (5 + 2 *(5 - self.stock)))));
+  }
+} 
+// ② 出てるなら発射
+else {
+  self.orbs.forEach(o => o.shoot(enemy));
+}
+}
+else{
+  self.stun = 120;
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math .abs(self.y - enemy.y);
+  if(dx < 400 && dy < 400){
+    enemy.damage += 60;
+    applyKnockback(enemy, self.x, 7, 45);
+  }
+  const effectX = enemy.x;
+  const effectY = enemy.y;
+
+effects.push(
+  new Effect(effectX, effectY, spImg7, self.direction, 400, 400)
+);
+}
+}}
+};
+  
+  // =========================
+  // プレイヤー
+  // =========================
+  class Player {
+  constructor(x, char, controls, isCPU = false, playerColor = "white") {
+    this.spawnX = x;
+    this.image = char.image;
+    this.spAttack = char.sp;
+    this.attack = char.at;
+
+    this.spOffsetX = char.spOffsetX || 0;
+    this.spOffsetY = char.spOffsetY || 0;
+
+    this.x = x;
+    this.y = 100;
+    this.vx = 0;
+    this.vy = 0;
+
+    this.width = 40;
+    this.height = 40;
+
+    this.controls = controls;
+
+    this.damage = 0;
+    this.projectiles = [];
+    this.stock = 3;
+
+    this.direction = 1;
+
+    this.onGround = false;
+    this.jumpCount = 0;
+    this.maxJumps = char.maxJumps;
+    this.speed = char.speed;
+    this.stun = 0;
+    this.spStun = char.spStun;
+    this.isWarping = false;
+    this.jumpPower = char.jumpPower;
+    this.gravity = char.gravity;
+    this.color = char.color;
+    this.orbs = [];
+    this.isCPU = isCPU;
+    this.playerColor = playerColor;
+  }
+
+  reset() {
+    this.x = this.spawnX;
+    this.y = 100;
+    this.vx = 0;
+    this.vy = 0;
+    this.damage = 0;
+    this.stun = false;
+  }
+
+  update(enemy) {
+    if (this.stun > 0) {
+      this.stun--;}
+      if (this.isWarping) {
+    this.vx = 0;
+  }
+    this.vy += gravity;
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vx *= 0.5;
+    this.orbs = this.orbs.filter(o => o.active);
+    this.orbs.forEach(o => o.update(enemy));
+
+    // 地面
+    if (
+      this.vy >= 0 &&
+      this.y + this.height >= stage.y &&
+      this.y + this.height <= stage.y + 20 &&
+      this.x + this.width > stage.x &&
+      this.x < stage.x + stage.width
+    ) {
+      this.y = stage.y - this.height;
+      this.vy = 0;
+      this.onGround = true;
+      this.jumpCount = 0;
+    } else {
+      this.onGround = false;
+    }
+if (
+  this.y > canvas.height + 150 ||   
+  this.y < -500 ||                  
+  this.x < -100 ||                  
+  this.x > canvas.width + 100      
+) {
+  this.stock--;
+  this.reset();
+}
+
+    // 弾
+    this.projectiles = this.projectiles.filter(p => p.active);
+    this.projectiles.forEach(p => p.update());
+
+    this.draw();
+  }
+
+  draw() {
+    ctx.save();
+
+    // 向き反転
+    if (this.direction === 1) {
+      ctx.scale(-1, 1);
+      ctx.drawImage(
+        this.image,
+        -this.x - this.width,
+        this.y,
+        this.width,
+        this.height
+      );
+    } else {
+      ctx.drawImage(
+        this.image,
+        this.x,
+        this.y,
+        this.width,
+        this.height
+      );
+    }
+
+    ctx.restore();
+    // スタン表示
+if (this.stun > 0) {
+  ctx.drawImage(
+    stunImg,
+    this.x - 20,
+    this.y - 10,   // ←頭の上
+    80,
+    40
+  );
+}
+
+    // ダメージ表示
+    ctx.fillStyle = this.playerColor;
+    ctx.fillText(Math.floor(this.damage) + "%", this.x, this.y - 10);
+
+    // ストック表示
+    ctx.fillText("❤" + this.stock, this.x, this.y - 30);
+  }
+
+  shoot() {
+    this.projectiles.push(
+      new Projectile(this.x, this.y, this.direction, this.color)
+    );
+  }
+}
+function applyKnockback(target, sourceX, power, angle) {
+  if(target.stun > 0) {
+    target.stun = 1;
+  };
+  const dir = target.x > sourceX ? 1 : -1;
+
+  const scale = 1 + target.damage / 75;
+  const rad = angle * Math.PI / 180;
+
+  target.vx = Math.cos(rad) * power * scale * dir * 2;
+  target.vy = -Math.sin(rad) * power * scale;
+}
+  
+  // =========================
+  // 弾
+  // =========================
+  class Orb {
+  constructor(player, angle) {
+    this.player = player;
+    this.angle = angle;
+    this.radius = 60;
+
+    this.x = player.x;
+    this.y = player.y;
+
+    this.state = "orbit"; // orbit → shoot
+    this.speed = 10;
+    this.active = true;
+  }
+
+  update(enemy) {
+    if (this.state === "orbit") {
+      // 周囲を回る
+      this.angle += 0.05;
+      const centerX = this.player.x + this.player.width / 2;
+      const centerY = this.player.y + this.player.height / 2;
+      this.x = centerX + Math.cos(this.angle) * this.radius;
+      this.y = centerY + Math.sin(this.angle) * this.radius;
+    }
+
+    if (this.state === "shoot") {
+      this.x += this.vx;
+      this.y += this.vy;
+
+      if (
+  this.x < -100 ||
+  this.x > canvas.width + 100 ||
+  this.y < -100 ||
+  this.y > canvas.height + 100
+) {
+  this.active = false;
+}
+    }
+
+    // 当たり判定
+    const dx = Math.abs(this.x - enemy.x);
+    const dy = Math.abs(this.y - enemy.y);
+
+    if (dx < 40 && dy < 40) {
+      enemy.damage += 10;
+      applyKnockback(enemy, this.x, 6, 45);
+      this.active = false;
+    }
+
+    // 描画
+    ctx.fillStyle = "crimson";
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, 8, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  shoot(enemy) {
+    this.state = "shoot";
+
+    const dx = enemy.x - this.x;
+    const dy = enemy.y - this.y;
+    const dist = Math.hypot(dx, dy);
+
+    this.vx = (dx / dist) * this.speed;
+    this.vy = (dy / dist) * this.speed;
+  }
+}
+  class Projectile {
+    constructor(x, y, dir, color) {
+      this.x = x;
+      this.y = y;
+      this.vx = dir * 8;
+      this.active = true;
+      this.color = color;
+    }
+  
+    update() {
+      this.x += this.vx;
+      if (this.x < 0 || this.x > canvas.width) this.active = false;
+  
+      ctx.fillStyle = this.color;
+      ctx.fillRect(this.x, this.y, 10, 10);
+    }
+  }
+  function projectileHit(list, target) {
+  list.forEach(p => {
+    if (!p.active) return;
+
+    const dx = Math.abs(p.x - target.x);
+    const dy = Math.abs(p.y - target.y);
+
+    if (dx < 40 && dy < 40) {
+      target.damage += 3;
+
+      applyKnockback(target, p.x, 5, 30);
+
+      p.active = false;
+
+    }
+  });
+}  
+  // =========================
+  // エフェクト
+  // =========================
+  class Effect {
+  constructor(x, y, img, direction = 1, width = 100, height = 100) {
+    this.x = x;
+    this.y = y;
+    this.img = img;
+    this.frame = 0;
+    this.direction = direction;
+    this.width = width;
+    this.height = height;
+  }
+
+  update() {
+  this.frame++;
+
+  ctx.save();
+
+  // 中心に移動
+  ctx.translate(this.x, this.y);
+
+  if (this.direction === 1) {
+    ctx.scale(-1, 1);
+  }
+  
+
+  ctx.drawImage(
+    this.img,
+    -this.width / 2,
+    -this.height / 2,
+    this.width,
+    this.height
+  );
+
+  ctx.restore();
+}
+
+  isFinished() {
+    return this.frame > 20;
+  }
+}
+  
+  // =========================
+  // 入力
+  // =========================
+  document.addEventListener("keydown", e => {
+    keys[e.key] = true;
+  
+    // キャラ選択
+    if (gameState === "select") {
+      if (e.key === "1") p1Choice = "reimu";
+      if (e.key === "2") p1Choice = "marisa";
+      if (e.key === "6") p2Choice = "reimu";
+      if (e.key === "7") p2Choice = "marisa";
+      if (e.key === "3") p1Choice = "youmu";
+      if (e.key === "8") p2Choice = "youmu";
+      if (e.key === "4") p1Choice = "sanae";
+      if (e.key === "9") p2Choice = "sanae";
+      if (e.key === "5") p1Choice = "sakuya";
+      if (e.key === "0") p2Choice = "sakuya";
+      if (e.key === "q") p1Choice = "remiria";
+      if (e.key === "p") p2Choice = "remiria";
+      if (e.key === "w") p1Choice = "huran";
+      if (e.key === "o") p2Choice = "huran";
+  
+      if (p1Choice && p2Choice) startGame();
+      return;
+    }
+  
+    // p1 p2 安全チェック
+    if (!p1 || !p2) return;
+  
+    // ジャンプ
+    if (e.key === "w" && p1.jumpCount < p1.maxJumps) {
+  p1.vy = -p1.jumpPower;
+  p1.jumpCount++;
+}
+
+if (e.key === "ArrowUp" && p2.jumpCount < p2.maxJumps) {
+  p2.vy = -p2.jumpPower;
+  p2.jumpCount++;
+}
+  
+    // 攻撃
+    if (e.key === "f" && p1.stun <= 0) p1.attack(p1, p2);
+if (e.key === "/" && p2.stun <= 0) p2.attack(p2, p1);
+
+if (e.key === "g" && p1.stun <= 0) p1.shoot();
+if (e.key === "." && p2.stun <= 0) p2.shoot();
+  
+    // 必殺技
+if (e.key === "q" && p1.stun <= 0) {p1.spAttack(p1, p2)};
+if (e.key === "ArrowDown" && p2.stun <= 0) {p2.spAttack(p2, p1)};
+  
+  });
+  
+  document.addEventListener("keyup", e => {
+    keys[e.key] = false;
+  });
+  
+  // =========================
+  // ゲーム開始
+  // =========================
+  function startGame() {
+    const stockValue = parseInt(document.getElementById("stockSelect").value);
+    p1 = new Player(400, characters[p1Choice], { left:"a", right:"d" }, false, "red");
+    p1.stock = stockValue;
+
+if (gameMode === "single") {
+  const keys = Object.keys(characters);
+  const randomChar = keys[Math.floor(Math.random() * keys.length)];
+
+  p2 = new Player(800, characters[randomChar], {}, true, "blue");
+  p2.stock = stockValue;
+} else {
+  p2 = new Player(800, characters[p2Choice], {
+    left: "ArrowLeft",
+    right: "ArrowRight"
+  }, false, "blue");
+  p2.stock = stockValue;
+}
+document.getElementById("selectUI").style.display = "none";
+document.getElementById("game").style.display = "block";
+  gameState = "game";
+}
+
+  
+  // =========================
+  // 入力処理
+  // =========================
+  canvas.addEventListener("click", (e) => {
+
+if (gameState !== "game") return;
+
+// 勝敗ついてないなら無視
+if (!(p1.stock <= 0 || p2.stock <= 0)) return;
+
+const rect = canvas.getBoundingClientRect();
+const mouseX = e.clientX - rect.left;
+const mouseY = e.clientY - rect.top;
+
+if (
+  mouseX > restartButton.x &&
+  mouseX < restartButton.x + restartButton.width &&
+  mouseY > restartButton.y &&
+  mouseY < restartButton.y + restartButton.height
+) {
+  // ▼リセット処理
+  gameState = "select";
+  p1 = null;
+  p2 = null;
+  p1Choice = null;
+  p2Choice = null;
+}});
+  function handleInput(p, left, right) {
+    if (!p || p.stun > 0) return;
+
+  if (keys[left]) {
+  p.vx = -p.speed;
+  p.direction = -1;
+} else if (keys[right]) {
+  p.vx = p.speed;
+  p.direction = 1;
+}
+}
+let restartButton = {
+  x: canvas.width / 2 - 100,
+  y: canvas.height / 2 + 50,
+  width: 200,
+  height: 60
+};
+
+  // =========================
+  // 描画
+  // =========================
+  function drawSelect() {
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+    ctx.fillStyle = "white";
+    ctx.font = "18px Arial"
+    ctx.fillText("P1: 1=霊夢 2=魔理沙 3=妖夢 4=早苗 5=咲夜 q=レミリア w=フラン", 400, 300);
+    ctx.fillText("P2: 6=霊夢 7=魔理沙 8=妖夢 9=早苗 0=咲夜 p=レミリア o=フラン", 400, 400);
+  }
+  
+  function drawStage() {
+    ctx.fillStyle = "#654321";
+    ctx.fillRect(stage.x, stage.y, stage.width, stage.height);
+  }
+  function drawWinner() {
+  if (p1.stock <= 0 || p2.stock <= 0) {
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "white";
+    ctx.font = "40px Arial";
+
+    const winner = p1.stock <= 0 ? "P2 WIN" : "P1 WIN";
+    ctx.fillText(winner, canvas.width / 2 - 100, canvas.height / 3);
+    ctx.fillStyle = "gray";
+    ctx.fillRect(
+      restartButton.x,
+      restartButton.y,
+      restartButton.width,
+      restartButton.height
+    );
+
+    ctx.fillStyle = "white";
+    ctx.font = "18px Arial";
+    ctx.fillText(
+    "ページ更新で再開",
+      restartButton.x + 30,
+      restartButton.y + 38
+    );
+
+    
+
+    return true;
+  }
+  return false;
+}
+function cpuControl(cpu, enemy) {
+
+const dx = enemy.x - cpu.x;
+const dy = enemy.y - cpu.y;
+const dist = Math.abs(dx);
+
+// =====================
+// 移動（追いかける）
+// =====================
+if (dist > 100 && cpu.stun <= 0) {
+  cpu.vx = dx > 0 ? cpu.speed : -cpu.speed;
+  cpu.direction = dx > 0 ? 1 : -1;
+}
+
+// =====================
+// 落下防止（超重要）
+// =====================
+if (cpu.x < stage.x + 20) {
+  cpu.vx = cpu.speed;
+}
+if (cpu.x > stage.x + stage.width - 20) {
+  cpu.vx = -cpu.speed;
+}
+
+// =====================
+// ジャンプ（段差対応）
+// =====================
+if (cpu.onGround && Math.random() < 0.02) {
+  cpu.vy = -cpu.jumpPower;
+  cpu.jumpCount++;
+}
+
+// =====================
+// 攻撃ロジック
+// =====================
+
+// 近距離
+if (dist < 80 && Math.random() < 0.2 && cpu.stun <= 0) {
+  cpu.attack(cpu, enemy);
+}
+
+// 中距離
+if (dist < 300 && Math.random() < 0.05 && cpu.stun <= 0) {
+  cpu.shoot();
+}
+
+// 必殺技（相手ダメージ高い）
+if (enemy.damage > 100 && Math.random() < 0.02 && cpu.stun <= 0) {
+  cpu.spAttack(cpu, enemy);
+}
+
+// =====================
+// 復帰（落ちそう）
+// =====================
+if (cpu.y > stage.y + 100 && cpu.jumpCount < cpu.maxJumps) {
+  cpu.vy = -cpu.jumpPower;
+  cpu.jumpCount++;
+}
+}
+  // =========================
+  // メインループ
+  // =========================
+  function gameLoop() {
+    function drawBackGround(){
+  if (bgActive) {
+    ctx.drawImage(spImg6, 0, 0, canvas.width, canvas.height);
+  } else {
+    ctx.fillStyle = "#87ceeb";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+}
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+drawBackGround();
+if (bgTimer > 0) {
+  bgTimer--;
+  if (bgTimer === 0) {
+    bgActive = false; // ←ここ重要
+  }
+}
+  
+    // 選択画面
+    if (gameState === "select") {
+      drawSelect();
+      requestAnimationFrame(gameLoop);
+      return;
+    }
+    if (p2.isCPU) cpuControl(p2, p1);
+  
+    // 安全チェック
+    if (!p1 || !p2) {
+      requestAnimationFrame(gameLoop);
+      return;
+    }
+    if (drawWinner()) 
+    return;
+    // 入力
+    handleInput(p1, "a", "d");
+    if(!p2.isCPU){
+    handleInput(p2, "ArrowLeft", "ArrowRight");
+    }
+    drawStage();
+    p1.update(p2);
+    p2.update(p1);
+
+    // エフェクト
+    effects.forEach(e => e.update());
+    effects = effects.filter(e => !e.isFinished());
+    projectileHit(p1.projectiles, p2);
+    projectileHit(p2.projectiles, p1);
+
+   
+
+    requestAnimationFrame(gameLoop);
+  }
+  
+  gameLoop();
+  </script>
+</body>
+</html>
