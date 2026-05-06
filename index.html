@@ -640,7 +640,6 @@ const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
 
 if (dx < 1000 && dy < 1000) {
-  enemy.damage += 1;
   enemy.stun = 150;
   applyKnockback(enemy, self.x, 0, 0);
 }
