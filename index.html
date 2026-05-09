@@ -163,7 +163,7 @@ body{
   <p>近接攻撃: アイシクルスラッシュ; 氷の斬撃を前方に出して攻撃する。相手が一瞬だけスタン状態になる。</p>
   <p>必殺技: パーフェクトフリーズ; 自身を中心に氷を出し、相手を凍結させる。相手がスタン状態になるのでふっとばしはないが、火力はかなり高い。</p>
   <h2>その他のゲーム仕様</h2>
-  <p>一人プレイ、二人プレイ: GameStartを押すと左上にボタンが現れるので、好きな方を選んで下さい。二人は普通に二人で、<br>一人の方は自身が2pとして選んだキャラがCPUになります。一人プレイの場合は必ず自分が1pになるので、操作もwasdの方です。</p>
+  <p>一人プレイ、二人プレイ: GameStartを押すと左上にボタンが現れるので、好きな方を選んで下さい。二人は普通に二人で、<br>一人の方は自身がキャラ選択したら相手がランダムで決まってゲームがスタートします。一人プレイの場合は必ず自分が1pになるので、操作もwasdまたは左側タップの方です。</p>
   <p>撃墜: 基本的にスマブラと同様で、上・横・下のボーダーラインを超えると撃墜判定となる。</p>
   <p>クールダウン: 主に必殺技を打った後に発生する、スタン状態のようなもの。ジャンプ以外できなくなる。スタン中は頭にピヨピヨがでます。<br>
     最後の行動が固定されるので、移動しながら必殺技打ったりすると何もできずに落ちていきます。時間経過か相手からの攻撃を受ける事で解除されます。</p>
@@ -194,18 +194,18 @@ body{
     <img src="pache.png" onclick="selectCharacter('p1', 'pache')">
     <img src="chilno.png" onclick="selectCharacter('p1', 'chilno')">
     
-    <h2>P2選択</h2>
-    
-    <img src="reimu.png" onclick="selectCharacter('p2','reimu')">
-    <img src="marisa.png" onclick="selectCharacter('p2','marisa')">
-    <img src="youmu.png" onclick="selectCharacter('p2','youmu')">
-    <img src="sanae.png" onclick="selectCharacter('p2', 'sanae')">
-    <img src="sakuya.png" onclick="selectCharacter('p2','sakuya')">
-    <img src="remiria.png" onclick="selectCharacter('p2','remiria')">
-    <img src="huran.png" onclick="selectCharacter('p2','huran')">
-    <img src="pache.png" onclick="selectCharacter('p2', 'pache')">
-    <img src="chilno.png" onclick="selectCharacter('p2', 'chilno')">
-    
+    <h2 id="p2Title">P2選択</h2>
+    <div id="p2Select">
+      <img src="reimu.png" onclick="selectCharacter('p2','reimu')">
+      <img src="marisa.png" onclick="selectCharacter('p2','marisa')">
+      <img src="youmu.png" onclick="selectCharacter('p2','youmu')">
+      <img src="sanae.png" onclick="selectCharacter('p2', 'sanae')">
+      <img src="sakuya.png" onclick="selectCharacter('p2','sakuya')">
+      <img src="remiria.png" onclick="selectCharacter('p2','remiria')">
+      <img src="huran.png" onclick="selectCharacter('p2','huran')" >
+      <img src="pache.png" onclick="selectCharacter('p2', 'pache')">
+      <img src="chilno.png" onclick="selectCharacter('p2', 'chilno')">
+    </div>
     </div>
 
   <h2>ストック数</h2>
@@ -259,16 +259,16 @@ z-index:10;
 <img src="special2.png" id="spEffect2" style="display: none">
 <img src="youmu.png" id="player3" style="display: none">
 <img src="special3.png" id="spEffect3" style="display: none">
-<img src="special3.2.png" id="spEffect3.2" style="display: none">
+<img src="special3.2.png" id="spEffect32" style="display: none">
 <img src="sanae.png" id="player4" style="display: none">
 <img src="special4.png" id="spEffect4" style="display: none"> 
 <img src="sakuya.png" id="player5" style="display: none">
 <img src="special5.png" id="spEffect5" style="display: none">
-<img src="special5.2.png" id="spEffect5.2" style="display: none">
+<img src="special5.2.png" id="spEffect52" style="display: none">
 <img src="remiria.png" id="player6" style="display: none">
 <img src="hit6.png" id="hitEffect6" style="display: none">
 <img src="special6.png" id="spEffect6" style="display: none">
-<img src="special6.2.png" id="spEffect6.2" style="display: none"> 
+<img src="special6.2.png" id="spEffect62" style="display: none"> 
 <img src="hit3.png" id="hitEffect3" style="display: none">
 <img src="stun.png" id="stunEffect" style="display: none">
 <img src="huran.png" id="player7" style="display: none">
@@ -372,12 +372,12 @@ z-index:10;
   const spImg1 = document.getElementById('spEffect1');
   const spImg2 = document.getElementById('spEffect2');
   const spImg3 = document.getElementById('spEffect3');
-  const spImg32 = document.getElementById('spEffect3.2');
+  const spImg32 = document.getElementById('spEffect32');
   const spImg4 = document.getElementById('spEffect4');
   const spImg5 = document.getElementById('spEffect5');
-  const spImg52 = document.getElementById('spEffect5.2');
+  const spImg52 = document.getElementById('spEffect52');
   const spImg6 = document.getElementById('spEffect6');
-  const spImg62 = document.getElementById('spEffect6.2');
+  const spImg62 = document.getElementById('spEffect62');
   const spImg7 = document.getElementById('spEffect7');
   const spImg81 = document.getElementById('spEffect81');
   const spImg82 = document.getElementById('spEffect82');
@@ -389,7 +389,6 @@ z-index:10;
   let gameState = "select";
   let p1Choice = null;
   let p2Choice = null;
-  
   let p1 = null;
   let p2 = null;
   
@@ -414,6 +413,8 @@ function backToTitle() {
 function goTitle() {
 document.getElementById("resultScreen").style.display = "none";
 document.getElementById("titleScreen").style.display = "flex";
+document.getElementById("oneortwo").style.display = "none";
+document.getElementById("selectUI").style.display = "none";
 document.getElementById("game").style.display = "none";
 gameState = "select";
 
@@ -421,34 +422,63 @@ p1 = null;
 p2 = null;
 p1Choice = null;
 p2Choice = null;
+let gameMode = "multi";
 }
 function selectCharacter(player, charName){
 
-if(player === "p1"){
+if (player === "p1") {
   p1Choice = charName;
-}else{
+} else {
   p2Choice = charName;
 }
 
-if(p1Choice && p2Choice){
-  startGame();
-}
-}
-let gameMode = "multi"; // デフォルト
 
+if (gameMode === "single") {
+  if (p1Choice) {
+    startGame();
+  }
+  return;
+}
+
+if(gameMode === "multi"){
+if (p1Choice && p2Choice) {
+  startGame();
+}}
+}
+
+function resetSelections(){
+  p1Choice = null;
+  p2Choice = null;
+  p1 = null;
+  p2 = null;
+}
+function updateSelectUI() {
+  if (gameMode === "single") {
+    document.getElementById("p2Title").style.display = "none";
+    document.getElementById("p2Select").style.display = "none";
+  } else {
+    document.getElementById("p2Title").style.display = "block";
+    document.getElementById("p2Select").style.display = "block";
+  }
+}
 function startSingle() {
+  resetSelections();
   gameMode = "single";
   gameState = "select";
   document.getElementById("selectUI").style.display = "block";
   document.getElementById('oneortwo').style.display = "none";
+  updateSelectUI();
 }
 
 function startMulti() {
+  resetSelections();
   gameMode = "multi";
   gameState = "select";
   document.getElementById("selectUI").style.display = "block";
   document.getElementById('oneortwo').style.display = "none";
+  updateSelectUI();
 }
+
   
   // =========================
   // ステージ
@@ -1407,31 +1437,6 @@ function applyKnockback(target, sourceX, power, angle) {
   document.addEventListener("keydown", e => {
     keys[e.key] = true;
   
-    // キャラ選択
-    if (gameState === "select") {
-      if (e.key === "1") p1Choice = "reimu";
-      if (e.key === "2") p1Choice = "marisa";
-      if (e.key === "6") p2Choice = "reimu";
-      if (e.key === "7") p2Choice = "marisa";
-      if (e.key === "3") p1Choice = "youmu";
-      if (e.key === "8") p2Choice = "youmu";
-      if (e.key === "4") p1Choice = "sanae";
-      if (e.key === "9") p2Choice = "sanae";
-      if (e.key === "5") p1Choice = "sakuya";
-      if (e.key === "0") p2Choice = "sakuya";
-      if (e.key === "q") p1Choice = "remiria";
-      if (e.key === "p") p2Choice = "remiria";
-      if (e.key === "w") p1Choice = "huran";
-      if (e.key === "o") p2Choice = "huran";
-      if (e.key === "e") p1Choice = "pache";
-      if (e.key === "i") p2Choice = "pache";
-      if (e.key === "r") p1Choice = "chilno";
-      if (e.key === "u") p2Choice = "chilno";
-  
-      if (p1Choice && p2Choice) startGame();
-      return;
-    }
-  
     // p1 p2 安全チェック
     if (!p1 || !p2) return;
   
@@ -1467,13 +1472,15 @@ if (e.key === "ArrowDown" && p2.stun <= 0) {p2.spAttack(p2, p1)};
   // ゲーム開始
   // =========================
   function startGame() {
+    if (!p1Choice) return;
     const stockValue = parseInt(document.getElementById("stockSelect").value);
     p1 = new Player(400, characters[p1Choice], { left:"a", right:"d" }, false, "red");
     p1.stock = stockValue;
 
 if (gameMode === "single") {
-  const keys = Object.keys(characters);
-  const randomChar = keys[Math.floor(Math.random() * keys.length)];
+  const charKeys = Object.keys(characters);
+const randomChar =
+  charKeys[Math.floor(Math.random() * charKeys.length)];
 
   p2 = new Player(800, characters[randomChar], {}, true, "blue");
   p2.stock = stockValue;
@@ -1665,7 +1672,6 @@ if (cpu.onGround && Math.random() < 0.02) {
   cpu.vy = -cpu.jumpPower;
   cpu.jumpCount++;
 }
-
 // =====================
 // 攻撃ロジック
 // =====================
@@ -1692,6 +1698,7 @@ if (cpu.y > stage.y + 100 && cpu.jumpCount < cpu.maxJumps) {
   cpu.vy = -cpu.jumpPower;
   cpu.jumpCount++;
 }
+cpu.vx = Math.max(-cpu.speed, Math.min(cpu.speed, cpu.vx));
 }
   // =========================
   // メインループ
@@ -1726,8 +1733,10 @@ if (bgTimer > 0) {
     }
     if (p2.isCPU) cpuControl(p2, p1);
   
-    if (drawWinner()) 
-    return;
+    if (drawWinner()) {
+      requestAnimationFrame(gameLoop);
+      return;
+    }
     // 入力
     handleInput(p1, "a", "d");
     if(!p2.isCPU){
@@ -1747,8 +1756,8 @@ if (bgTimer > 0) {
 
     requestAnimationFrame(gameLoop);
   }
-  
-  gameLoop();
+  window.onload = () =>{ 
+    gameLoop();};
   </script>
   <!-- スマホ操作 -->
   
