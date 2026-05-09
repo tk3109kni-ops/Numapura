@@ -54,9 +54,9 @@ img{
 
 }
 #mobileControls button{
-  width:70px;
-  height:70px;
-  font-size:22px;
+  width:120px;
+  height:120px;
+  font-size:35px;
   margin:3px;
   border-radius:50%;
   opacity:0.7;
@@ -77,6 +77,12 @@ html, body {
   height: 100%;
   margin: 0;
   overflow: hidden;
+}
+button {
+  touch-action: manipulation;
+}
+#game, canvas {
+  touch-action: none;
 }
 </style>
 </head>
@@ -227,6 +233,8 @@ html, body {
   <p>※キャラを選ぶとゲーム開始</p>
 
 </div>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <div id="resultScreen" style="
 display:none;
 position:absolute;
@@ -253,6 +261,7 @@ z-index:10;
   </button>
 
 </div>
+<button onclick="enterFullscreen()">フルスクリーン</button>
 <canvas id="game" style="display: none"></canvas>
 
 <img src="reimu.png" id="player1" style="display:none">
@@ -315,8 +324,8 @@ z-index:10;
       </div>
   
       <div>
-        <button id="p1Attack">攻撃</button>
-        <button id="p1Shot">射撃</button>
+        <button id="p1Attack">近</button>
+        <button id="p1Shot">遠</button>
         <button id="p1SP">必殺</button>
       </div>
   
@@ -339,8 +348,8 @@ z-index:10;
       </div>
   
       <div>
-        <button id="p2Attack">攻撃</button>
-        <button id="p2Shot">射撃</button>
+        <button id="p2Attack">近</button>
+        <button id="p2Shot">遠</button>
         <button id="p2SP">必殺</button>
       </div>
   
@@ -370,8 +379,8 @@ z-index:10;
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
   
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = 2000;
+canvas.height = 1000;
   
   const img1 = document.getElementById('player1');
   const img2 = document.getElementById('player2');
@@ -422,6 +431,9 @@ canvas.height = window.innerHeight;
   function startGameFromMenu() {
   document.getElementById("titleScreen").style.display = "none";
   document.getElementById('oneortwo').style.display = "block"; 
+  if (window.innerWidth < 900) {
+    enterFullscreen();
+  }
 }           
 function showHelp() {
   document.getElementById("titleScreen").style.display = "none";
@@ -526,10 +538,32 @@ window.onload = () => {
   gameLoop();
 };
 function resizeCanvas() {
-  const scale = Math.min(window.innerWidth / 1300, window.innerHeight / 1000);
 
-  canvas.style.transform = `scale(${scale})`;
-  canvas.style.transformOrigin = "top left";
+const scale = Math.min(
+  window.innerWidth / canvas.width,
+  window.innerHeight / canvas.height
+);
+
+canvas.style.position = "absolute";
+
+canvas.style.left = "50%";
+canvas.style.top = "50%";
+
+canvas.style.transform =
+  `translate(-50%, -50%) scale(${scale})`;
+
+canvas.style.transformOrigin = "center center";
+}
+function enterFullscreen() {
+  const elem = document.documentElement;
+
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) {
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) {
+    elem.msRequestFullscreen();
+  }
 }
 
 window.addEventListener("resize", resizeCanvas);
@@ -546,7 +580,7 @@ window.onload = () => {
     width: 800,
     height: 20,
     x: canvas.width / 2 - 400,
-    y: canvas.height / 2
+    y: canvas.height / 2 - 150
   };
   
   // =========================
@@ -1498,17 +1532,6 @@ function applyKnockback(target, sourceX, power, angle) {
     // p1 p2 安全チェック
     if (!p1 || !p2) return;
   
-    // ジャンプ
-    if (e.key === "w" && p1.jumpCount < p1.maxJumps) {
-  p1.vy = -p1.jumpPower;
-  p1.jumpCount++;
-}
-
-if (e.key === "ArrowUp" && p2.jumpCount < p2.maxJumps) {
-  p2.vy = -p2.jumpPower;
-  p2.jumpCount++;
-}
-  
     // 攻撃
     if (e.key === "f" && p1.stun <= 0) p1.attack(p1, p2);
 if (e.key === "/" && p2.stun <= 0) p2.attack(p2, p1);
@@ -1532,7 +1555,7 @@ if (e.key === "ArrowDown" && p2.stun <= 0) {p2.spAttack(p2, p1)};
   function startGame() {
     if (!p1Choice) return;
     const stockValue = parseInt(document.getElementById("stockSelect").value);
-    p1 = new Player(400, characters[p1Choice], { left:"a", right:"d" }, false, "red");
+    p1 = new Player(750, characters[p1Choice], { left:"a", right:"d" }, false, "red");
     p1.stock = stockValue;
 
 if (gameMode === "single") {
@@ -1540,10 +1563,10 @@ if (gameMode === "single") {
 const randomChar =
   charKeys[Math.floor(Math.random() * charKeys.length)];
 
-  p2 = new Player(800, characters[randomChar], {}, true, "blue");
+  p2 = new Player(1150, characters[randomChar], {}, true, "blue");
   p2.stock = stockValue;
 } else {
-  p2 = new Player(800, characters[p2Choice], {
+  p2 = new Player(1150, characters[p2Choice], {
     left: "ArrowLeft",
     right: "ArrowRight"
   }, false, "blue");
@@ -1560,61 +1583,81 @@ if(gameMode === "multi"){
   gameState = "game";
   
 }
+function jump(p) {
+  if (!p || p.stun > 0) return;
+
+  if (p.jumpCount < p.maxJumps) {
+    p.vy = -p.jumpPower;
+    p.jumpCount++;
+  }
+}
 function bindButton(id, key) {
 
 const btn = document.getElementById(id);
 
-btn.addEventListener("touchstart", e => {
-  e.preventDefault();
-  keys[key] = true;
-});
+  btn.addEventListener("pointerdown", e => {
+    e.preventDefault();
+    keys[key] = true;
+  });
 
-btn.addEventListener("touchend", e => {
-  e.preventDefault();
-  keys[key] = false;
-});
+  btn.addEventListener("pointerup", e => {
+    e.preventDefault();
+    keys[key] = false;
+  });
+
+  btn.addEventListener("pointerleave", e => {
+    keys[key] = false;
+  });
 }
+
 bindButton("p1Left","a");
 bindButton("p1Right","d");
-bindButton("p1Jump","w");
 bindButton("p2Left","ArrowLeft");
 bindButton("p2Right","ArrowRight");
-bindButton("p2Jump","ArrowUp");
-document.getElementById("p1Attack").addEventListener("touchstart",e=>{
+document.getElementById("p1Jump").addEventListener("pointerdown", e => {
+  e.preventDefault();
+  jump(p1);
+});
+
+document.getElementById("p2Jump").addEventListener("pointerdown", e => {
+  e.preventDefault();
+  jump(p2);
+});
+document.getElementById("p1Attack").addEventListener("pointerdown",e=>{
   e.preventDefault();
   if(p1 && p2 && p1.stun <= 0){
     p1.attack(p1,p2);
   }
 });
 
-document.getElementById("p1Shot").addEventListener("touchstart",e=>{
+document.getElementById("p1Shot").addEventListener("pointerdown",e=>{
   e.preventDefault();
   if(p1 && p2 && p1.stun <= 0){
     p1.shoot();
   }
 });
 
-document.getElementById("p1SP").addEventListener("touchstart",e=>{
+document.getElementById("p1SP").addEventListener("pointerdown",e=>{
   e.preventDefault();
   if(p1 && p2 && p1.stun <= 0){
     p1.spAttack(p1,p2);
   }
 });
-document.getElementById("p2Attack").addEventListener("touchstart",e=>{
+document.getElementById("p2Attack").addEventListener("pointerdown",e=>{
   e.preventDefault();
   if(p1 && p2 && p2.stun <= 0){
     p2.attack(p2,p1);
   }
 });
 
-document.getElementById("p2Shot").addEventListener("touchstart",e=>{
+document.getElementById("p2Shot").addEventListener("pointerdown",e=>{
   e.preventDefault();
   if(p1 && p2 && p2.stun <= 0){
     p2.shoot();
   }
 });
 
-document.getElementById("p2SP").addEventListener("touchstart",e=>{
+document.getElementById("p2SP").addEventListener("pointerdown",e=>{
   e.preventDefault();
   if(p1 && p2 && p2.stun <= 0){
     p2.spAttack(p2,p1);
@@ -1800,6 +1843,18 @@ if (bgTimer > 0) {
     if(!p2.isCPU){
     handleInput(p2, "ArrowLeft", "ArrowRight");
     }
+    // ジャンプ処理（ここで統一）
+if (p1 && keys["w"] && p1.jumpCount < p1.maxJumps) {
+  p1.vy = -p1.jumpPower;
+  p1.jumpCount++;
+  keys["w"] = false; // 長押し暴発防止
+}
+
+if (p2 && keys["ArrowUp"] && p2.jumpCount < p2.maxJumps) {
+  p2.vy = -p2.jumpPower;
+  p2.jumpCount++;
+  keys["ArrowUp"] = false;
+}
     drawStage();
     p1.update(p2);
     p2.update(p1);
