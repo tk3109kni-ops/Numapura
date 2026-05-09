@@ -348,8 +348,8 @@ z-index:10;
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
   
-  canvas.width = 1300;
-  canvas.height = 1000;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
   
   const img1 = document.getElementById('player1');
   const img2 = document.getElementById('player2');
@@ -487,7 +487,7 @@ function startMulti() {
     width: 800,
     height: 20,
     x: canvas.width / 2 - 400,
-    y: canvas.height / 2 - 150
+    y: canvas.height / 2
   };
   
   // =========================
