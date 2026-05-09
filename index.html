@@ -53,6 +53,25 @@ img{
   font-size: 200px;
 
 }
+#mobileControls button{
+  width:70px;
+  height:70px;
+  font-size:22px;
+  margin:3px;
+  border-radius:50%;
+  opacity:0.7;
+}
+body{
+  touch-action:none;
+}
+#charSelect img{
+  width: 120px;
+  height: 120px;
+
+}
+#charSelect img:hover{
+  border: solid white;
+}
 </style>
 </head>
 
@@ -71,6 +90,7 @@ img{
   <h1>操作方法</h1>
   <p>p1: wでジャンプ、 aで左、dで右、fで近接、gで遠距離、qで必殺技</p>
   <p>p2: 矢印の上、左、右でそれぞれの方向、/で近接、,で遠距離、下矢印で必殺技</p>
+  <p>タップの場合は下にある操作ボタンを使ってください。ボタンはパソコンのクリックでは反応しません(タブレットやスマホのみ対応)。</p>
   <br>
   <h1>キャラ説明</h1>
   <h2>博麗霊夢</h2>
@@ -136,6 +156,12 @@ img{
   <p><span style="color: red">ロイヤルフレア</span>: 自身を中心に炎を出して攻撃。範囲はそれほど広くないが、威力、クールタイムともに最も使いやすい。</p>
   <p><span style="color: aqua">ランドフリーズ</span>: 前方長距離に氷を出して攻撃。威力が最も高く、クールタイムもかなり長い。相手が自分と同じ高さにいないと当たらない。</p>
   <p><span style="color: greenyellow">エターナルウインド</span>: 縦方向に風を出して攻撃。ふっとばし力がかなり高く、当たれば撃墜しやすいが、判定が縦に細長いため使いづらい。クールタイムは最も短い。</p>
+  <h2>チルノ</h2>
+  <img src="chilno.png">
+  <p>こいつは➈というあだ名があるが、割となんでかは知られてない。まあ➈＝バカと覚えておけばいいだろう。</p>
+  <h3>攻撃</h3>
+  <p>近接攻撃: アイシクルスラッシュ; 氷の斬撃を前方に出して攻撃する。相手が一瞬だけスタン状態になる。</p>
+  <p>必殺技: パーフェクトフリーズ; 自身を中心に氷を出し、相手を凍結させる。相手がスタン状態になるのでふっとばしはないが、火力はかなり高い。</p>
   <h2>その他のゲーム仕様</h2>
   <p>一人プレイ、二人プレイ: GameStartを押すと左上にボタンが現れるので、好きな方を選んで下さい。二人は普通に二人で、<br>一人の方は自身が2pとして選んだキャラがCPUになります。一人プレイの場合は必ず自分が1pになるので、操作もwasdの方です。</p>
   <p>撃墜: 基本的にスマブラと同様で、上・横・下のボーダーラインを超えると撃墜判定となる。</p>
@@ -154,8 +180,33 @@ img{
 
   <h1>キャラ選択</h1>
 
-  <p>P1: 1=霊夢 2=魔理沙 3=妖夢 4=早苗 5=咲夜 q=レミリア w=フラン e=パチェ</p>
-  <p>P2: 6=霊夢 7=魔理沙 8=妖夢 9=早苗 0=咲夜 p=レミリア o=フラン i=パチェ</p>
+  <div id="charSelect">
+
+    <h2>P1選択</h2>
+    
+    <img src="reimu.png" onclick="selectCharacter('p1','reimu')">
+    <img src="marisa.png" onclick="selectCharacter('p1','marisa')">
+    <img src="youmu.png" onclick="selectCharacter('p1','youmu')">
+    <img src="sanae.png" onclick="selectCharacter('p1', 'sanae')">
+    <img src="sakuya.png" onclick="selectCharacter('p1','sakuya')">
+    <img src="remiria.png" onclick="selectCharacter('p1','remiria')">
+    <img src="huran.png" onclick="selectCharacter('p1','huran')">
+    <img src="pache.png" onclick="selectCharacter('p1', 'pache')">
+    <img src="chilno.png" onclick="selectCharacter('p1', 'chilno')">
+    
+    <h2>P2選択</h2>
+    
+    <img src="reimu.png" onclick="selectCharacter('p2','reimu')">
+    <img src="marisa.png" onclick="selectCharacter('p2','marisa')">
+    <img src="youmu.png" onclick="selectCharacter('p2','youmu')">
+    <img src="sanae.png" onclick="selectCharacter('p2', 'sanae')">
+    <img src="sakuya.png" onclick="selectCharacter('p2','sakuya')">
+    <img src="remiria.png" onclick="selectCharacter('p2','remiria')">
+    <img src="huran.png" onclick="selectCharacter('p2','huran')">
+    <img src="pache.png" onclick="selectCharacter('p2', 'pache')">
+    <img src="chilno.png" onclick="selectCharacter('p2', 'chilno')">
+    
+    </div>
 
   <h2>ストック数</h2>
 
@@ -228,9 +279,68 @@ z-index:10;
 <img src="special8.1.png" id="spEffect81" style="display: none">
 <img src="special8.2.png" id="spEffect82" style="display: none">
 <img src="special8.3.png" id="spEffect83" style="display: none">
+<img src="chilno.png" id="player9" style="display: none">
+<img src="hit9.png" id="hitEffect9" style="display: none">
+<img src="special9.png" id="spEffect9" style="display: none">
 
-
-<canvas id="game"></canvas>
+<div id="mobileControls" style="
+  display:none;
+  position:absolute;
+  bottom:20px;
+  width:100%;
+  z-index:20;
+  pointer-events:auto;
+  ">
+  
+    <!-- ===================== -->
+    <!-- P1 -->
+    <!-- ===================== -->
+    <div id="p1Controls" style="
+    position:absolute;
+    left:20px;
+    bottom:20px;
+    ">
+  
+      <div>
+        <button id="p1Left">←</button>
+        <button id="p1Jump">↑</button>
+        <button id="p1Right">→</button>
+        
+      </div>
+  
+      <div>
+        <button id="p1Attack">攻撃</button>
+        <button id="p1Shot">射撃</button>
+        <button id="p1SP">必殺</button>
+      </div>
+  
+    </div>
+  
+    <!-- ===================== -->
+    <!-- P2 -->
+    <!-- ===================== -->
+    <div id="p2Controls" style="
+    position:absolute;
+    right:20px;
+    bottom:20px;
+    ">
+  
+      <div>
+        <button id="p2Left">←</button>
+        <button id="p2Jump">↑</button>
+        <button id="p2Right">→</button>
+        
+      </div>
+  
+      <div>
+        <button id="p2Attack">攻撃</button>
+        <button id="p2Shot">射撃</button>
+        <button id="p2SP">必殺</button>
+      </div>
+  
+    </div>
+  
+  </div>
 <script>
   // =========================
   // 初期設定
@@ -249,6 +359,7 @@ z-index:10;
   const img6 = document.getElementById('player6');
   const img7 = document.getElementById('player7');
   const img8 = document.getElementById('player8');
+  const img9 = document.getElementById('player9');
   const hitImg = document.getElementById('hitEffect');
   const hitImg2 = document.getElementById('hitEffect2');
   const hitImg3 = document.getElementById('hitEffect3');
@@ -257,6 +368,7 @@ z-index:10;
   const hitImg6 = document.getElementById('hitEffect6');
   const hitImg7 = document.getElementById('hitEffect7');
   const hitImg8 = document.getElementById('hitEffect8');
+  const hitImg9 = document.getElementById('hitEffect9');
   const spImg1 = document.getElementById('spEffect1');
   const spImg2 = document.getElementById('spEffect2');
   const spImg3 = document.getElementById('spEffect3');
@@ -270,6 +382,7 @@ z-index:10;
   const spImg81 = document.getElementById('spEffect81');
   const spImg82 = document.getElementById('spEffect82');
   const spImg83 = document.getElementById('spEffect83');
+  const spImg9 = document.getElementById('spEffect9');
   const stunImg = document.getElementById('stunEffect');
   const gravity = 0.5
   
@@ -308,6 +421,18 @@ p1 = null;
 p2 = null;
 p1Choice = null;
 p2Choice = null;
+}
+function selectCharacter(player, charName){
+
+if(player === "p1"){
+  p1Choice = charName;
+}else{
+  p2Choice = charName;
+}
+
+if(p1Choice && p2Choice){
+  startGame();
+}
 }
 let gameMode = "multi"; // デフォルト
 
@@ -378,7 +503,7 @@ const dy = Math.abs(self.y - enemy.y);
 const powerup = 7 + self.damage / 50;
 
 if (dx < 250 + self.damage && dy < 250 + self.damage) {
-  enemy.damage += 70;
+  enemy.damage += 40;
   applyKnockback(enemy, self.x, powerup, 45);
 }
 
@@ -410,7 +535,7 @@ effects.push(
   (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 150 && dy < 20 && isFront) {
-    enemy.damage += 12;
+    enemy.damage += 10;
 
     const angle = 20 + enemy.damage * 0.2;
     applyKnockback(enemy, self.x, 6, angle);
@@ -436,7 +561,7 @@ const isFront =
   (self.direction === -1 && enemy.x < self.x);
 
 if (dx < 800 && dy < 10 && isFront) {
-  enemy.damage += 180;
+  enemy.damage += 90;
   applyKnockback(enemy, self.x, 8, 45);
 }
 
@@ -661,7 +786,7 @@ else{
 const dy = Math.abs(self.y - enemy.y);
 
 if (dx < 400 && dy < 400) {
-  enemy.damage += 80;
+  enemy.damage += 70;
   applyKnockback(enemy, self.x, 0, 0);
 }
 
@@ -696,7 +821,7 @@ remiria: {
   (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 150 && dy < 20 && isFront && bgTimer <= 0) {
-    enemy.damage += 8;
+    enemy.damage += 6;
 
     const angle = 20 + enemy.damage * 0.2;
     applyKnockback(enemy, self.x, 6, angle);
@@ -709,7 +834,7 @@ effects.push(
 );
   }
   if (dx < 300 && dy < 50 && isFront && bgTimer > 0){
-    enemy.damage += 20;
+    enemy.damage += 15;
     const angle = 20 + enemy.damage * 0.2;
     applyKnockback(enemy, self.x, 12, angle);
     const effectX = self.x + self.direction * 100;
@@ -738,7 +863,7 @@ const isFront =
   (self.direction === -1 && enemy.x < self.x);
 
 if(dx < 800 && dy < 200 && isFront){
-  enemy.damage += 90;
+  enemy.damage += 70;
   applyKnockback(enemy, self.x, 10, 45)
 
 }
@@ -771,7 +896,7 @@ huran: {
   (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 80 && dy < 60 && isFront) {
-    enemy.damage += 12;
+    enemy.damage += 10;
 
     const angle = 20 + enemy.damage * 0.2;
     applyKnockback(enemy, self.x, 6, angle);
@@ -860,7 +985,7 @@ const isFront =
   (self.direction === -1 && enemy.x < self.x);
 
 if (dx < 600 && dy < 100 && isFront) {
-  enemy.damage += 85;
+  enemy.damage += 55;
   applyKnockback(enemy, self.x, 6, 45);
 }
 
@@ -878,7 +1003,7 @@ const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
 
 if (dx < 200 && dy < 200) {
-  enemy.damage += 70;
+  enemy.damage += 50;
   applyKnockback(enemy, self.x, 7, 45);
 }
 
@@ -907,6 +1032,63 @@ effects.push(
   new Effect(effectX, effectY, spImg83, self.direction, 100, 800)
 );
 }
+}
+},
+chilno: {
+  image: img9,
+  maxJumps: 8,
+  speed: 9,
+  spOffsetX: 0,
+  spOffsetY: -200,
+  jumpPower: 8,
+  spStun: 375,
+  color: "blue",
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+
+
+  if (dx < 100 && dy < 50 && isFront) {
+    enemy.damage += 5;
+
+    const angle = 20 + enemy.damage * 0.2;
+    applyKnockback(enemy, self.x, 9, angle);
+    enemy.stun = 10;
+  
+    const effectX = self.x + self.direction * 100;
+    const effectY = self.y + Math.abs(self.direction * 20);
+
+effects.push(
+  new Effect(effectX, effectY, hitImg9, self.direction, 200, 120)
+);
+  }
+},
+
+  sp: (self, enemy) => {
+
+self.stun = 375;
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+
+
+if (dx < 300 && dy < 500) {
+  enemy.damage += 85;
+  applyKnockback(enemy, self.x, 2, 45);
+  enemy.stun = 200;
+}
+
+const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
+const effectY = self.y + self.height / 2 + self.spOffsetY;
+
+effects.push(
+  new Effect(effectX, effectY, spImg9, self.direction, 600, 600)
+);
 }
 }
 
@@ -1086,7 +1268,7 @@ function applyKnockback(target, sourceX, power, angle) {
     this.y = player.y;
 
     this.state = "orbit"; // orbit → shoot
-    this.speed = 10;
+    this.speed = 7;
     this.active = true;
   }
 
@@ -1119,7 +1301,7 @@ function applyKnockback(target, sourceX, power, angle) {
     const dy = Math.abs(this.y - enemy.y);
 
     if (dx < 40 && dy < 40) {
-      enemy.damage += 10;
+      enemy.damage += 7;
       applyKnockback(enemy, this.x, 6, 45);
       this.active = false;
     }
@@ -1243,6 +1425,8 @@ function applyKnockback(target, sourceX, power, angle) {
       if (e.key === "o") p2Choice = "huran";
       if (e.key === "e") p1Choice = "pache";
       if (e.key === "i") p2Choice = "pache";
+      if (e.key === "r") p1Choice = "chilno";
+      if (e.key === "u") p2Choice = "chilno";
   
       if (p1Choice && p2Choice) startGame();
       return;
@@ -1302,8 +1486,75 @@ if (gameMode === "single") {
 }
 document.getElementById("selectUI").style.display = "none";
 document.getElementById("game").style.display = "block";
-  gameState = "game";
+document.getElementById("mobileControls").style.display = "block";
+if(gameMode === "multi"){
+  document.getElementById("p2Controls").style.display = "block";
+}else{
+  document.getElementById("p2Controls").style.display = "none";
 }
+  gameState = "game";
+  
+}
+function bindButton(id, key) {
+
+const btn = document.getElementById(id);
+
+btn.addEventListener("touchstart", e => {
+  e.preventDefault();
+  keys[key] = true;
+});
+
+btn.addEventListener("touchend", e => {
+  e.preventDefault();
+  keys[key] = false;
+});
+}
+bindButton("p1Left","a");
+bindButton("p1Right","d");
+bindButton("p1Jump","w");
+bindButton("p2Left","ArrowLeft");
+bindButton("p2Right","ArrowRight");
+bindButton("p2Jump","ArrowUp");
+document.getElementById("p1Attack").addEventListener("touchstart",e=>{
+  e.preventDefault();
+  if(p1 && p2 && p1.stun <= 0){
+    p1.attack(p1,p2);
+  }
+});
+
+document.getElementById("p1Shot").addEventListener("touchstart",e=>{
+  e.preventDefault();
+  if(p1 && p2 && p1.stun <= 0){
+    p1.shoot();
+  }
+});
+
+document.getElementById("p1SP").addEventListener("touchstart",e=>{
+  e.preventDefault();
+  if(p1 && p2 && p1.stun <= 0){
+    p1.spAttack(p1,p2);
+  }
+});
+document.getElementById("p2Attack").addEventListener("touchstart",e=>{
+  e.preventDefault();
+  if(p1 && p2 && p2.stun <= 0){
+    p2.attack(p2,p1);
+  }
+});
+
+document.getElementById("p2Shot").addEventListener("touchstart",e=>{
+  e.preventDefault();
+  if(p1 && p2 && p2.stun <= 0){
+    p2.shoot();
+  }
+});
+
+document.getElementById("p2SP").addEventListener("touchstart",e=>{
+  e.preventDefault();
+  if(p1 && p2 && p2.stun <= 0){
+    p2.spAttack(p2,p1);
+  }
+});
 
   
   // =========================
@@ -1360,8 +1611,8 @@ let restartButton = {
   
     ctx.fillStyle = "white";
     ctx.font = "18px Arial"
-    ctx.fillText("P1: 1=霊夢 2=魔理沙 3=妖夢 4=早苗 5=咲夜 q=レミリア w=フラン e=パチェ", 400, 300);
-    ctx.fillText("P2: 6=霊夢 7=魔理沙 8=妖夢 9=早苗 0=咲夜 p=レミリア o=フラン i=パチェ", 400, 400);
+    ctx.fillText("P1: 1=霊夢 2=魔理沙 3=妖夢 4=早苗 5=咲夜 q=レミリア w=フラン e=パチェ r=チルノ", 400, 300);
+    ctx.fillText("P2: 6=霊夢 7=魔理沙 8=妖夢 9=早苗 0=咲夜 p=レミリア o=フラン i=パチェ u=チルノ", 400, 400);
   }
   
   function drawStage() {
@@ -1376,6 +1627,7 @@ if (p1.stock <= 0 || p2.stock <= 0) {
 
   document.getElementById("resultScreen").style.display = "flex";
   document.getElementById("winnerText").innerText = winner;
+  document.getElementById("mobileControls").style.display = "none";
 
   return true;
 }
@@ -1468,13 +1720,12 @@ if (bgTimer > 0) {
       requestAnimationFrame(gameLoop);
       return;
     }
-    if (p2.isCPU) cpuControl(p2, p1);
-  
-    // 安全チェック
     if (!p1 || !p2) {
       requestAnimationFrame(gameLoop);
       return;
     }
+    if (p2.isCPU) cpuControl(p2, p1);
+  
     if (drawWinner()) 
     return;
     // 入力
@@ -1499,5 +1750,7 @@ if (bgTimer > 0) {
   
   gameLoop();
   </script>
+  <!-- スマホ操作 -->
+  
 </body>
 </html>
