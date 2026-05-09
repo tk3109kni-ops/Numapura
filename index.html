@@ -72,6 +72,12 @@ body{
 #charSelect img:hover{
   border: solid white;
 }
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
 </style>
 </head>
 
@@ -341,6 +347,22 @@ z-index:10;
     </div>
   
   </div>
+  <div id="rotateWarning" style="
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:black;
+  color:white;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  font-size:30px;
+  z-index:9999;
+  ">
+  横画面にしてください
+  </div>
 <script>
   // =========================
   // 初期設定
@@ -478,8 +500,45 @@ function startMulti() {
   document.getElementById('oneortwo').style.display = "none";
   updateSelectUI();
 }
+function checkOrientation() {
+  const isPortrait = window.innerHeight > window.innerWidth;
 
-  
+  const warn = document.getElementById("rotateWarning");
+  const game = document.getElementById("game");
+
+  if (isPortrait) {
+    warn.style.display = "flex";
+    game.style.display = "none";
+  } else {
+    warn.style.display = "none";
+
+    // ゲーム中だけ表示
+    if (gameState === "game") {
+      game.style.display = "block";
+    }
+  }
+}
+
+window.addEventListener("resize", checkOrientation);
+window.addEventListener("orientationchange", checkOrientation);
+window.onload = () => {
+  checkOrientation();
+  gameLoop();
+};
+function resizeCanvas() {
+  const scale = Math.min(window.innerWidth / 1300, window.innerHeight / 1000);
+
+  canvas.style.transform = `scale(${scale})`;
+  canvas.style.transformOrigin = "top left";
+}
+
+window.addEventListener("resize", resizeCanvas);
+window.addEventListener("orientationchange", resizeCanvas);
+window.onload = () => {
+  resizeCanvas();
+  checkOrientation();
+  gameLoop();
+};
   // =========================
   // ステージ
   // =========================
@@ -817,7 +876,6 @@ const dy = Math.abs(self.y - enemy.y);
 
 if (dx < 400 && dy < 400) {
   enemy.damage += 70;
-  applyKnockback(enemy, self.x, 0, 0);
 }
 
 const effectX = enemy.x + enemy.width / 2;
