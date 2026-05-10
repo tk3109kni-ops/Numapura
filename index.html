@@ -53,16 +53,27 @@ img{
   font-size: 200px;
 
 }
+#mobileControls{
+  display:none;
+  position:absolute;
+  bottom:20px;
+  left:0;
+  width:100%;
+  z-index:20;
+  pointer-events:auto;
+}
 #mobileControls button{
-  width:100px;
-  height:100px;
+  width:120px;
+  height:120px;
   font-size:35px;
-  margin:3px;
   border-radius:50%;
   opacity:0.7;
 }
 body{
   touch-action:none;
+}
+body.gameMode{
+  overflow: hidden;
 }
 #charSelect img{
   width: 120px;
@@ -76,13 +87,53 @@ html, body {
   width: 100%;
   height: 100%;
   margin: 0;
-  overflow: hidden;
 }
 button {
   touch-action: manipulation;
 }
 #game, canvas {
   touch-action: none;
+}
+#selectUI{
+  position:absolute;
+  width:100%;
+  height:100%;
+  overflow-y:auto;
+  background:black;
+}
+#mobileControls.singleMode{
+  display:block;
+  position:absolute;
+  width:100%;
+  height:100%;
+  left:0;
+  top:0;
+  pointer-events:none;
+}
+
+/* 左側：移動 */
+#mobileControls.singleMode #moveButtons{
+  position:absolute;
+  left:20px;
+  bottom:20px;
+  display:flex;
+  gap:10px;
+  pointer-events:auto;
+}
+
+/* 右側：攻撃 */
+#mobileControls.singleMode #attackButtons{
+  position:absolute;
+  right:20px;
+  bottom:20px;
+  display:flex;
+  flex-direction:row;
+  gap:10px;
+  pointer-events:auto;
+}
+#p1Jump{
+  width: 120px;
+  height: 120px;
 }
 </style>
 </head>
@@ -310,27 +361,18 @@ z-index:10;
     <!-- ===================== -->
     <!-- P1 -->
     <!-- ===================== -->
-    <div id="p1Controls" style="
-    position:absolute;
-    left:20px;
-    bottom:20px;
-    ">
-  
-      <div>
-        <button id="p1Left">←</button>
-        <button id="p1Jump">↑</button>
-        <button id="p1Right">→</button>
-        
-      </div>
-  
-      <div>
-        <button id="p1Attack">近</button>
-        <button id="p1Shot">遠</button>
-        <button id="p1SP">必殺</button>
-      </div>
-  
+    <div id="moveButtons">
+      <button id="p1Left">←</button>
+      <button id="p1Jump">↑</button>
+      <button id="p1Right">→</button>
     </div>
   
+    <!-- 右：攻撃 -->
+    <div id="attackButtons">
+      <button id="p1Attack">攻撃</button>
+      <button id="p1Shot">射撃</button>
+      <button id="p1SP">必殺</button>
+    </div>
     <!-- ===================== -->
     <!-- P2 -->
     <!-- ===================== -->
@@ -445,6 +487,7 @@ function backToTitle() {
   document.getElementById("titleScreen").style.display = "flex";
 }
 function goTitle() {
+document.body.classList.remove("gameMode");
 document.getElementById("resultScreen").style.display = "none";
 document.getElementById("titleScreen").style.display = "flex";
 document.getElementById("oneortwo").style.display = "none";
@@ -540,8 +583,8 @@ window.onload = () => {
 function resizeCanvas() {
 
 const scale = Math.min(
-  window.innerWidth / canvas.width * 1.8,
-  window.innerHeight / canvas.height * 1.8
+  window.innerWidth / canvas.width * 2,
+  window.innerHeight / canvas.height * 2
 );
 
 canvas.style.position = "absolute";
@@ -1554,6 +1597,7 @@ if (e.key === "ArrowDown" && p2.stun <= 0) {p2.spAttack(p2, p1)};
   // =========================
   function startGame() {
     if (!p1Choice) return;
+    document.body.classList.add("gameMode");
     const stockValue = parseInt(document.getElementById("stockSelect").value);
     p1 = new Player(750, characters[p1Choice], { left:"a", right:"d" }, false, "red");
     p1.stock = stockValue;
@@ -1575,6 +1619,22 @@ const randomChar =
 document.getElementById("selectUI").style.display = "none";
 document.getElementById("game").style.display = "block";
 document.getElementById("mobileControls").style.display = "block";
+if(gameMode === "single"){
+
+document.getElementById("mobileControls")
+  .classList.add("singleMode");
+
+document.getElementById("p2Controls")
+  .style.display = "none";
+
+}else{
+
+document.getElementById("mobileControls")
+  .classList.remove("singleMode");
+
+document.getElementById("p2Controls")
+  .style.display = "block";
+}
 if(gameMode === "multi"){
   document.getElementById("p2Controls").style.display = "block";
 }else{
