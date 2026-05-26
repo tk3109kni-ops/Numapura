@@ -256,6 +256,7 @@ button {
     <img src="huran.png" onclick="selectCharacter('p1','huran')">
     <img src="pache.png" onclick="selectCharacter('p1', 'pache')">
     <img src="chilno.png" onclick="selectCharacter('p1', 'chilno')">
+    <img src="aya.png" onclick="selectCharacter('p1','aya')">
     
     <h2 id="p2Title">P2選択</h2>
     <div id="p2Select">
@@ -268,6 +269,7 @@ button {
       <img src="huran.png" onclick="selectCharacter('p2','huran')" >
       <img src="pache.png" onclick="selectCharacter('p2', 'pache')">
       <img src="chilno.png" onclick="selectCharacter('p2', 'chilno')">
+      <img src="aya.png" onclick="selectCharacter('p2','aya')">
     </div>
     </div>
 
@@ -348,6 +350,10 @@ z-index:10;
 <img src="chilno.png" id="player9" style="display: none">
 <img src="hit9.png" id="hitEffect9" style="display: none">
 <img src="special9.png" id="spEffect9" style="display: none">
+<img src="aya.png" id="player10" style="display: none">
+<img src="hit10.png" id="hitEffect10" style="display: none">
+<img src="special10.1.png" id="spEffect101" style="display: none">
+<img src="special10.2.png" id="spEffect102" style="display: none">
 
 <div id="mobileControls" style="
   display:none;
@@ -433,6 +439,7 @@ canvas.height = 1000;
   const img7 = document.getElementById('player7');
   const img8 = document.getElementById('player8');
   const img9 = document.getElementById('player9');
+  const img10 = document.getElementById('player10');
   const hitImg = document.getElementById('hitEffect');
   const hitImg2 = document.getElementById('hitEffect2');
   const hitImg3 = document.getElementById('hitEffect3');
@@ -442,6 +449,7 @@ canvas.height = 1000;
   const hitImg7 = document.getElementById('hitEffect7');
   const hitImg8 = document.getElementById('hitEffect8');
   const hitImg9 = document.getElementById('hitEffect9');
+  const hitImg10 = document.getElementById('hitEffect10');
   const spImg1 = document.getElementById('spEffect1');
   const spImg2 = document.getElementById('spEffect2');
   const spImg3 = document.getElementById('spEffect3');
@@ -456,6 +464,8 @@ canvas.height = 1000;
   const spImg82 = document.getElementById('spEffect82');
   const spImg83 = document.getElementById('spEffect83');
   const spImg9 = document.getElementById('spEffect9');
+  const spImg101 = document.getElementById('spEffect102');
+  const spImg102 = document.getElementById('spEffect101');
   const stunImg = document.getElementById('stunEffect');
   const gravity = 0.5
   
@@ -638,7 +648,14 @@ window.onload = () => {
     spOffsetY: 0,
     spStun: 300,
     jumpPower: 10,
+    shot: {
     color: "red",
+    speed: 8,
+    size: 15,
+    damage: 5,
+    knockback: 3,
+    angle: 30
+  },
 at: (self,enemy) =>{
   if (!self || !enemy) return;
 
@@ -648,9 +665,8 @@ at: (self,enemy) =>{
   if (dx < 60 && dy < 50) {
     enemy.damage += 5;
 
-    const angle = 20 + enemy.damage * 0.2;
     const powerup = 5 + self.damage / 60;
-    applyKnockback(enemy, self.x, powerup, angle);
+    applyKnockback(enemy, self.x, powerup, 45);
   
     const effectX = self.x + Math.abs(self.direction * 50);
     const effectY = self.y + Math.abs(self.direction * 20);
@@ -668,7 +684,7 @@ const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
 const powerup = 7 + self.damage / 50;
 
-if (dx < 250 + self.damage && dy < 250 + self.damage) {
+if (dx < 250 + self.damage / 2 && dy < 250 + self.damage / 2) {
   enemy.damage += 40;
   applyKnockback(enemy, self.x, powerup, 45);
 }
@@ -677,7 +693,7 @@ const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
 const effectY = self.y + self.height / 2 + self.spOffsetY;
 
 effects.push(
-  new Effect(effectX, effectY, spImg1, self.direction, 750 + self.damage * 3, 750 + self.damage * 3)
+  new Effect(effectX, effectY, spImg1, self.direction, 750 + self.damage * 1.5, 750 + self.damage * 1.5)
 );
 }
   },
@@ -690,7 +706,14 @@ effects.push(
   spOffsetY: 0,
   jumpPower: 12,
   spStun: 375,
-  color: "yellow",
+  shot: {
+    color: "yellow",
+    speed: 8,
+    size: 5,
+    damage: 9,
+    knockback: 5,
+    angle: 30
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
 
@@ -703,8 +726,8 @@ effects.push(
   if (dx < 150 && dy < 20 && isFront) {
     enemy.damage += 10;
 
-    const angle = 20 + enemy.damage * 0.2;
-    applyKnockback(enemy, self.x, 6, angle);
+    
+    applyKnockback(enemy, self.x, 6, 60);
   
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
@@ -728,7 +751,7 @@ const isFront =
 
 if (dx < 800 && dy < 10 && isFront) {
   enemy.damage += 90;
-  applyKnockback(enemy, self.x, 8, 45);
+  applyKnockback(enemy, self.x, 10, 45);
 }
 
 const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
@@ -746,7 +769,14 @@ youmu: {
   spOffsetX: 0,
   spOffsetY: -30,
   jumpPower: 7,
-  color: "white",
+  shot: {
+    color: "white",
+    speed: 8,
+    size: 5,
+    damage: 1,
+    knockback: 15,
+    angle: 30
+  },
 
   spStun: 100,
   at: (self,enemy) =>{
@@ -758,8 +788,7 @@ youmu: {
   if (dx < 60 && dy < 50) {
     enemy.damage += 7;
 
-    const angle = 20 + enemy.damage * 0.2;
-    applyKnockback(enemy, self.x, 7, angle);
+    applyKnockback(enemy, self.x, 8, 20);
   
     const effectX = self.x + self.direction * 20;
     const effectY = self.y + self.direction * 0;
@@ -842,7 +871,14 @@ sanae: {
   spOffsetX: 0,
   spOffsetY: 0,
   jumpPower: 9,
-  color: "green",
+  shot: {
+    color: "green",
+    speed: 8,
+    size: 10,
+    damage: 3,
+    knockback: 5,
+    angle: 30
+  },
 
   spStun: 375,
   at: (self,enemy) =>{
@@ -859,7 +895,7 @@ sanae: {
     enemy.damage += 20;
 
     const angle = 20 + enemy.damage * 0.2;
-    applyKnockback(enemy, self.x, 6, angle);
+    applyKnockback(enemy, self.x, 6, 10);
   
     const effectX = self.x + self.direction * 80;
     const effectY = self.y + self.direction * 0;
@@ -881,7 +917,7 @@ const isFront =
   (self.direction === 1 && enemy.x > self.x) ||
   (self.direction === -1 && enemy.x < self.x);
 
-if (dx < 400 && dy < 400) {
+if (dx < 200 && dy < 200) {
   enemy.damage += 1;
   applyKnockback(enemy, self.x, 15, 45);
 }
@@ -901,7 +937,14 @@ sakuya: {
   spOffsetX: 0,
   spOffsetY: 0,
   jumpPower: 11,
-  color: "gray",
+  shot: {
+    color: "gray",
+    speed: 2,
+    size: 10,
+    damage: 3,
+    knockback: 15,
+    angle: 25
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
 
@@ -912,7 +955,7 @@ sakuya: {
     enemy.damage += 8;
 
     const angle = 20 + enemy.damage * 0.2;
-    applyKnockback(enemy, self.x, 5, angle);
+    applyKnockback(enemy, self.x, 5, 75);
   
     const effectX = self.x + self.direction * 30;
     const effectY = self.y + Math.abs(self.direction * 20);
@@ -975,7 +1018,14 @@ remiria: {
   spOffsetY: 0,
   jumpPower: 12,
   spStun: 375,
-  color: "purple",
+  shot: {
+    color: "purple",
+    speed: 10,
+    size: 10,
+    damage: 4,
+    knockback: 3,
+    angle: 30
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
 
@@ -988,8 +1038,7 @@ remiria: {
   if (dx < 150 && dy < 20 && isFront && bgTimer <= 0) {
     enemy.damage += 6;
 
-    const angle = 20 + enemy.damage * 0.2;
-    applyKnockback(enemy, self.x, 6, angle);
+    applyKnockback(enemy, self.x, 6, 15);
   
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
@@ -1000,8 +1049,8 @@ effects.push(
   }
   if (dx < 300 && dy < 50 && isFront && bgTimer > 0){
     enemy.damage += 15;
-    const angle = 20 + enemy.damage * 0.2;
-    applyKnockback(enemy, self.x, 12, angle);
+
+    applyKnockback(enemy, self.x, 12, 45);
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
   
@@ -1050,7 +1099,14 @@ huran: {
   spOffsetY: 0,
   jumpPower: 10,
   spStun: 375,
-  color: "crimson",
+  shot: {
+    color: "crimson",
+    speed: 6,
+    size: 12,
+    damage: 9,
+    knockback: 8,
+    angle: 30
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
 
@@ -1063,8 +1119,7 @@ huran: {
   if (dx < 80 && dy < 60 && isFront) {
     enemy.damage += 10;
 
-    const angle = 20 + enemy.damage * 0.2;
-    applyKnockback(enemy, self.x, 6, angle);
+    applyKnockback(enemy, self.x, 6, 50);
   
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
@@ -1093,7 +1148,7 @@ else{
   const dy = Math .abs(self.y - enemy.y);
   if(dx < 400 && dy < 400){
     enemy.damage += 60;
-    applyKnockback(enemy, self.x, 7, 45);
+    applyKnockback(enemy, self.x, 7, 90);
   }
   const effectX = enemy.x;
   const effectY = enemy.y;
@@ -1111,7 +1166,14 @@ pache: {
   spOffsetY: 0,
   jumpPower: 8,
   spStun: 375,
-  color: "brown",
+  shot: {
+    color: "brown",
+    speed: 8,
+    size: 8,
+    damage: 8,
+    knockback: 8,
+    angle: 8
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
 
@@ -1125,7 +1187,7 @@ pache: {
     enemy.damage += 10;
 
     const angle = 20 + enemy.damage * 0.2;
-    applyKnockback(enemy, self.x, 6, angle);
+    applyKnockback(enemy, self.x, 6, 45);
   
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
@@ -1151,7 +1213,7 @@ const isFront =
 
 if (dx < 600 && dy < 100 && isFront) {
   enemy.damage += 55;
-  applyKnockback(enemy, self.x, 6, 45);
+  applyKnockback(enemy, self.x, 6, 15);
 }
 
 const effectX = self.x + self.width / 2 + self.direction * 300;
@@ -1187,7 +1249,7 @@ const dy = Math.abs(self.y - enemy.y);
 
 if (dx < 100 && dy < 800) {
   enemy.damage += 80;
-  applyKnockback(enemy, self.x, 12, 45);
+  applyKnockback(enemy, self.x, 12, 75);
 }
 
 const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
@@ -1200,14 +1262,21 @@ effects.push(
 }
 },
 chilno: {
-  image: img9,
+  image: img8,
   maxJumps: 8,
   speed: 9,
   spOffsetX: 0,
   spOffsetY: -200,
   jumpPower: 8,
   spStun: 375,
-  color: "blue",
+  shot: {
+    color: "blue",
+    speed: 20,
+    size: 5,
+    damage: 3,
+    knockback: 5,
+    angle: 30
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
 
@@ -1222,7 +1291,7 @@ chilno: {
     enemy.damage += 5;
 
     const angle = 20 + enemy.damage * 0.2;
-    applyKnockback(enemy, self.x, 9, angle);
+    applyKnockback(enemy, self.x, 9, 45);
     enemy.stun = 10;
   
     const effectX = self.x + self.direction * 100;
@@ -1255,8 +1324,93 @@ effects.push(
   new Effect(effectX, effectY, spImg9, self.direction, 600, 600)
 );
 }
+},
+aya: {
+  image: img10,
+  maxJumps: 9,
+  speed: 12,
+  spOffsetX: 0,
+  spOffsetY: 0,
+  jumpPower: 7,
+  spStun: 375,
+  shot: {
+    color: "black",
+    speed: 12,
+    size: 5,
+    damage: 9,
+    knockback: 5,
+    angle: 30
+  },
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+
+  if (dx < 75 && dy < 75 && self.mode === "normal") {
+    enemy.damage += 10;
+    applyKnockback(enemy, self.x, 6, 80);
+    const effectX = self.x + self.width / 2;
+    const effectY = self.y + self.height / 2;
+
+effects.push(
+  new Effect(effectX, effectY, hitImg10, self.direction, 200, 200)
+);
+  }
+  else if(self.mode === "boost" && dx < 150 && dy < 150){
+    enemy.damage += 15;
+    applyKnockback(enemy, self.x, 8, 80);
+
+    const effectX = self.x + self.width / 2;
+    const effectY = self.y + self.height / 2;
+
+effects.push(
+  new Effect(effectX, effectY, hitImg10, self.direction, 300, 300)
+);
+  }
+},
+
+  sp: (self, enemy) => {
+
+
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+
+const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+
+if (self.mode === "normal" && self.damage <= 200) {
+  self.damage += 30;
+  self.mode = "boost"
+  self.modeTimer = 200;
+  self.speed = 24;
+  self.jumpPower = 10;
+  const effectX = self.x + self.width / 2;
+  const effectY = self.y + self.height / 2;
+
+  effects.push(
+  new Effect(effectX, effectY, spImg101, self.direction, 120, 120)
+);
+}
+if(self.mode === "normal"){
+  self.speed = self.baseSpeed;
+  self.jumpPower = self.baseJumpPower;
 }
 
+if(self.damage > 200 && dx < 400 && dy < 400){
+  self.stun = 300;
+  enemy.damage += 80;
+  applyKnockback(enemy, self.x, 2, 45);
+const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
+const effectY = self.y + self.height / 2 + self.spOffsetY;
+effects.push(
+  new Effect(effectX, effectY, spImg102, self.direction, 800, 800)
+);
+}
+}
+}
 
 };
   
@@ -1302,6 +1456,12 @@ effects.push(
     this.orbs = [];
     this.isCPU = isCPU;
     this.playerColor = playerColor;
+    this.shotData = char.shot;
+    this.baseSpeed = char.speed;
+    this.baseJumpPower = char.jumpPower;
+    this.baseMaxJumps = char.maxJumps;
+    this.mode = "normal";
+    this.modeTimer = char.modeTimer;
   }
 
   reset() {
@@ -1311,6 +1471,7 @@ effects.push(
     this.vy = 0;
     this.damage = 0;
     this.stun = false;
+    this.mode = "normal";
   }
 
   update(enemy) {
@@ -1319,6 +1480,16 @@ effects.push(
       if (this.isWarping) {
     this.vx = 0;
   }
+  if (this.modeTimer > 0) {
+  this.modeTimer--;
+
+  if (this.modeTimer <= 0) {
+    this.mode = "normal";
+    this.speed = this.baseSpeed;
+    this.jumpPower = this.baseJumpPower;
+    this.maxJumps = this.baseMaxJumps
+  }
+}
     this.vy += gravity;
     this.x += this.vx;
     this.y += this.vy;
@@ -1403,7 +1574,7 @@ if (this.stun > 0) {
 
   shoot() {
     this.projectiles.push(
-      new Projectile(this.x, this.y, this.direction, this.color)
+      new Projectile(this.x, this.y, this.direction, this.shotData)
     );
   }
 }
@@ -1416,7 +1587,7 @@ function applyKnockback(target, sourceX, power, angle) {
   const scale = 1 + target.damage / 75;
   const rad = angle * Math.PI / 180;
 
-  target.vx = Math.cos(rad) * power * scale * dir * 2;
+  target.vx = Math.cos(rad) * power * scale * dir * 5;
   target.vy = -Math.sin(rad) * power * scale;
 }
   
@@ -1489,21 +1660,30 @@ function applyKnockback(target, sourceX, power, angle) {
     this.vy = (dy / dist) * this.speed;
   }
 }
-  class Projectile {
-    constructor(x, y, dir, color) {
-      this.x = x;
-      this.y = y;
-      this.vx = dir * 8;
-      this.active = true;
-      this.color = color;
-    }
+class Projectile{
+constructor(x, y, dir, data) {
+
+this.x = x;
+this.y = y;
+
+this.vx = dir * data.speed;
+
+this.active = true;
+
+this.color = data.color;
+this.size = data.size;
+
+this.damage = data.damage;
+this.knockback = data.knockback;
+this.angle = data.angle;
+}
   
     update() {
       this.x += this.vx;
       if (this.x < 0 || this.x > canvas.width) this.active = false;
   
       ctx.fillStyle = this.color;
-      ctx.fillRect(this.x, this.y, 10, 10);
+      ctx.fillRect(this.x, this.y, this.size, this.size);
     }
   }
   function projectileHit(list, target) {
@@ -1513,16 +1693,16 @@ function applyKnockback(target, sourceX, power, angle) {
     const dx = Math.abs(p.x - target.x);
     const dy = Math.abs(p.y - target.y);
 
-    if (dx < 40 && dy < 40) {
-      target.damage += 3;
+    if (dx < 10 && dy < 10) {
+      target.damage += p.damage;
 
-      applyKnockback(target, p.x, 5, 30);
+      applyKnockback(target, p.x, p.knockback, p.angle);
 
       p.active = false;
 
     }
   });
-}  
+}
   // =========================
   // エフェクト
   // =========================
