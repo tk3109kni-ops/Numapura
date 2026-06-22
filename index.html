@@ -151,8 +151,8 @@ button {
 </div>
 <div id="helpScreen" style="display:none;">
   <h1>操作方法</h1>
-  <p>p1: wでジャンプ、 aで左、dで右、fで近接、gで遠距離、qで必殺技</p>
-  <p>p2: 矢印の上、左、右でそれぞれの方向、/で近接、,で遠距離、下矢印で必殺技</p>
+  <p>p1: wでジャンプ、 aで左、dで右、fで近接、gで遠距離、qで必殺技、sでガード。</p>
+  <p>p2: 矢印の上、左、右でそれぞれの方向、/で近接、,で遠距離、下矢印で必殺技、エンターでガード。</p>
   <p>タップの場合は下にある操作ボタンを使ってください。ボタンはパソコンのクリックでは反応しません(タブレットやスマホのみ対応)。</p>
   <br>
   <h1>キャラ説明</h1>
@@ -208,7 +208,7 @@ button {
   <h3>攻撃</h3>
   <p>近接攻撃: デビルブラスト; 火力はある技。実際のフランのスペカとは見た目がかけ離れているので名前考えるのが一番大変だった。</p>
   <p>必殺技: カゴメカゴメ; 自身にエネルギー弾をまとい、それに敵が触れたらダメージ。もう一度必殺技入力で相手の方に飛んでいくが、オート追尾はしない。<br>飛ばした後必殺技連打で追尾っぽくはできる。</p>
-  <p>必殺技α: 破壊; 蓄積ダメージが200を超えると必殺技が変化、範囲内の敵に必中する爆破で攻撃する。 <br>火力は一級品というわけではないが、クールダウンが短いのとやはり必中なのが強い。</p>
+  <p>必殺技α: 破壊; 蓄積ダメージが200を超えると必殺技が変化、範囲内の敵に必中する爆破で攻撃する。 <br>火力は一級品というわけではないが、クールダウンが短いのとやはり必中なのが強い。ガードも無効。</p>
   <br>
   <h2>パチュリー・ノーレッジ</h2>
   <img src="pache.png">
@@ -225,12 +225,20 @@ button {
   <h3>攻撃</h3>
   <p>近接攻撃: アイシクルスラッシュ; 氷の斬撃を前方に出して攻撃する。相手が一瞬だけスタン状態になる。</p>
   <p>必殺技: パーフェクトフリーズ; 自身を中心に氷を出し、相手を凍結させる。相手がスタン状態になるのでふっとばしはないが、火力はかなり高い。</p>
+  <h2>射命丸文</h2>
+  <img src="aya.png">
+  <p>天狗の新聞記者。幻想郷一の速さを持つと言われる。</p>
+  <h3>攻撃</h3>
+  <p>近接攻撃: 旋風; 自身を中心に風を出して攻撃する。範囲が広く、本気モードだとさらに威力が上がる。</p>
+  <p>必殺技: 本気で行きます！; 身体能力と通常攻撃の性能が１０秒間大幅アップ、ただし使うと自傷ダメージを受ける。</p>
+  <p>必殺技α: 春天神風; 蓄積ダメージが200を超えると必殺技が変化、広範囲に高威力の風で攻撃する。ただしふっとばしは下がる。</p>
+  <br>
   <h2>その他のゲーム仕様</h2>
   <p>一人プレイ、二人プレイ: GameStartを押すと左上にボタンが現れるので、好きな方を選んで下さい。二人は普通に二人で、<br>一人の方は自身がキャラ選択したら相手がランダムで決まってゲームがスタートします。一人プレイの場合は必ず自分が1pになるので、操作もwasdまたは左側タップの方です。</p>
   <p>撃墜: 基本的にスマブラと同様で、上・横・下のボーダーラインを超えると撃墜判定となる。</p>
   <p>クールダウン: 主に必殺技を打った後に発生する、スタン状態のようなもの。ジャンプ以外できなくなる。スタン中は頭にピヨピヨがでます。<br>
     最後の行動が固定されるので、移動しながら必殺技打ったりすると何もできずに落ちていきます。時間経過か相手からの攻撃を受ける事で解除されます。</p>
-  <p>ガード: そんなもんはねぇよ～♪ ジャンプを駆使して全部避けてください。気が向いたらアプデで入れるかもです。</p>
+  <p>ガード: いつでも出せる上に割れないとかいうぶっ壊れ。ただしダメージやノックバックを減少させるだけで無効化はしません。</p>
   <p>ステージ: ジャンプを使えば下からでも入り込めます。高いところから降って来た際にすり抜けて落ちていく事がありますが、それはバグではなく上方向の撃墜ボーダーラインを超えた時に起きうる演出なので仕様です。</p>
   <button onclick="backToTitle()">タイトルに戻る</button>
   <br>
@@ -375,8 +383,8 @@ z-index:10;
   
     <!-- 右：攻撃 -->
     <div id="attackButtons">
-      <button id="p1Attack">攻撃</button>
-      <button id="p1Shot">射撃</button>
+      <button id="p1Attack">近</button>
+      <button id="p1Shot">遠</button>
       <button id="p1SP">必殺</button>
     </div>
     <!-- ===================== -->
@@ -663,7 +671,8 @@ at: (self,enemy) =>{
   const dy = Math.abs(self.y - enemy.y);
 
   if (dx < 60 && dy < 50) {
-    enemy.damage += 5;
+    if(!enemy.guarding){enemy.damage += 12}
+    else{enemy.damage += 4}
 
     const powerup = 5 + self.damage / 60;
     applyKnockback(enemy, self.x, powerup, 45);
@@ -685,7 +694,8 @@ const dy = Math.abs(self.y - enemy.y);
 const powerup = 7 + self.damage / 50;
 
 if (dx < 250 + self.damage / 2 && dy < 250 + self.damage / 2) {
-  enemy.damage += 40;
+  if(!enemy.guarding){enemy.damage += 40}
+  else{enemy.damage += 15}
   applyKnockback(enemy, self.x, powerup, 45);
 }
 
@@ -724,7 +734,8 @@ effects.push(
   (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 150 && dy < 20 && isFront) {
-    enemy.damage += 10;
+    if(!enemy.guarding){enemy.damage += 10}
+    else{enemy.damage += 3}
 
     
     applyKnockback(enemy, self.x, 6, 60);
@@ -750,7 +761,8 @@ const isFront =
   (self.direction === -1 && enemy.x < self.x);
 
 if (dx < 800 && dy < 10 && isFront) {
-  enemy.damage += 90;
+  if(!enemy.guarding){enemy.damage += 90}
+  else{enemy.damage += 30}
   applyKnockback(enemy, self.x, 10, 45);
 }
 
@@ -786,7 +798,8 @@ youmu: {
   const dy = Math.abs(self.y - enemy.y);
 
   if (dx < 60 && dy < 50) {
-    enemy.damage += 7;
+    if(!enemy.guarding){enemy.damage += 7}
+    else{enemy.damage += 3}
 
     applyKnockback(enemy, self.x, 8, 20);
   
@@ -826,7 +839,8 @@ effects.push(
       self.y = warpY;
 
       // 攻撃
-      enemy.damage += 25;
+      if(!enemy.guarding){enemy.damage += 25}
+      else{enemy.damage += 8}
       applyKnockback(enemy, self.x, 2, 30);
 
       // ★強制的に離脱（ここが重要）
@@ -852,6 +866,7 @@ effects.push(
 
     if (dx < 2000 && dy < 1600) {
       enemy.damage += 100;
+      enemy.guarding = false;
       applyKnockback(enemy, self.x, 18, 30);
     }
 
@@ -892,7 +907,8 @@ sanae: {
       (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 200 && dy < 100 && isFront) {
-    enemy.damage += 20;
+    if(!enemy.guarding){enemy.damage += 20}
+    else{enemy.damage += 7}
 
     const angle = 20 + enemy.damage * 0.2;
     applyKnockback(enemy, self.x, 6, 10);
@@ -952,7 +968,8 @@ sakuya: {
   const dy = Math.abs(self.y - enemy.y);
 
   if (dx < 60 && dy < 60) {
-    enemy.damage += 8;
+    if(!enemy.guarding){enemy.damage += 8}
+    else{enemy.damage += 2}
 
     const angle = 20 + enemy.damage * 0.2;
     applyKnockback(enemy, self.x, 5, 75);
@@ -1036,7 +1053,8 @@ remiria: {
   (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 150 && dy < 20 && isFront && bgTimer <= 0) {
-    enemy.damage += 6;
+    if(!enemy.guarding){enemy.damage += 6}
+    else{enemy.damage += 2}
 
     applyKnockback(enemy, self.x, 6, 15);
   
@@ -1048,7 +1066,8 @@ effects.push(
 );
   }
   if (dx < 300 && dy < 50 && isFront && bgTimer > 0){
-    enemy.damage += 15;
+    if(!enemy.guarding){enemy.damage += 15}
+    else{enemy.damage += 5}
 
     applyKnockback(enemy, self.x, 12, 45);
     const effectX = self.x + self.direction * 100;
@@ -1077,7 +1096,8 @@ const isFront =
   (self.direction === -1 && enemy.x < self.x);
 
 if(dx < 800 && dy < 200 && isFront){
-  enemy.damage += 70;
+  if(!enemy.guarding){enemy.damage += 70}
+  else{enemy.damage += 21}
   applyKnockback(enemy, self.x, 10, 45)
 
 }
@@ -1117,7 +1137,8 @@ huran: {
   (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 80 && dy < 60 && isFront) {
-    enemy.damage += 10;
+    if(!enemy.guarding){enemy.damage += 10}
+    else{enemy.damage += 3}
 
     applyKnockback(enemy, self.x, 6, 50);
   
@@ -1147,8 +1168,9 @@ else{
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math .abs(self.y - enemy.y);
   if(dx < 400 && dy < 400){
-    enemy.damage += 60;
-    applyKnockback(enemy, self.x, 7, 90);
+    enemy.damage += 30;
+    enemy.guarding = false;
+    applyKnockback(enemy, self.x, 8, 90);
   }
   const effectX = enemy.x;
   const effectY = enemy.y;
@@ -1184,7 +1206,8 @@ pache: {
   (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 220 && dy < 100 && isFront) {
-    enemy.damage += 10;
+    if(!enemy.guarding){enemy.damage += 10}
+    else{enemy.damage += 3}
 
     const angle = 20 + enemy.damage * 0.2;
     applyKnockback(enemy, self.x, 6, 45);
@@ -1212,7 +1235,8 @@ const isFront =
   (self.direction === -1 && enemy.x < self.x);
 
 if (dx < 600 && dy < 100 && isFront) {
-  enemy.damage += 55;
+  if(!enemy.guarding){enemy.damage += 55}
+  else{enemy.damage += 17}
   applyKnockback(enemy, self.x, 6, 15);
 }
 
@@ -1230,7 +1254,8 @@ const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
 
 if (dx < 200 && dy < 200) {
-  enemy.damage += 50;
+  if(!enemy.guarding){enemy.damage += 50}
+  else{enemy.damage += 15}
   applyKnockback(enemy, self.x, 7, 45);
 }
 
@@ -1248,7 +1273,8 @@ const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
 
 if (dx < 100 && dy < 800) {
-  enemy.damage += 80;
+  if(!enemy.guarding){enemy.damage += 80}
+  else{enemy.damage += 24}
   applyKnockback(enemy, self.x, 12, 75);
 }
 
@@ -1262,7 +1288,7 @@ effects.push(
 }
 },
 chilno: {
-  image: img8,
+  image: img9,
   maxJumps: 8,
   speed: 9,
   spOffsetX: 0,
@@ -1288,7 +1314,8 @@ chilno: {
 
 
   if (dx < 100 && dy < 50 && isFront) {
-    enemy.damage += 5;
+    if(!enemy.guarding){enemy.damage += 5}
+    else{enemy.damage += 1}
 
     const angle = 20 + enemy.damage * 0.2;
     applyKnockback(enemy, self.x, 9, 45);
@@ -1312,9 +1339,10 @@ const dy = Math.abs(self.y - enemy.y);
 
 
 if (dx < 300 && dy < 500) {
-  enemy.damage += 85;
+  if(!enemy.guarding){enemy.damage += 85}
+  else{enemy.damage += 25}
   applyKnockback(enemy, self.x, 2, 45);
-  enemy.stun = 200;
+  if(!enemy.guarding){enemy.stun = 200}
 }
 
 const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
@@ -1348,7 +1376,8 @@ aya: {
   const dy = Math.abs(self.y - enemy.y);
 
   if (dx < 75 && dy < 75 && self.mode === "normal") {
-    enemy.damage += 10;
+    if(!enemy.guarding){enemy.damage += 10}
+    else{enemy.damage += 3}
     applyKnockback(enemy, self.x, 6, 80);
     const effectX = self.x + self.width / 2;
     const effectY = self.y + self.height / 2;
@@ -1358,7 +1387,8 @@ effects.push(
 );
   }
   else if(self.mode === "boost" && dx < 150 && dy < 150){
-    enemy.damage += 15;
+    if(!enemy.guarding){enemy.damage += 15}
+    else{enemy.damage += 5}
     applyKnockback(enemy, self.x, 8, 80);
 
     const effectX = self.x + self.width / 2;
@@ -1401,7 +1431,8 @@ if(self.mode === "normal"){
 
 if(self.damage > 200 && dx < 400 && dy < 400){
   self.stun = 300;
-  enemy.damage += 80;
+  if(!enemy.guarding){enemy.damage += 80}
+  else{enemy.damage += 24}
   applyKnockback(enemy, self.x, 2, 45);
 const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
 const effectY = self.y + self.height / 2 + self.spOffsetY;
@@ -1462,6 +1493,7 @@ effects.push(
     this.baseMaxJumps = char.maxJumps;
     this.mode = "normal";
     this.modeTimer = char.modeTimer;
+    this.guarding = false;
   }
 
   reset() {
@@ -1570,6 +1602,21 @@ if (this.stun > 0) {
 
     // ストック表示
     ctx.fillText("❤" + this.stock, this.x, this.y - 30);
+
+    if (this.guarding) {
+  ctx.strokeStyle = "cyan";
+  ctx.lineWidth = 3;
+
+  ctx.beginPath();
+  ctx.arc(
+    this.x + this.width / 2,
+    this.y + this.height / 2,
+    35,
+    0,
+    Math.PI * 2
+  );
+  ctx.stroke();
+}
   }
 
   shoot() {
@@ -1587,8 +1634,13 @@ function applyKnockback(target, sourceX, power, angle) {
   const scale = 1 + target.damage / 75;
   const rad = angle * Math.PI / 180;
 
-  target.vx = Math.cos(rad) * power * scale * dir * 5;
-  target.vy = -Math.sin(rad) * power * scale;
+  let finalPower = power;
+
+if (target.guarding) {
+  finalPower *= 0.4;
+}
+  target.vx = Math.cos(rad) * finalPower * scale * dir * 5;
+  target.vy = -Math.sin(rad) * finalPower * scale;
 }
   
   // =========================
@@ -1636,9 +1688,14 @@ function applyKnockback(target, sourceX, power, angle) {
     const dx = Math.abs(this.x - enemy.x);
     const dy = Math.abs(this.y - enemy.y);
 
-    if (dx < 40 && dy < 40) {
+    if (dx < 40 && dy < 40 && !enemy.guarding) {
       enemy.damage += 7;
       applyKnockback(enemy, this.x, 6, 45);
+      this.active = false;
+    }
+    else if(dx < 40 && dy < 40 && enemy.guarding){
+      enemy.damage += 2;
+      applyKnockback(enemy, this.x, 1, 45);
       this.active = false;
     }
 
@@ -1693,13 +1750,18 @@ this.angle = data.angle;
     const dx = Math.abs(p.x - target.x);
     const dy = Math.abs(p.y - target.y);
 
-    if (dx < 10 && dy < 10) {
+    if (dx < 10 && dy < 10 && !target.guarding) {
       target.damage += p.damage;
 
       applyKnockback(target, p.x, p.knockback, p.angle);
 
       p.active = false;
 
+    }
+    else if(dx < 10 && dy < 10 && target.guarding){
+      target.damage += 0.3 * p.damage;
+      applyKnockback(target, p.x, p.knockback, p.angle)
+      p.active = false;
     }
   });
 }
@@ -1756,20 +1818,35 @@ this.angle = data.angle;
     if (!p1 || !p2) return;
   
     // 攻撃
-    if (e.key === "f" && p1.stun <= 0) p1.attack(p1, p2);
-if (e.key === "/" && p2.stun <= 0) p2.attack(p2, p1);
+    if (e.key === "f" && p1.stun <= 0 && !p1.guarding) p1.attack(p1, p2);
+if (e.key === "/" && p2.stun <= 0 && !p2.guarding) p2.attack(p2, p1);
 
-if (e.key === "g" && p1.stun <= 0) p1.shoot();
-if (e.key === "." && p2.stun <= 0) p2.shoot();
+if (e.key === "g" && p1.stun <= 0 && !p1.guarding) p1.shoot();
+if (e.key === "." && p2.stun <= 0 && !p2.guarding) p2.shoot();
   
     // 必殺技
-if (e.key === "q" && p1.stun <= 0) {p1.spAttack(p1, p2)};
-if (e.key === "ArrowDown" && p2.stun <= 0) {p2.spAttack(p2, p1)};
+if (e.key === "q" && p1.stun <= 0 && !p1.guarding) {p1.spAttack(p1, p2)};
+if (e.key === "ArrowDown" && p2.stun <= 0 && !p2.guarding) {p2.spAttack(p2, p1)};
+
+if (e.key === "s" && p1.stun <= 0) {
+  p1.guarding = true;
+}
+
+if (e.key === "Enter" && p2.stun <= 0) {
+  p2.guarding = true;
+}
   
   });
   
   document.addEventListener("keyup", e => {
     keys[e.key] = false;
+    if (e.key === "s") {
+  p1.guarding = false;
+}
+
+if (e.key === "Enter") {
+  p2.guarding = false;
+}
   });
   
   // =========================
@@ -1935,6 +2012,11 @@ if (
   function handleInput(p, left, right) {
     if (!p || p.stun > 0) return;
 
+    if (p.stun > 0 || p.guarding) {
+    p.vx = 0;
+    return;
+  }
+
   if (keys[left]) {
   p.vx = -p.speed;
   p.direction = -1;
@@ -1991,7 +2073,7 @@ const dist = Math.abs(dx);
 // =====================
 // 移動（追いかける）
 // =====================
-if (dist > 100 && cpu.stun <= 0) {
+if (dist > 100 && cpu.stun <= 0 && !cpu.guarding) {
   cpu.vx = dx > 0 ? cpu.speed : -cpu.speed;
   cpu.direction = dx > 0 ? 1 : -1;
 }
@@ -2009,7 +2091,7 @@ if (cpu.x > stage.x + stage.width - 20) {
 // =====================
 // ジャンプ（段差対応）
 // =====================
-if (cpu.onGround && Math.random() < 0.02) {
+if (cpu.onGround && Math.random() < 0.02 && !cpu.guarding) {
   cpu.vy = -cpu.jumpPower;
   cpu.jumpCount++;
 }
@@ -2018,18 +2100,24 @@ if (cpu.onGround && Math.random() < 0.02) {
 // =====================
 
 // 近距離
-if (dist < 80 && Math.random() < 0.2 && cpu.stun <= 0) {
+if (dist < 80 && Math.random() < 0.2 && cpu.stun <= 0 && !cpu.guarding) {
   cpu.attack(cpu, enemy);
 }
 
 // 中距離
-if (dist < 300 && Math.random() < 0.05 && cpu.stun <= 0) {
+if (dist < 300 && Math.random() < 0.05 && cpu.stun <= 0 && !cpu.guarding) {
   cpu.shoot();
 }
 
 // 必殺技（相手ダメージ高い）
-if (enemy.damage > 100 && Math.random() < 0.02 && cpu.stun <= 0) {
+if (enemy.damage > 100 && Math.random() < 0.01 && cpu.stun <= 0 && !cpu.guarding) {
   cpu.spAttack(cpu, enemy);
+}
+if(cpu.damage > 50 && Math.random() < 0.01 && cpu.stun <= 0){
+  cpu.guarding = true;
+}
+if(Math.random() < 0.02){
+  cpu.guarding = false;
 }
 
 // =====================
@@ -2084,13 +2172,13 @@ if (bgTimer > 0) {
     handleInput(p2, "ArrowLeft", "ArrowRight");
     }
     // ジャンプ処理（ここで統一）
-if (p1 && keys["w"] && p1.jumpCount < p1.maxJumps) {
+if (p1 && keys["w"] && p1.jumpCount < p1.maxJumps && !p1.guarding) {
   p1.vy = -p1.jumpPower;
   p1.jumpCount++;
   keys["w"] = false; // 長押し暴発防止
 }
 
-if (p2 && keys["ArrowUp"] && p2.jumpCount < p2.maxJumps) {
+if (p2 && keys["ArrowUp"] && p2.jumpCount < p2.maxJumps && !p2.guarding) {
   p2.vy = -p2.jumpPower;
   p2.jumpCount++;
   keys["ArrowUp"] = false;
