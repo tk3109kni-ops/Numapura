@@ -36,7 +36,7 @@ body {
   position: absolute;
   width: 100%;
   height: 100%;
-  overflow-y: auto;  /* ←これ重要 */
+  overflow-y: auto;
   background: black;
   color: white;
   padding: 20px;
@@ -111,7 +111,7 @@ button {
   pointer-events:none;
 }
 
-/* 左側：移動 */
+
 #mobileControls.singleMode #moveButtons{
   position:absolute;
   left:20px;
@@ -121,7 +121,7 @@ button {
   pointer-events:auto;
 }
 
-/* 右側：攻撃 */
+
 #mobileControls.singleMode #attackButtons{
   position:absolute;
   right:20px;
@@ -372,24 +372,20 @@ z-index:10;
   pointer-events:auto;
   ">
   
-    <!-- ===================== -->
-    <!-- P1 -->
-    <!-- ===================== -->
+ 
     <div id="moveButtons">
       <button id="p1Left">←</button>
       <button id="p1Jump">↑</button>
       <button id="p1Right">→</button>
     </div>
   
-    <!-- 右：攻撃 -->
+ 
     <div id="attackButtons">
       <button id="p1Attack">近</button>
       <button id="p1Shot">遠</button>
       <button id="p1SP">必殺</button>
     </div>
-    <!-- ===================== -->
-    <!-- P2 -->
-    <!-- ===================== -->
+  
     <div id="p2Controls" style="
     position:absolute;
     right:20px;
@@ -429,9 +425,7 @@ z-index:10;
   横画面にしてください
   </div>
 <script>
-  // =========================
-  // 初期設定
-  // =========================
+
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
   
@@ -585,7 +579,6 @@ function checkOrientation() {
   } else {
     warn.style.display = "none";
 
-    // ゲーム中だけ表示
     if (gameState === "game") {
       game.style.display = "block";
     }
@@ -634,9 +627,7 @@ window.onload = () => {
   checkOrientation();
   gameLoop();
 };
-  // =========================
-  // ステージ
-  // =========================
+
   const stage = {
     width: 800,
     height: 20,
@@ -644,9 +635,7 @@ window.onload = () => {
     y: canvas.height / 2
   };
   
-  // =========================
-  // キャラデータ
-  // =========================
+
   const characters = {
   reimu: {
     image: img1,
@@ -830,20 +819,20 @@ effects.push(
 
       const dir = enemy.x > self.x ? -1 : 1;
 
-      // ★「ワープ先」だけ別で保持
+      
       const warpX = enemy.x + dir * 50;
       const warpY = enemy.y;
 
-      // 移動（瞬間移動）
+      
       self.x = warpX;
       self.y = warpY;
 
-      // 攻撃
+      
       if(!enemy.guarding){enemy.damage += 25}
       else{enemy.damage += 8}
       applyKnockback(enemy, self.x, 2, 30);
 
-      // ★強制的に離脱（ここが重要）
+
       self.vx = -dir * 8;
       self.vy = -2;
 
@@ -1445,9 +1434,7 @@ effects.push(
 
 };
   
-  // =========================
-  // プレイヤー
-  // =========================
+
   class Player {
   constructor(x, char, controls, isCPU = false, playerColor = "white") {
     this.spawnX = x;
@@ -1529,7 +1516,7 @@ effects.push(
     this.orbs = this.orbs.filter(o => o.active);
     this.orbs.forEach(o => o.update(enemy));
 
-    // 地面
+
     if (
       this.vy >= 0 &&
       this.y + this.height >= stage.y &&
@@ -1554,7 +1541,7 @@ if (
   this.reset();
 }
 
-    // 弾
+
     this.projectiles = this.projectiles.filter(p => p.active);
     this.projectiles.forEach(p => p.update());
 
@@ -1564,7 +1551,6 @@ if (
   draw() {
     ctx.save();
 
-    // 向き反転
     if (this.direction === 1) {
       ctx.scale(-1, 1);
       ctx.drawImage(
@@ -1585,22 +1571,22 @@ if (
     }
 
     ctx.restore();
-    // スタン表示
+    
 if (this.stun > 0) {
   ctx.drawImage(
     stunImg,
     this.x - 20,
-    this.y - 10,   // ←頭の上
+    this.y - 10,  
     80,
     40
   );
 }
 
-    // ダメージ表示
+    
     ctx.fillStyle = this.playerColor;
     ctx.fillText(Math.floor(this.damage) + "%", this.x, this.y - 10);
 
-    // ストック表示
+   
     ctx.fillText("❤" + this.stock, this.x, this.y - 30);
 
     if (this.guarding) {
@@ -1643,9 +1629,7 @@ if (target.guarding) {
   target.vy = -Math.sin(rad) * finalPower * scale;
 }
   
-  // =========================
-  // 弾
-  // =========================
+
   class Orb {
   constructor(player, angle) {
     this.player = player;
@@ -1655,14 +1639,13 @@ if (target.guarding) {
     this.x = player.x;
     this.y = player.y;
 
-    this.state = "orbit"; // orbit → shoot
+    this.state = "orbit"; 
     this.speed = 7;
     this.active = true;
   }
 
   update(enemy) {
     if (this.state === "orbit") {
-      // 周囲を回る
       this.angle += 0.05;
       const centerX = this.player.x + this.player.width / 2;
       const centerY = this.player.y + this.player.height / 2;
@@ -1684,7 +1667,6 @@ if (target.guarding) {
 }
     }
 
-    // 当たり判定
     const dx = Math.abs(this.x - enemy.x);
     const dy = Math.abs(this.y - enemy.y);
 
@@ -1699,7 +1681,7 @@ if (target.guarding) {
       this.active = false;
     }
 
-    // 描画
+  
     ctx.fillStyle = "crimson";
     ctx.beginPath();
     ctx.arc(this.x, this.y, 8, 0, Math.PI * 2);
@@ -1765,9 +1747,7 @@ this.angle = data.angle;
     }
   });
 }
-  // =========================
-  // エフェクト
-  // =========================
+
   class Effect {
   constructor(x, y, img, direction = 1, width = 100, height = 100) {
     this.x = x;
@@ -1784,7 +1764,7 @@ this.angle = data.angle;
 
   ctx.save();
 
-  // 中心に移動
+  
   ctx.translate(this.x, this.y);
 
   if (this.direction === 1) {
@@ -1808,23 +1788,21 @@ this.angle = data.angle;
   }
 }
   
-  // =========================
-  // 入力
-  // =========================
+
   document.addEventListener("keydown", e => {
     keys[e.key] = true;
   
-    // p1 p2 安全チェック
+  
     if (!p1 || !p2) return;
   
-    // 攻撃
+   
     if (e.key === "f" && p1.stun <= 0 && !p1.guarding) p1.attack(p1, p2);
 if (e.key === "/" && p2.stun <= 0 && !p2.guarding) p2.attack(p2, p1);
 
 if (e.key === "g" && p1.stun <= 0 && !p1.guarding) p1.shoot();
 if (e.key === "." && p2.stun <= 0 && !p2.guarding) p2.shoot();
   
-    // 必殺技
+
 if (e.key === "q" && p1.stun <= 0 && !p1.guarding) {p1.spAttack(p1, p2)};
 if (e.key === "ArrowDown" && p2.stun <= 0 && !p2.guarding) {p2.spAttack(p2, p1)};
 
@@ -1848,10 +1826,7 @@ if (e.key === "Enter") {
   p2.guarding = false;
 }
   });
-  
-  // =========================
-  // ゲーム開始
-  // =========================
+
   function startGame() {
     if (!p1Choice) return;
     document.body.classList.add("gameMode");
@@ -1982,14 +1957,12 @@ document.getElementById("p2SP").addEventListener("pointerdown",e=>{
 });
 
   
-  // =========================
-  // 入力処理
-  // =========================
+
   canvas.addEventListener("click", (e) => {
 
 if (gameState !== "game") return;
 
-// 勝敗ついてないなら無視
+
 if (!(p1.stock <= 0 || p2.stock <= 0)) return;
 
 const rect = canvas.getBoundingClientRect();
@@ -2002,7 +1975,7 @@ if (
   mouseY > restartButton.y &&
   mouseY < restartButton.y + restartButton.height
 ) {
-  // ▼リセット処理
+
   gameState = "select";
   p1 = null;
   p2 = null;
@@ -2032,9 +2005,7 @@ let restartButton = {
   height: 60
 };
 
-  // =========================
-  // 描画
-  // =========================
+
   function drawSelect() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -2070,17 +2041,13 @@ const dx = enemy.x - cpu.x;
 const dy = enemy.y - cpu.y;
 const dist = Math.abs(dx);
 
-// =====================
-// 移動（追いかける）
-// =====================
+
 if (dist > 100 && cpu.stun <= 0 && !cpu.guarding) {
   cpu.vx = dx > 0 ? cpu.speed : -cpu.speed;
   cpu.direction = dx > 0 ? 1 : -1;
 }
 
-// =====================
-// 落下防止（超重要）
-// =====================
+
 if (cpu.x < stage.x + 20) {
   cpu.vx = cpu.speed;
 }
@@ -2088,29 +2055,28 @@ if (cpu.x > stage.x + stage.width - 20) {
   cpu.vx = -cpu.speed;
 }
 
-// =====================
-// ジャンプ（段差対応）
-// =====================
+
 if (cpu.onGround && Math.random() < 0.02 && !cpu.guarding) {
   cpu.vy = -cpu.jumpPower;
   cpu.jumpCount++;
 }
-// =====================
-// 攻撃ロジック
-// =====================
 
-// 近距離
+
+
 if (dist < 80 && Math.random() < 0.2 && cpu.stun <= 0 && !cpu.guarding) {
   cpu.attack(cpu, enemy);
 }
 
-// 中距離
+
 if (dist < 300 && Math.random() < 0.05 && cpu.stun <= 0 && !cpu.guarding) {
   cpu.shoot();
 }
 
-// 必殺技（相手ダメージ高い）
-if (enemy.damage > 100 && Math.random() < 0.01 && cpu.stun <= 0 && !cpu.guarding) {
+
+if (enemy.damage > 100 && Math.random() < 0.01 && cpu.stun <= 0 && !cpu.guarding && cpu.onGround) {
+  cpu.spAttack(cpu, enemy);
+}
+if(Math.random()<0.002 && cpu.stun <= 0 && !cpu.guarding){
   cpu.spAttack(cpu, enemy);
 }
 if(cpu.damage > 50 && Math.random() < 0.01 && cpu.stun <= 0){
@@ -2120,18 +2086,14 @@ if(Math.random() < 0.02){
   cpu.guarding = false;
 }
 
-// =====================
-// 復帰（落ちそう）
-// =====================
+
 if (cpu.y > stage.y + 100 && cpu.jumpCount < cpu.maxJumps) {
   cpu.vy = -cpu.jumpPower;
   cpu.jumpCount++;
 }
 cpu.vx = Math.max(-cpu.speed, Math.min(cpu.speed, cpu.vx));
 }
-  // =========================
-  // メインループ
-  // =========================
+
   function gameLoop() {
     function drawBackGround(){
   if (bgActive) {
@@ -2146,11 +2108,10 @@ drawBackGround();
 if (bgTimer > 0) {
   bgTimer--;
   if (bgTimer === 0) {
-    bgActive = false; // ←ここ重要
+    bgActive = false;
   }
 }
   
-    // 選択画面
     if (gameState === "select") {
       drawSelect();
       requestAnimationFrame(gameLoop);
@@ -2166,16 +2127,16 @@ if (bgTimer > 0) {
       requestAnimationFrame(gameLoop);
       return;
     }
-    // 入力
+   
     handleInput(p1, "a", "d");
     if(!p2.isCPU){
     handleInput(p2, "ArrowLeft", "ArrowRight");
     }
-    // ジャンプ処理（ここで統一）
+    
 if (p1 && keys["w"] && p1.jumpCount < p1.maxJumps && !p1.guarding) {
   p1.vy = -p1.jumpPower;
   p1.jumpCount++;
-  keys["w"] = false; // 長押し暴発防止
+  keys["w"] = false; 
 }
 
 if (p2 && keys["ArrowUp"] && p2.jumpCount < p2.maxJumps && !p2.guarding) {
@@ -2187,7 +2148,7 @@ if (p2 && keys["ArrowUp"] && p2.jumpCount < p2.maxJumps && !p2.guarding) {
     p1.update(p2);
     p2.update(p1);
 
-    // エフェクト
+  
     effects.forEach(e => e.update());
     effects = effects.filter(e => !e.isFinished());
     projectileHit(p1.projectiles, p2);
@@ -2200,7 +2161,7 @@ if (p2 && keys["ArrowUp"] && p2.jumpCount < p2.maxJumps && !p2.guarding) {
   window.onload = () =>{ 
     gameLoop();};
   </script>
-  <!-- スマホ操作 -->
+  
   
 </body>
 </html>
