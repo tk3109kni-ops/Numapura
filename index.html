@@ -925,6 +925,12 @@ const isFront =
 if (dx < 200 && dy < 200) {
   enemy.damage += 1;
   applyKnockback(enemy, self.x, 15, 45);
+  if(self.damage >= 10){
+    self.damage-=10;
+  }
+  else{
+    self.damage = 0;
+  }
 }
 
 const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
