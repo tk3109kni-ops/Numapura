@@ -383,6 +383,7 @@ z-index:10;
       <button id="p1Left">←</button>
       <button id="p1Jump">↑</button>
       <button id="p1Right">→</button>
+      <button id="p1Guard">守</button>
     </div>
   
  
@@ -399,10 +400,11 @@ z-index:10;
     ">
   
       <div>
+        
         <button id="p2Left">←</button>
         <button id="p2Jump">↑</button>
         <button id="p2Right">→</button>
-        
+        <button id="p2Guard">守</button>
       </div>
   
       <div>
@@ -410,7 +412,7 @@ z-index:10;
         <button id="p2Shot">遠</button>
         <button id="p2SP">必殺</button>
       </div>
-  
+      
     </div>
   
   </div>
@@ -1380,7 +1382,7 @@ aya: {
   if (dx < 75 && dy < 75 && self.mode === "normal") {
     if(!enemy.guarding){enemy.damage += 10}
     else{enemy.damage += 3}
-    applyKnockback(enemy, self.x, 6, 80);
+    applyKnockback(enemy, self.x, 3, 30);
     const effectX = self.x + self.width / 2;
     const effectY = self.y + self.height / 2;
 
@@ -1391,7 +1393,7 @@ effects.push(
   else if(self.mode === "boost" && dx < 150 && dy < 150){
     if(!enemy.guarding){enemy.damage += 15}
     else{enemy.damage += 5}
-    applyKnockback(enemy, self.x, 8, 80);
+    applyKnockback(enemy, self.x, 5, 30);
 
     const effectX = self.x + self.width / 2;
     const effectY = self.y + self.height / 2;
@@ -1969,8 +1971,32 @@ document.getElementById("p2SP").addEventListener("pointerdown",e=>{
   }
 });
 
-  
-
+document.getElementById("p1Guard").addEventListener("pointerdown",e=>{
+  e.preventDefault();
+  if(p1 && p2 && p1.stun <= 0)
+  p1.guarding = true;
+})
+document.getElementById("p2Guard").addEventListener("pointerdown",e=>{
+  e.preventDefault();
+  if(p1 && p2 && p2.stun <= 0)
+  p2.guarding = true;
+})
+document.getElementById("p1Guard").addEventListener("pointerup",e=>{
+  e.preventDefault();
+  p1.guarding = false;
+})
+document.getElementById("p2Guard").addEventListener("pointerup",e=>{
+  e.preventDefault();
+  p2.guarding = false;
+})
+document.getElementById("p1Guard").addEventListener("pointerleave",e=>{
+  e.preventDefault();
+  p1.guarding = false;
+})
+document.getElementById("p2Guard").addEventListener("pointerleave",e=>{
+  e.preventDefault();
+  p2.guarding = false;
+})
   canvas.addEventListener("click", (e) => {
 
 if (gameState !== "game") return;
@@ -2019,7 +2045,7 @@ let restartButton = {
 };
 
 
-  function drawSelect() {
+function drawSelect() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   
