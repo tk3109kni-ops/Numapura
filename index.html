@@ -813,7 +813,7 @@ effects.push(
   sp: (self, enemy) => {
     if (self.damage <= 400){
 
-    self.stun = 100;
+    self.stun = 50;
 
     const dx = Math.abs(self.x - enemy.x);
     const dy = Math.abs(self.y - enemy.y);
@@ -1015,7 +1015,7 @@ else{
   const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
 
-if (dx < 400 && dy < 400) {
+if (dx < 4000 && dy < 4000) {
   enemy.damage += 70;
 }
 
