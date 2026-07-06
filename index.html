@@ -282,6 +282,7 @@ button {
     <img src="pache.png" onclick="selectCharacter('p1', 'pache')">
     <img src="chilno.png" onclick="selectCharacter('p1', 'chilno')">
     <img src="aya.png" onclick="selectCharacter('p1','aya')">
+    <img src="meirin.png" onclick="selectCharacter('p1','meirin')">
     
     <h2 id="p2Title">P2選択</h2>
     <div id="p2Select">
@@ -295,6 +296,7 @@ button {
       <img src="pache.png" onclick="selectCharacter('p2', 'pache')">
       <img src="chilno.png" onclick="selectCharacter('p2', 'chilno')">
       <img src="aya.png" onclick="selectCharacter('p2','aya')">
+      <img src="meirin.png" onclick="selectCharacter('p2','meirin')">
     </div>
     </div>
 
@@ -379,7 +381,12 @@ z-index:10;
 <img src="hit10.png" id="hitEffect10" style="display: none">
 <img src="special10.1.png" id="spEffect101" style="display: none">
 <img src="special10.2.png" id="spEffect102" style="display: none">
+<img src="hit11.png" id="hitEffect11" style="display: none;">
+<img src="special11.png" id="spEffect11" style="display: none;">
+<img src="special11.1.png" id="spEffect111" style="display: none;">
+<img src="meirin.png" id="player11" style="display: none;">
 <img src="haikei.jpg" id="haikei" style="display: none">
+<img src="ko.png" id="koEffect" style="display: none;">
 
 <div id="mobileControls" style="
   display:none;
@@ -462,6 +469,7 @@ canvas.height = 1000;
   const img8 = document.getElementById('player8');
   const img9 = document.getElementById('player9');
   const img10 = document.getElementById('player10');
+  const img11 = document.getElementById('player11');
   const hitImg = document.getElementById('hitEffect');
   const hitImg2 = document.getElementById('hitEffect2');
   const hitImg3 = document.getElementById('hitEffect3');
@@ -472,6 +480,7 @@ canvas.height = 1000;
   const hitImg8 = document.getElementById('hitEffect8');
   const hitImg9 = document.getElementById('hitEffect9');
   const hitImg10 = document.getElementById('hitEffect10');
+  const hitImg11 = document.getElementById('hitEffect11');
   const spImg1 = document.getElementById('spEffect1');
   const spImg2 = document.getElementById('spEffect2');
   const spImg3 = document.getElementById('spEffect3');
@@ -488,7 +497,10 @@ canvas.height = 1000;
   const spImg9 = document.getElementById('spEffect9');
   const spImg101 = document.getElementById('spEffect102');
   const spImg102 = document.getElementById('spEffect101');
+  const spImg11 = document.getElementById('spEffect11');
+  const spImg111 = document.getElementById('spEffect111');
   const stunImg = document.getElementById('stunEffect');
+  const koImg = document.getElementById('koEffect');
   const haikei = document.getElementById('haikei');
   const gravity = 0.5
   
@@ -650,9 +662,9 @@ window.onload = () => {
 };
 
   const stage = {
-    width: 800,
+    width: 600,
     height: 20,
-    x: canvas.width / 2 - 400,
+    x: canvas.width / 2 - 300,
     y: canvas.height / 2
   };
   
@@ -770,7 +782,7 @@ const isFront =
   (self.direction === 1 && enemy.x > self.x) ||
   (self.direction === -1 && enemy.x < self.x);
 
-if (dx < 800 && dy < 10 && isFront) {
+if (dx < 800 && dy < 70 && isFront) {
   if(!enemy.guarding){enemy.damage += 90}
   else{enemy.damage += 30}
   applyKnockback(enemy, self.x, 10, 45);
@@ -1457,6 +1469,108 @@ effects.push(
 );
 }
 }
+},
+meirin: {
+  image: img11,
+  maxJumps: 2,
+  speed: 8,
+  spOffsetX: 300,
+  spOffsetY: 0,
+  jumpPower: 10,
+  spStun: 375,
+  shot: {
+    color: "maroon",
+    speed: 5,
+    size: 30,
+    damage: 12,
+    knockback: 5,
+    angle: 30
+  },
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+
+  if (dx < 20 && dy < 20 && isFront) {
+    if(!enemy.guarding){enemy.damage += 22}
+    else{enemy.damage += 7}
+
+    
+    applyKnockback(enemy, self.x, 8, 20);
+  
+    const effectX = self.x + self.direction * 100;
+    const effectY = self.y + Math.abs(self.direction * 20);
+
+effects.push(
+  new Effect(effectX, effectY, hitImg11, self.direction, 200, 120)
+);
+  }
+},
+
+  sp: (self, enemy) => {
+
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+
+const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+
+  if (dx < 200 && dy < 200 && isFront) {
+    self.stun = 375;
+
+self.isWarping = true;
+
+const dir = enemy.x > self.x ? -1 : 1;
+
+
+const warpX = enemy.x + dir * 50;
+const warpY = enemy.y;
+
+
+self.x = warpX;
+self.y = warpY;
+
+
+if(!enemy.guarding){enemy.damage += 50}
+else{enemy.damage += 120}
+applyKnockback(enemy, self.x, 8, 15);
+
+
+self.vx = -dir * 8;
+self.vy = -2;
+
+setTimeout(() => {
+  self.isWarping = false;
+}, 200);
+const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
+const effectY = self.y + self.height / 2 + self.spOffsetY;
+
+effects.push(
+  new Effect(effectX, effectY, spImg11, self.direction, 150, 150)
+);
+}
+else if(200<= dx && dx < 650 && dy < 80 && isFront){
+  self.stun = 70;
+  self.damage += 20;
+  if(!enemy.guarding){enemy.damage += 40}
+    else{enemy.damage += 15}
+  applyKnockback(enemy, self.x, 2, 45);
+  const effectX = self.x + self.width / 2 + self.direction* self.spOffsetX;
+const effectY = self.y + self.height / 2 + self.spOffsetY;
+
+effects.push(
+  new Effect(effectX, effectY, spImg111, self.direction, 800, 150)
+);
+}
+
+
+}
 }
 
 };
@@ -1508,6 +1622,7 @@ effects.push(
     this.mode = "normal";
     this.modeTimer = char.modeTimer;
     this.guarding = false;
+    this.isKO = false;
   }
 
   reset() {
@@ -1521,6 +1636,7 @@ effects.push(
   }
 
   update(enemy) {
+    if (this.isKO) return;
     if (this.stun > 0) {
       this.stun--;}
       if (this.isWarping) {
@@ -1558,14 +1674,30 @@ effects.push(
     } else {
       this.onGround = false;
     }
-if (
-  this.y > canvas.height + 150 ||   
-  this.y < -500 ||                  
-  this.x < -100 ||                  
-  this.x > canvas.width + 100      
-) {
+    if (!this.isKO &&
+(
+  this.y > canvas.height + 150 ||
+  this.y < -300 ||
+  this.x < -100 ||
+  this.x > canvas.width + 100
+)) {
+
+  this.isKO = true;
+
+  const pos = getKOPosition(this.x, this.y);
+
+effects.push(
+    new KOEffect(pos.x, pos.y, koImg)
+);
+
   this.stock--;
-  this.reset();
+
+  setTimeout(() => {
+    this.reset();
+    this.isKO = false;
+  }, 400);
+
+  return;
 }
 
 
@@ -1655,8 +1787,109 @@ if (target.guarding) {
   target.vx = Math.cos(rad) * finalPower * scale * dir * 5;
   target.vy = -Math.sin(rad) * finalPower * scale;
 }
-  
+function getKOPosition(x, y) {
 
+const cx = canvas.width / 2;
+const cy = canvas.height / 2;
+
+// 画面中央→撃墜位置
+let dx = x - cx;
+let dy = y - cy;
+
+// 長さ
+const len = Math.sqrt(dx * dx + dy * dy);
+
+if (len === 0) {
+  return { x: cx, y: cy };
+}
+
+dx /= len;
+dy /= len;
+
+// 十分長く伸ばす
+const far = 3000;
+
+const ex = cx + dx * far;
+const ey = cy + dy * far;
+
+// 画面との交点
+let t = Infinity;
+
+if (dx > 0)
+  t = Math.min(t, (canvas.width - cx) / dx);
+
+if (dx < 0)
+  t = Math.min(t, -cx / dx);
+
+if (dy > 0)
+  t = Math.min(t, (canvas.height - cy) / dy);
+
+if (dy < 0)
+  t = Math.min(t, -cy / dy);
+
+return {
+  x: cx + dx * t,
+  y: cy + dy * t
+};
+} 
+const deathX = this.x;
+const deathY = this.y;
+
+const centerX = canvas.width / 2;
+const centerY = canvas.height / 2;
+
+const angle = Math.atan2(
+    deathY - centerY,
+    deathX - centerX
+);
+class KOEffect {
+  constructor(x, y, img) {
+    this.x = x;
+    this.y = y;
+    this.img = img;
+
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    // 中央→撃墜位置への角度
+    this.angle = Math.atan2(y - cy, x - cx);
+
+    this.frame = 0;
+    this.life = 25;   
+    this.scale = 0.2;   
+  }
+
+  update() {
+    this.frame++;
+
+    if (this.scale < 1)
+      this.scale += 0.05;
+
+    ctx.save();
+
+    
+    ctx.translate(this.x, this.y);
+
+    ctx.rotate(this.angle + Math.PI);
+
+    ctx.scale(this.scale, this.scale);
+
+    
+    ctx.drawImage(
+      this.img,
+      0,
+    -150,
+    1400,
+    300
+    );
+
+    ctx.restore();
+  }
+
+  isFinished() {
+    return this.frame > this.life;
+  }
+}
   class Orb {
   constructor(player, angle) {
     this.player = player;
@@ -1691,6 +1924,7 @@ if (target.guarding) {
   this.y > canvas.height + 100
 ) {
   this.active = false;
+
 }
     }
 
