@@ -1620,7 +1620,7 @@ rumia: {
   (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 40 && dy < 20 && isFront) {
-    if(enemy.damage < 500){
+    if(enemy.damage < 400){
     if(!enemy.guarding){enemy.damage += 8}
     else{enemy.damage += 3}
 
@@ -1633,7 +1633,7 @@ effects.push(
   new Effect(effectX, effectY, hitImg121, self.direction, 200, 120)
 );
     }
-    if(enemy.damage >= 500){
+    if(enemy.damage >= 400){
 
 effects.push(
   new Effect(enemy.x, enemy.y, hitImg122, self.direction, 400, 240)
@@ -2141,7 +2141,7 @@ class Hitbox {
       this.hitTimer <= 0
     ) {
       enemy.damage += this.damage
-    applyKnockback(enemy, this.owner.x, 2, 90);
+    applyKnockback(enemy, this.owner.x, 1, 90);
     this.hitTimer = this.hitInterval;
     }
     
