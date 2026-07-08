@@ -284,6 +284,7 @@ button {
     <img src="aya.png" onclick="selectCharacter('p1','aya')">
     <img src="meirin.png" onclick="selectCharacter('p1','meirin')">
     <img src="ru-mia.png" onclick="selectCharacter('p1','rumia')">
+    <img src="mokou.png" onclick="selectCharacter('p1','mokou')">
     
     <h2 id="p2Title">P2選択</h2>
     <div id="p2Select">
@@ -299,6 +300,7 @@ button {
       <img src="aya.png" onclick="selectCharacter('p2','aya')">
       <img src="meirin.png" onclick="selectCharacter('p2','meirin')">
       <img src="ru-mia.png" onclick="selectCharacter('p2','rumia')">
+      <img src="mokou.png" onclick="selectCharacter('p2','mokou')">
     </div>
     </div>
 
@@ -392,6 +394,10 @@ z-index:10;
 <img src="ru-mia.png" id="player12" style="display: none;">
 <img src="hit12.png" id="hitEffect121" style="display: none;">
 <img src="hit12.2.png" id="hitEffect122" style="display: none;">
+<img src="mokou.png" id="player13" style="display: none;">
+<img src="hit13.png" id="hitEffect13" style="display: none;">
+<img src="special13.1.png" id="spEffect131" style="display: none">
+<img src="special13.2.png" id="spEffect132" style="display: none;">
 <img src="poisonCloud.png" id="poisonCloud" style="display: none;">
 
 <div id="mobileControls" style="
@@ -477,6 +483,7 @@ canvas.height = 1000;
   const img10 = document.getElementById('player10');
   const img11 = document.getElementById('player11');
   const img12 = document.getElementById('player12');
+  const img13 = document.getElementById('player13');
   const hitImg = document.getElementById('hitEffect');
   const hitImg2 = document.getElementById('hitEffect2');
   const hitImg3 = document.getElementById('hitEffect3');
@@ -490,6 +497,7 @@ canvas.height = 1000;
   const hitImg11 = document.getElementById('hitEffect11');
   const hitImg121 = document.getElementById('hitEffect121');
   const hitImg122 = document.getElementById('hitEffect122');
+  const hitImg13 = document.getElementById('hitEffect13');
   const spImg1 = document.getElementById('spEffect1');
   const spImg2 = document.getElementById('spEffect2');
   const spImg3 = document.getElementById('spEffect3');
@@ -509,6 +517,8 @@ canvas.height = 1000;
   const spImg11 = document.getElementById('spEffect11');
   const spImg111 = document.getElementById('spEffect111');
   const poisonCloud = document.getElementById('poisonCloud');
+  const spImg131 = document.getElementById('spEffect131');
+  const spImg132 = document.getElementById('spEffect132');
   const stunImg = document.getElementById('stunEffect');
   const koImg = document.getElementById('koEffect');
   const haikei = document.getElementById('haikei');
@@ -523,6 +533,7 @@ canvas.height = 1000;
   const keys = {};
   let effects = [];
   let poisonClouds = [];
+  let hitboxes = [];
   let bgColor = "#87ceeb";  
   let bgActive = false;   
   let bgTimer = 0;  
@@ -1550,7 +1561,7 @@ self.y = warpY;
 
 if(!enemy.guarding){enemy.damage += 50}
 else{enemy.damage += 120}
-applyKnockback(enemy, self.x, 8, 15);
+applyKnockback(enemy, self.x, 10, 15);
 
 
 self.vx = -dir * 8;
@@ -1654,10 +1665,66 @@ poisonClouds.push(
     )
 );
 }
-}
+},
+mokou: {
+  image: img13,
+  maxJumps: 3,
+  speed: 10,
+  spOffsetX: 0,
+  spOffsetY: 0,
+  jumpPower: 12,
+  spStun: 375,
+  shot: {
+    color: "red",
+    speed: 13,
+    size: 10,
+    damage: 10,
+    knockback: 10,
+    angle: 30
+  },
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
 
-};
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+
+
+  if (dx < 100 && dy < 50 && isFront) {
+    if(!enemy.guarding){enemy.damage += 10}
+    else{enemy.damage += 1}
+
+    applyKnockback(enemy, self.x, 9, 45); 
   
+    const effectX = self.x + self.direction * 100;
+    const effectY = self.y + Math.abs(self.direction * 20);
+
+effects.push(
+  new Effect(effectX, effectY, hitImg13, self.direction, 200, 120)
+);
+  }
+},
+
+  sp: (self, enemy) => {
+
+self.stun = 375;
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+
+
+  if(!enemy.guarding){hitboxes.push(new Hitbox(self, 0, 0, 200, 500, 120, 4.5, spImg131, 300, 750))}
+  else{hitboxes.push(new Hitbox(self, 0, 0, 200, 1000, 120, 1, spImg131, 300, 750))}
+
+  
+ 
+
+
+}
+  }
+  }
 
   class Player {
   constructor(x, char, controls, isCPU = false, playerColor = "white") {
@@ -1673,7 +1740,6 @@ poisonClouds.push(
     this.y = 100;
     this.vx = 0;
     this.vy = 0;
-
     this.width = 40;
     this.height = 40;
 
@@ -1706,6 +1772,7 @@ poisonClouds.push(
     this.modeTimer = char.modeTimer;
     this.guarding = false;
     this.isKO = false;
+    this.hukkatsu = false;
   }
 
   reset() {
@@ -1719,6 +1786,7 @@ poisonClouds.push(
   }
 
   update(enemy) {
+
     if (this.isKO) return;
     if (this.stun > 0) {
       this.stun--;}
@@ -1735,6 +1803,11 @@ poisonClouds.push(
     this.maxJumps = this.baseMaxJumps
   }
 }
+if(this.stock === 1 && this.hukkatsu === true){
+  this.stock++;
+  this.hukkatsu = false;
+}
+
     this.vy += gravity;
     this.x += this.vx;
     this.y += this.vy;
@@ -1983,7 +2056,7 @@ class PoisonCloud {
     this.width = 200;
     this.height = 150;
 
-    this.life = 300; //5秒(60fps)
+    this.life = 300;
     this.frame = 0;
   }
 
@@ -2008,6 +2081,97 @@ class PoisonCloud {
 
   isFinished(){
     return this.frame > this.life;
+  }
+}
+class Hitbox {
+  constructor(owner, offsetX, offsetY, width, height, life, damage, img, imgwidth, imgheight) {
+    this.owner = owner;
+
+    // キャラからの相対位置
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
+
+    this.width = width;
+    this.height = height;
+
+    this.life = life;
+    this.frame = 0;
+
+    // 多段ヒット間隔
+    this.hitInterval = 6;
+    this.hitTimer = 0;
+
+    this.img = img;
+    this.damage = damage;
+    this.imgwidth = imgwidth;
+    this.imgheight = imgheight;
+  }
+
+  update(enemy) {
+
+    this.frame++;
+
+    if (this.hitTimer > 0)
+      this.hitTimer--;
+
+    //=========================
+    // キャラに追従
+    //=========================
+
+    const x =
+      this.owner.x +
+      this.owner.width / 2 +
+      this.owner.direction * this.offsetX;
+
+    const y =
+      this.owner.y +
+      this.owner.height / 2 +
+      this.offsetY;
+
+    //=========================
+    // 当たり判定
+    //=========================
+
+    const dx = Math.abs(enemy.x + enemy.width / 2 - x);
+    const dy = Math.abs(enemy.y + enemy.height / 2 - y);
+
+    if (
+      dx < this.width / 2 &&
+      dy < this.height / 2 &&
+      this.hitTimer <= 0
+    ) {
+      enemy.damage += this.damage
+    applyKnockback(enemy, this.owner.x, 2, 90);
+    this.hitTimer = this.hitInterval;
+    }
+    
+    ctx.save();
+
+ctx.translate(x, y);
+
+if (this.owner.direction === 1) {
+    ctx.scale(-1, 1);
+}
+
+ctx.drawImage(
+    this.img,
+    -this.imgwidth / 2,
+    -this.imgheight / 2,
+    this.imgwidth,
+    this.imgheight
+);
+
+ctx.restore();
+
+    //=========================
+    // デバッグ表示
+    //=========================
+
+    
+  }
+
+  isFinished() {
+    return this.frame >= this.life;
   }
 }
   class Orb {
@@ -2548,7 +2712,7 @@ c.update(enemy);
 
 poisonClouds =
 poisonClouds.filter(c=>!c.isFinished());
-    
+
 if (p1 && keys["w"] && p1.jumpCount < p1.maxJumps && !p1.guarding) {
   p1.vy = -p1.jumpPower;
   p1.jumpCount++;
@@ -2567,6 +2731,19 @@ if (p2 && keys["ArrowUp"] && p2.jumpCount < p2.maxJumps && !p2.guarding) {
   
     effects.forEach(e => e.update());
     effects = effects.filter(e => !e.isFinished());
+    
+    hitboxes.forEach(h => {
+
+const enemy =
+  h.owner === p1 ? p2 : p1;
+
+h.update(enemy);
+
+});
+
+hitboxes =
+hitboxes.filter(h => !h.isFinished());
+
     projectileHit(p1.projectiles, p2);
     projectileHit(p2.projectiles, p1);
 
