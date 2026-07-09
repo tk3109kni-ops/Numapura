@@ -1798,8 +1798,8 @@ const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
 self.isAttacking = true;
 if(enemy.onGround){
-  if(!enemy.guarding){hitboxes.push(new Hitbox(self, 300, 0, 600, 600, 20, 20, spImg14, 600, 600, 6, 45))}
-  else{hitboxes.push(new Hitbox(self, 300, 0, 600, 600, 20, 10, spImg14, 600, 600, 6, 45))}
+  if(!enemy.guarding){hitboxes.push(new Hitbox(self, 300, 0, 600, 600, 20, 15, spImg14, 600, 600, 6, 45))}
+  else{hitboxes.push(new Hitbox(self, 300, 0, 600, 600, 20, 8, spImg14, 600, 600, 6, 45))}
 }
 else{
   if(!enemy.guarding){hitboxes.push(new Hitbox(self, 300, 0, 600, 600, 20, 25, spImg14, 600, 600, 15, 270))}
