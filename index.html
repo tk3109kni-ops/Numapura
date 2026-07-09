@@ -285,6 +285,7 @@ button {
     <img src="meirin.png" onclick="selectCharacter('p1','meirin')">
     <img src="ru-mia.png" onclick="selectCharacter('p1','rumia')">
     <img src="mokou.png" onclick="selectCharacter('p1','mokou')">
+    <img src="yuyuko.png" onclick="selectCharacter('p1','yuyuko')">
     
     <h2 id="p2Title">P2選択</h2>
     <div id="p2Select">
@@ -301,6 +302,7 @@ button {
       <img src="meirin.png" onclick="selectCharacter('p2','meirin')">
       <img src="ru-mia.png" onclick="selectCharacter('p2','rumia')">
       <img src="mokou.png" onclick="selectCharacter('p2','mokou')">
+      <img src="yuyuko.png" onclick="selectCharacter('p2','yuyuko')">
     </div>
     </div>
 
@@ -398,6 +400,9 @@ z-index:10;
 <img src="hit13.png" id="hitEffect13" style="display: none;">
 <img src="special13.1.png" id="spEffect131" style="display: none">
 <img src="special13.2.png" id="spEffect132" style="display: none;">
+<img src="yuyuko.png" id="player14" style="display: none;">
+<img src="hit14.png" id="hitEffect14" style="display: none;">
+<img src="special14.png" id="spEffect14" style="display: none;">
 <img src="poisonCloud.png" id="poisonCloud" style="display: none;">
 
 <div id="mobileControls" style="
@@ -484,6 +489,7 @@ canvas.height = 1000;
   const img11 = document.getElementById('player11');
   const img12 = document.getElementById('player12');
   const img13 = document.getElementById('player13');
+  const img14 = document.getElementById('player14');
   const hitImg = document.getElementById('hitEffect');
   const hitImg2 = document.getElementById('hitEffect2');
   const hitImg3 = document.getElementById('hitEffect3');
@@ -498,6 +504,7 @@ canvas.height = 1000;
   const hitImg121 = document.getElementById('hitEffect121');
   const hitImg122 = document.getElementById('hitEffect122');
   const hitImg13 = document.getElementById('hitEffect13');
+  const hitImg14 = document.getElementById('hitEffect14');
   const spImg1 = document.getElementById('spEffect1');
   const spImg2 = document.getElementById('spEffect2');
   const spImg3 = document.getElementById('spEffect3');
@@ -519,6 +526,7 @@ canvas.height = 1000;
   const poisonCloud = document.getElementById('poisonCloud');
   const spImg131 = document.getElementById('spEffect131');
   const spImg132 = document.getElementById('spEffect132');
+  const spImg14 = document.getElementById('spEffect14');
   const stunImg = document.getElementById('stunEffect');
   const koImg = document.getElementById('koEffect');
   const haikei = document.getElementById('haikei');
@@ -692,7 +700,7 @@ window.onload = () => {
   
 
   const characters = {
-  reimu: {
+reimu: {
     image: img1,
     maxJumps : 3,
     speed: 8,
@@ -710,49 +718,39 @@ window.onload = () => {
   },
 at: (self,enemy) =>{
   if (!self || !enemy) return;
-
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
 
   if (dx < 60 && dy < 50) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 12}
     else{enemy.damage += 4}
 
     const powerup = 5 + self.damage / 60;
     applyKnockback(enemy, self.x, powerup, 45);
-  
+  }
     const effectX = self.x + Math.abs(self.direction * 50);
     const effectY = self.y + Math.abs(self.direction * 20);
 
 effects.push(
   new Effect(effectX, effectY, hitImg3, self.direction, 60, 60)
 );
-  }
+  
 },
 sp: (self, enemy) => {
-
 self.stun = 300;
 
 const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
 const powerup = 7 + self.damage / 50;
 
-if (dx < 250 + self.damage / 2 && dy < 250 + self.damage / 2) {
-  if(!enemy.guarding){enemy.damage += 40}
-  else{enemy.damage += 15}
-  applyKnockback(enemy, self.x, powerup, 45);
-}
-
-const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
-const effectY = self.y + self.height / 2 + self.spOffsetY;
-
-effects.push(
-  new Effect(effectX, effectY, spImg1, self.direction, 750 + self.damage * 1.5, 750 + self.damage * 1.5)
-);
+self.isAttacking=true;
+  if(!enemy.guarding){hitboxes.push(new Hitbox(self, 0, 0, 250 + self.damage/2, 250+self.damage/2, 100, 7, spImg1, 250+self.damage/2, 250+self.damage/2, 7, 45))}
+  else{hitboxes.push(new Hitbox(self, 0, 0, 250 + self.damage/2, 250+self.damage/2, 100, 4, spImg1, 250+self.damage/2, 250+self.damage/2, 7, 45))}
 }
   },
-
-  marisa: {
+marisa: {
   image: img2,
   maxJumps: 2,
   speed: 5,
@@ -770,7 +768,6 @@ effects.push(
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
-
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
   const isFront =
@@ -778,23 +775,24 @@ effects.push(
   (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 150 && dy < 20 && isFront) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 10}
     else{enemy.damage += 3}
 
     
     applyKnockback(enemy, self.x, 6, 60);
-  
+  }
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
 
 effects.push(
   new Effect(effectX, effectY, hitImg2, self.direction, 200, 120)
 );
-  }
+  
 },
 
   sp: (self, enemy) => {
-
 self.stun = 375;
 
 const dx = Math.abs(self.x - enemy.x);
@@ -803,19 +801,10 @@ const dy = Math.abs(self.y - enemy.y);
 const isFront =
   (self.direction === 1 && enemy.x > self.x) ||
   (self.direction === -1 && enemy.x < self.x);
+self.isAttacking=true;
+  if(!enemy.guarding){hitboxes.push(new Hitbox(self, 400, 0, 800, 80, 120, 10, spImg2, 800, 150, 8, 30))}
+  else{hitboxes.push(new Hitbox(self, 400, 0, 800, 80, 120, 4, spImg2, 800, 150, 8, 30))}
 
-if (dx < 800 && dy < 70 && isFront) {
-  if(!enemy.guarding){enemy.damage += 90}
-  else{enemy.damage += 30}
-  applyKnockback(enemy, self.x, 10, 45);
-}
-
-const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
-const effectY = self.y + self.height / 2 + self.spOffsetY;
-
-effects.push(
-  new Effect(effectX, effectY, spImg2, self.direction, 800, 150)
-);
 }
 },
 youmu: {
@@ -837,23 +826,24 @@ youmu: {
   spStun: 100,
   at: (self,enemy) =>{
   if (!self || !enemy) return;
-
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
 
   if (dx < 60 && dy < 50) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 7}
     else{enemy.damage += 3}
 
     applyKnockback(enemy, self.x, 8, 20);
-  
+  }
     const effectX = self.x + self.direction * 20;
     const effectY = self.y + self.direction * 0;
 
 effects.push(
   new Effect(effectX, effectY, hitImg, self.direction, 60, 60)
 );
-  }
+  
 },
 
   sp: (self, enemy) => {
@@ -869,7 +859,8 @@ effects.push(
       (self.direction === -1 && enemy.x < self.x);
 
     if (dx < 600 && dy < 500 && isFront) {
-
+      self.isAttacking = true;
+      cancelAttack(enemy);
       self.isWarping = true;
 
       const dir = enemy.x > self.x ? -1 : 1;
@@ -909,6 +900,8 @@ effects.push(
     const dy = Math.abs(self.y - enemy.y);
 
     if (dx < 2000 && dy < 1600) {
+      self.isAttacking = true;
+      cancelAttack(enemy);
       enemy.damage += 100;
       enemy.guarding = false;
       applyKnockback(enemy, self.x, 18, 30);
@@ -951,23 +944,24 @@ sanae: {
       (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 200 && dy < 100 && isFront) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 20}
     else{enemy.damage += 7}
 
     const angle = 20 + enemy.damage * 0.2;
     applyKnockback(enemy, self.x, 6, 10);
-  
+  }
     const effectX = self.x + self.direction * 80;
     const effectY = self.y + self.direction * 0;
 
 effects.push(
   new Effect(effectX, effectY, hitImg4, self.direction, 200, 90)
 );
-  }
+  
 },
 
   sp: (self, enemy) => {
-
 self.stun = 375;
 
 const dx = Math.abs(self.x - enemy.x);
@@ -978,6 +972,8 @@ const isFront =
   (self.direction === -1 && enemy.x < self.x);
 
 if (dx < 200 && dy < 200) {
+  self.isAttacking = true;
+  cancelAttack(enemy);
   enemy.damage += 1;
   applyKnockback(enemy, self.x, 15, 45);
   if(self.damage >= 10){
@@ -1013,24 +1009,25 @@ sakuya: {
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
-
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
 
   if (dx < 60 && dy < 60) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 8}
     else{enemy.damage += 2}
 
     const angle = 20 + enemy.damage * 0.2;
     applyKnockback(enemy, self.x, 5, 75);
-  
+  }
     const effectX = self.x + self.direction * 30;
     const effectY = self.y + Math.abs(self.direction * 20);
 
 effects.push(
   new Effect(effectX, effectY, hitImg5, self.direction, 80, 60)
 );
-  }
+  
 },
 
   sp: (self, enemy) => {
@@ -1041,7 +1038,15 @@ const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
 
 if (dx < 1000 && dy < 1000) {
+  self.isAttacking = true;
+  cancelAttack(enemy);
   enemy.stun = 150;
+  const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
+const effectY = self.y + self.height / 2 + self.spOffsetY;
+
+effects.push(
+  new Effect(effectX, effectY, spImg5, self.direction, 400, 400)
+)
 }
 if(self.damage >= 400){
   self.stock--;
@@ -1050,18 +1055,15 @@ if(self.damage >= 400){
   
 
 
-const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
-const effectY = self.y + self.height / 2 + self.spOffsetY;
-
-effects.push(
-  new Effect(effectX, effectY, spImg5, self.direction, 400, 400)
-)}
+}
 else{
   self.stun = 150;
   const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
 
 if (dx < 4000 && dy < 4000) {
+  self.isAttacking = true;
+  cancelAttack(enemy);
   enemy.damage += 70;
 }
 
@@ -1095,7 +1097,6 @@ remiria: {
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
-
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
   const isFront =
@@ -1103,11 +1104,14 @@ remiria: {
   (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 150 && dy < 20 && isFront && bgTimer <= 0) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 6}
     else{enemy.damage += 2}
 
     applyKnockback(enemy, self.x, 6, 15);
-  
+  }
+  if(bgTimer <= 0){
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
 
@@ -1116,10 +1120,14 @@ effects.push(
 );
   }
   if (dx < 300 && dy < 50 && isFront && bgTimer > 0){
+    self.isAttacking = true;
+    cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 15}
     else{enemy.damage += 5}
 
     applyKnockback(enemy, self.x, 12, 45);
+  }
+  if(bgTimer>0){
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
   
@@ -1127,7 +1135,7 @@ effects.push(
 effects.push(
   new Effect(effectX, effectY, hitImg6, self.direction, 400, 240)
 )
-  }
+  } 
 },
 
   sp: (self, enemy) => {
@@ -1146,6 +1154,8 @@ const isFront =
   (self.direction === -1 && enemy.x < self.x);
 
 if(dx < 800 && dy < 200 && isFront){
+  self.isAttacking = true;
+  cancelAttack(enemy);
   if(!enemy.guarding){enemy.damage += 70}
   else{enemy.damage += 21}
   applyKnockback(enemy, self.x, 10, 45)
@@ -1179,7 +1189,6 @@ huran: {
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
-
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
   const isFront =
@@ -1187,23 +1196,24 @@ huran: {
   (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 80 && dy < 60 && isFront) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 10}
     else{enemy.damage += 3}
 
     applyKnockback(enemy, self.x, 6, 50);
-  
+  }
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
 
 effects.push(
   new Effect(effectX, effectY, hitImg7, self.direction, 80, 60)
 );
-  }
+  
 },
 
 sp: (self, enemy) => {
 if(self.damage < 200){
-
 if (self.orbs.length === 0) {
   for (let i = 0; i < 5 + 2 * (5 - self.stock); i++) {
     self.orbs.push(new Orb(self, i * (Math.PI * 2 / (5 + 2 *(5 - self.stock)))));
@@ -1218,6 +1228,8 @@ else{
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math .abs(self.y - enemy.y);
   if(dx < 400 && dy < 400){
+    self.isAttacking = true;
+    cancelAttack(enemy);
     enemy.damage += 30;
     enemy.guarding = false;
     applyKnockback(enemy, self.x, 8, 90);
@@ -1248,7 +1260,6 @@ pache: {
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
-
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
   const isFront =
@@ -1256,25 +1267,26 @@ pache: {
   (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 220 && dy < 100 && isFront) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 10}
     else{enemy.damage += 3}
 
     const angle = 20 + enemy.damage * 0.2;
     applyKnockback(enemy, self.x, 6, 45);
-  
+  }
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
 
 effects.push(
   new Effect(effectX, effectY, hitImg8, self.direction, 200, 120)
 );
-  }
+  
 },
 
   sp: (self, enemy) => {
 let three = Math.floor(Math.random()*3) + 1;
 if(three === 1){
-
 self.stun = 375;
 
 const dx = Math.abs(self.x - enemy.x);
@@ -1285,6 +1297,8 @@ const isFront =
   (self.direction === -1 && enemy.x < self.x);
 
 if (dx < 600 && dy < 100 && isFront) {
+  self.isAttacking = true;
+  cancelAttack(enemy);
   if(!enemy.guarding){enemy.damage += 55}
   else{enemy.damage += 17}
   applyKnockback(enemy, self.x, 6, 15);
@@ -1304,6 +1318,8 @@ const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
 
 if (dx < 200 && dy < 200) {
+  self.isAttacking = true;
+  cancelAttack(enemy);
   if(!enemy.guarding){enemy.damage += 50}
   else{enemy.damage += 15}
   applyKnockback(enemy, self.x, 7, 45);
@@ -1323,6 +1339,8 @@ const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
 
 if (dx < 100 && dy < 800) {
+  self.isAttacking = true;
+  cancelAttack(enemy);
   if(!enemy.guarding){enemy.damage += 80}
   else{enemy.damage += 24}
   applyKnockback(enemy, self.x, 12, 75);
@@ -1355,7 +1373,6 @@ chilno: {
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
-
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
   const isFront =
@@ -1364,24 +1381,25 @@ chilno: {
 
 
   if (dx < 100 && dy < 50 && isFront) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 5}
     else{enemy.damage += 1}
 
     const angle = 20 + enemy.damage * 0.2;
     applyKnockback(enemy, self.x, 9, 45);
     enemy.stun = 10;
-  
+  }
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
 
 effects.push(
   new Effect(effectX, effectY, hitImg9, self.direction, 200, 120)
 );
-  }
+  
 },
 
   sp: (self, enemy) => {
-
 self.stun = 375;
 
 const dx = Math.abs(self.x - enemy.x);
@@ -1389,6 +1407,8 @@ const dy = Math.abs(self.y - enemy.y);
 
 
 if (dx < 300 && dy < 500) {
+  self.isAttacking = true;
+  cancelAttack(enemy);
   if(!enemy.guarding){enemy.damage += 85}
   else{enemy.damage += 25}
   applyKnockback(enemy, self.x, 2, 45);
@@ -1421,11 +1441,12 @@ aya: {
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
-
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
 
   if (dx < 75 && dy < 75 && self.mode === "normal") {
+    self.isAttacking = true;
+    cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 10}
     else{enemy.damage += 3}
     applyKnockback(enemy, self.x, 3, 30);
@@ -1437,6 +1458,8 @@ effects.push(
 );
   }
   else if(self.mode === "boost" && dx < 150 && dy < 150){
+    self.isAttacking = true;
+    cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 15}
     else{enemy.damage += 5}
     applyKnockback(enemy, self.x, 5, 30);
@@ -1480,6 +1503,8 @@ if(self.mode === "normal"){
 }
 
 if(self.damage > 200 && dx < 400 && dy < 400){
+  self.isAttacking = true;
+  cancelAttack(enemy);
   self.stun = 300;
   if(!enemy.guarding){enemy.damage += 80}
   else{enemy.damage += 24}
@@ -1510,7 +1535,6 @@ meirin: {
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
-
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
   const isFront =
@@ -1518,23 +1542,24 @@ meirin: {
   (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 20 && dy < 20 && isFront) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 22}
     else{enemy.damage += 7}
 
     
     applyKnockback(enemy, self.x, 8, 20);
-  
+  }
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
 
 effects.push(
   new Effect(effectX, effectY, hitImg11, self.direction, 200, 120)
 );
-  }
+  
 },
 
   sp: (self, enemy) => {
-
 
 const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
@@ -1544,6 +1569,8 @@ const isFront =
   (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 200 && dy < 200 && isFront) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
     self.stun = 375;
 
 self.isWarping = true;
@@ -1578,6 +1605,8 @@ effects.push(
 );
 }
 else if(200<= dx && dx < 650 && dy < 80 && isFront){
+  self.isAttacking = true;
+  cancelAttack(enemy);
   self.stun = 70;
   self.damage += 20;
   if(!enemy.guarding){enemy.damage += 30}
@@ -1612,7 +1641,6 @@ rumia: {
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
-
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
   const isFront =
@@ -1620,17 +1648,18 @@ rumia: {
   (self.direction === -1 && enemy.x < self.x);
 
   if (dx < 40 && dy < 20 && isFront) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
     if(enemy.damage < 400){
     if(!enemy.guarding){enemy.damage += 8}
     else{enemy.damage += 3}
 
     
     applyKnockback(enemy, self.x, 2, 60);
-    const effectX = self.x + self.direction * 30;
-    const effectY = self.y + Math.abs(self.direction * 20);
+    
 
 effects.push(
-  new Effect(effectX, effectY, hitImg121, self.direction, 200, 120)
+  new Effect(enemy.x, enemy.y, hitImg121, self.direction, 200, 120)
 );
     }
     if(enemy.damage >= 400){
@@ -1648,7 +1677,6 @@ effects.push(
 },
 
   sp: (self, enemy) => {
-
 self.stun = 75;
 
 const cloudX =
@@ -1684,7 +1712,6 @@ mokou: {
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
-
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
   const isFront =
@@ -1693,39 +1720,93 @@ mokou: {
 
 
   if (dx < 100 && dy < 50 && isFront) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 10}
     else{enemy.damage += 1}
 
     applyKnockback(enemy, self.x, 9, 45); 
-  
+  }
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
 
 effects.push(
   new Effect(effectX, effectY, hitImg13, self.direction, 200, 120)
 );
-  }
+  
 },
 
   sp: (self, enemy) => {
-
 self.stun = 375;
 
 const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
+self.isAttacking = true;
 
-
-  if(!enemy.guarding){hitboxes.push(new Hitbox(self, 0, 0, 200, 500, 120, 4.5, spImg131, 300, 750))}
-  else{hitboxes.push(new Hitbox(self, 0, 0, 200, 1000, 120, 1, spImg131, 300, 750))}
+  if(!enemy.guarding){hitboxes.push(new Hitbox(self, 0, 0, 200, 500, 120, 4.5, spImg131, 300, 750, 1, 90))}
+  else{hitboxes.push(new Hitbox(self, 0, 0, 200, 1000, 120, 1, spImg131, 300, 750, 1, 90))}
 
   
  
 
 
 }
-  }
-  }
+  },
+yuyuko: {
+  image: img14,
+  maxJumps: 5,
+  speed: 3,
+  spOffsetX: 0,
+  spOffsetY: 0,
+  jumpPower: 12,
+  spStun: 375,
+  shot: {
+    color: "mediumvioletred",
+    speed: 13,
+    size: 10,
+    damage: 7,
+    knockback: 3,
+    angle: 30
+  },
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
 
+  self.x += self.direction*150
+  if (dx < 150 && dy < 20 && isFront) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
+    if(!enemy.guarding){enemy.damage += 15}
+    else{enemy.damage += 5}
+
+    applyKnockback(enemy, self.x, 9, 45); 
+    effects.push(
+  new Effect(enemy.x, enemy.y, hitImg14, self.direction, 200, 120)
+);
+  }
+  
+},
+
+  sp: (self, enemy) => {
+self.stun = 300;
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+self.isAttacking = true;
+if(enemy.onGround){
+  if(!enemy.guarding){hitboxes.push(new Hitbox(self, 300, 0, 600, 600, 20, 20, spImg14, 600, 600, 6, 45))}
+  else{hitboxes.push(new Hitbox(self, 300, 0, 600, 600, 20, 10, spImg14, 600, 600, 6, 45))}
+}
+else{
+  if(!enemy.guarding){hitboxes.push(new Hitbox(self, 300, 0, 600, 600, 20, 25, spImg14, 600, 600, 15, 270))}
+  else{hitboxes.push(new Hitbox(self, 300, 0, 600, 600, 20, 10, spImg14, 600, 600, 15, 270))}
+}
+  }
+  }}
   class Player {
   constructor(x, char, controls, isCPU = false, playerColor = "white") {
     this.spawnX = x;
@@ -1773,6 +1854,7 @@ const dy = Math.abs(self.y - enemy.y);
     this.guarding = false;
     this.isKO = false;
     this.hukkatsu = false;
+    this.isAttacking = false;
   }
 
   reset() {
@@ -1782,11 +1864,12 @@ const dy = Math.abs(self.y - enemy.y);
     this.vy = 0;
     this.damage = 0;
     this.stun = false;
+    this.isAttacking = false;
     this.mode = "normal";
   }
 
   update(enemy) {
-
+    const prevY = this.y;
     if (this.isKO) return;
     if (this.stun > 0) {
       this.stun--;}
@@ -1817,19 +1900,20 @@ if(this.stock === 1 && this.hukkatsu === true){
 
 
     if (
-      this.vy >= 0 &&
-      this.y + this.height >= stage.y &&
-      this.y + this.height <= stage.y + 20 &&
-      this.x + this.width > stage.x &&
-      this.x < stage.x + stage.width
-    ) {
-      this.y = stage.y - this.height;
-      this.vy = 0;
-      this.onGround = true;
-      this.jumpCount = 0;
-    } else {
-      this.onGround = false;
-    }
+    this.vy >= 0 &&
+    prevY + this.height <= stage.y &&
+    this.y + this.height >= stage.y &&
+    this.x + this.width > stage.x &&
+    this.x < stage.x + stage.width
+) {
+    this.y = stage.y - this.height;
+    this.vy = 0;
+    this.onGround = true;
+    this.jumpCount = 0;
+}
+else {
+    this.onGround = false;
+}
     if (!this.isKO &&
 (
   this.y > canvas.height + 150 ||
@@ -1942,6 +2026,20 @@ if (target.guarding) {
 }
   target.vx = Math.cos(rad) * finalPower * scale * dir * 5;
   target.vy = -Math.sin(rad) * finalPower * scale;
+}
+function cancelAttack(player) {
+
+// 技中じゃないなら何もしない
+if (!player.isAttacking) return;
+
+// 攻撃状態解除
+player.isAttacking = false;
+
+// スタン解除
+player.stun = 0;
+
+// このプレイヤーのHitboxを全部消す
+hitboxes = hitboxes.filter(h => h.owner !== player);
 }
 function getKOPosition(x, y) {
 
@@ -2084,7 +2182,7 @@ class PoisonCloud {
   }
 }
 class Hitbox {
-  constructor(owner, offsetX, offsetY, width, height, life, damage, img, imgwidth, imgheight) {
+  constructor(owner, offsetX, offsetY, width, height, life, damage, img, imgwidth, imgheight, knockBack, angle) {
     this.owner = owner;
 
     // キャラからの相対位置
@@ -2105,10 +2203,15 @@ class Hitbox {
     this.damage = damage;
     this.imgwidth = imgwidth;
     this.imgheight = imgheight;
+    this.knockBack = knockBack;
+    this.angle = angle
   }
 
   update(enemy) {
-
+    if (!this.owner.isAttacking) {
+    this.frame = this.life;
+    return;
+}
     this.frame++;
 
     if (this.hitTimer > 0)
@@ -2141,7 +2244,8 @@ class Hitbox {
       this.hitTimer <= 0
     ) {
       enemy.damage += this.damage
-    applyKnockback(enemy, this.owner.x, 1, 90);
+      cancelAttack(enemy);
+    applyKnockback(enemy, this.owner.x, this.knockBack, this.angle);
     this.hitTimer = this.hitInterval;
     }
     
@@ -2163,9 +2267,6 @@ ctx.drawImage(
 
 ctx.restore();
 
-    //=========================
-    // デバッグ表示
-    //=========================
 
     
   }
@@ -2278,6 +2379,7 @@ this.angle = data.angle;
     const dy = Math.abs(p.y - target.y);
 
     if (dx < 10 && dy < 10 && !target.guarding) {
+      p.isAttacking = true;
       target.damage += p.damage;
 
       applyKnockback(target, p.x, p.knockback, p.angle);
@@ -2341,11 +2443,11 @@ this.angle = data.angle;
     if (!p1 || !p2) return;
   
    
-    if (e.key === "f" && p1.stun <= 0 && !p1.guarding) p1.attack(p1, p2);
-if (e.key === "/" && p2.stun <= 0 && !p2.guarding) p2.attack(p2, p1);
+    if (e.key === "f" && p1.stun <= 0 && !p1.guarding) {p1.attack(p1, p2);};
+if (e.key === "/" && p2.stun <= 0 && !p2.guarding) {p2.attack(p2, p1)};
 
-if (e.key === "g" && p1.stun <= 0 && !p1.guarding) p1.shoot();
-if (e.key === "." && p2.stun <= 0 && !p2.guarding) p2.shoot();
+if (e.key === "g" && p1.stun <= 0 && !p1.guarding) {p1.shoot();};
+if (e.key === "." && p2.stun <= 0 && !p2.guarding) {p2.shoot()};
   
 
 if (e.key === "q" && p1.stun <= 0 && !p1.guarding) {p1.spAttack(p1, p2)};
@@ -2625,7 +2727,7 @@ if (cpu.x > stage.x + stage.width - 20) {
 }
 
 
-if (cpu.onGround && Math.random() < 0.02 && !cpu.guarding) {
+if (cpu.onGround && Math.random() < 0.02 && !cpu.guarding && cpu.stun <= 0) {
   cpu.vy = -cpu.jumpPower;
   cpu.jumpCount++;
 }
@@ -2740,7 +2842,17 @@ const enemy =
 h.update(enemy);
 
 });
+hitboxes = hitboxes.filter(h => {
 
+if (h.isFinished()) {
+
+    h.owner.isAttacking = false;
+
+    return false;
+}
+
+return true;
+});
 hitboxes =
 hitboxes.filter(h => !h.isFinished());
 
