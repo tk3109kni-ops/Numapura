@@ -294,6 +294,7 @@ button {
     <img src="ru-mia.png" onclick="selectCharacter('p1','rumia')">
     <img src="mokou.png" onclick="selectCharacter('p1','mokou')">
     <img src="yuyuko.png" onclick="selectCharacter('p1','yuyuko')">
+    <img src="wakka.png" onclick="selectCharacter('p1','wakka')">
     
     <h2 id="p2Title">P2選択</h2>
     <div id="p2Select">
@@ -311,6 +312,7 @@ button {
       <img src="ru-mia.png" onclick="selectCharacter('p2','rumia')">
       <img src="mokou.png" onclick="selectCharacter('p2','mokou')">
       <img src="yuyuko.png" onclick="selectCharacter('p2','yuyuko')">
+      <img src="wakka.png" onclick="selectCharacter('p2','wakka')">
     </div>
     </div>
 
@@ -411,6 +413,11 @@ z-index:10;
 <img src="yuyuko.png" id="player14" style="display: none;">
 <img src="hit14.png" id="hitEffect14" style="display: none;">
 <img src="special14.png" id="spEffect14" style="display: none;">
+<img src="wakka.png" id="player15" style="display: none;">
+<img src="hit15.png" id="hitEffect15" style="display: none;">
+<img src="hit15.2.png" id="hitEffect152" style="display: none;">
+<img src="special151.jpg" id="spEffect151" style="display: none;">
+<img src="special152.png" id="spEffect152" style="display: none;">
 <img src="poisonCloud.png" id="poisonCloud" style="display: none;">
 
 <div id="mobileControls" style="
@@ -498,6 +505,7 @@ canvas.height = 1000;
   const img12 = document.getElementById('player12');
   const img13 = document.getElementById('player13');
   const img14 = document.getElementById('player14');
+  const img15 = document.getElementById('player15');
   const hitImg = document.getElementById('hitEffect');
   const hitImg2 = document.getElementById('hitEffect2');
   const hitImg3 = document.getElementById('hitEffect3');
@@ -513,6 +521,8 @@ canvas.height = 1000;
   const hitImg122 = document.getElementById('hitEffect122');
   const hitImg13 = document.getElementById('hitEffect13');
   const hitImg14 = document.getElementById('hitEffect14');
+  const hitImg151 = document.getElementById('hitEffect15');
+  const hitImg152 = document.getElementById('hitEffect152');
   const spImg1 = document.getElementById('spEffect1');
   const spImg2 = document.getElementById('spEffect2');
   const spImg3 = document.getElementById('spEffect3');
@@ -535,6 +545,8 @@ canvas.height = 1000;
   const spImg131 = document.getElementById('spEffect131');
   const spImg132 = document.getElementById('spEffect132');
   const spImg14 = document.getElementById('spEffect14');
+  const spImg151 = document.getElementById('spEffect151');
+  const spImg152 = document.getElementById('spEffect152');
   const stunImg = document.getElementById('stunEffect');
   const koImg = document.getElementById('koEffect');
   const haikei = document.getElementById('haikei');
@@ -1111,7 +1123,7 @@ remiria: {
   (self.direction === 1 && enemy.x > self.x) ||
   (self.direction === -1 && enemy.x < self.x);
 
-  if (dx < 150 && dy < 20 && isFront && bgTimer <= 0) {
+  if (dx < 150 && dy < 20 && isFront && bgColor !== spImg6) {
     self.isAttacking = true;
     cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 6}
@@ -1119,7 +1131,7 @@ remiria: {
 
     applyKnockback(enemy, self.x, 6, 15);
   }
-  if(bgTimer <= 0){
+  if(bgColor !== spImg6){
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
 
@@ -1127,7 +1139,7 @@ effects.push(
   new Effect(effectX, effectY, hitImg6, self.direction, 200, 120)
 );
   }
-  if (dx < 300 && dy < 50 && isFront && bgTimer > 0){
+  if (dx < 300 && dy < 50 && isFront && bgColor === spImg6){
     self.isAttacking = true;
     cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 15}
@@ -1135,7 +1147,7 @@ effects.push(
 
     applyKnockback(enemy, self.x, 12, 45);
   }
-  if(bgTimer>0){
+  if(bgColor === spImg6){
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
   
@@ -1147,7 +1159,7 @@ effects.push(
 },
 
   sp: (self, enemy) => {
-    if(bgTimer <= 0){
+    if(bgColor !== spImg6){
 self.damage += 50;      
 bgColor = spImg6;
 bgActive = true;
@@ -1167,7 +1179,6 @@ if(dx < 800 && dy < 200 && isFront){
   if(!enemy.guarding){enemy.damage += 70}
   else{enemy.damage += 21}
   applyKnockback(enemy, self.x, 10, 45)
-
 }
 
 const effectX = self.x + self.width / 2 + self.direction * self.spOffsetX;
@@ -1549,7 +1560,7 @@ meirin: {
   (self.direction === 1 && enemy.x > self.x) ||
   (self.direction === -1 && enemy.x < self.x);
 
-  if (dx < 20 && dy < 20 && isFront) {
+  if (dx < 50 && dy < 20 && isFront) {
     self.isAttacking = true;
     cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 22}
@@ -1812,6 +1823,75 @@ if(enemy.onGround){
 else{
   if(!enemy.guarding){hitboxes.push(new Hitbox(self, 300, 0, 600, 600, 20, 25, spImg14, 600, 600, 15, 270))}
   else{hitboxes.push(new Hitbox(self, 300, 0, 600, 600, 20, 10, spImg14, 600, 600, 15, 270))}
+}
+  }
+  },
+wakka: {
+  image: img15,
+  maxJumps: 3,
+  speed: 10,
+  spOffsetX: 0,
+  spOffsetY: 0,
+  jumpPower: 9,
+  spStun: 375,
+  shot: {
+    image: hitImg151,
+    speed: 13,
+    width: 30,
+    height: 30,
+    damage: 7,
+    knockback: 3,
+    angle: 30
+  },
+  at: (self,enemy) =>{
+
+  if (!self || !enemy) return;
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+self.y -= 100;
+  if (dx < 150 && dy < 200 && isFront && bgColor !== spImg151 && self.onGround) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
+    if(!enemy.guarding){enemy.damage += 15}
+    else{enemy.damage += 5}
+
+    applyKnockback(enemy, self.x, 7, 45); 
+    effects.push(
+  new Effect(enemy.x, enemy.y, hitImg152, self.direction, 200, 200)
+);
+  }
+  if(dx < 200 && dy < 400 && isFront && bgColor === spImg151 && self.onGround){
+    self.isAttacking = true;
+    cancelAttack(enemy);
+    if(!enemy.guarding){enemy.damage += 30}
+    else{enemy.damage += 10}
+
+    applyKnockback(enemy, self.x, 11, 45); 
+    effects.push(
+  new Effect(enemy.x, enemy.y, hitImg152, self.direction, 300, 300)
+);
+  }
+},
+
+  sp: (self, enemy) => {
+    if(bgColor !== spImg151){
+self.damage += 50;      
+bgColor = spImg151;
+bgActive = true;
+bgTimer = 600;
+    }
+    else if(bgColor === spImg151){
+self.stun = 300;
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+self.isAttacking = true;
+
+  if(!enemy.guarding){hitboxes.push(new Hitbox(self, 0, 0, 450, 450, 200, 10, spImg152, 450, 450, 2, 45))}
+  else{hitboxes.push(new Hitbox(self, 0, 0, 450, 450, 200, 1, spImg152, 450, 450, 2, 45))}
 }
   }
   }}
@@ -2364,7 +2444,10 @@ this.vx = dir * data.speed;
 this.active = true;
 
 this.color = data.color;
+this.image = data.image;
 this.size = data.size;
+this.width = data.width;
+this.height = data.height;
 
 this.damage = data.damage;
 this.knockback = data.knockback;
@@ -2375,8 +2458,21 @@ this.angle = data.angle;
       this.x += this.vx;
       if (this.x < 0 || this.x > canvas.width) this.active = false;
   
+      if (this.image) {
+
+ctx.drawImage(
+    this.image,
+    this.x - this.width / 2,
+    this.y - this.height / 2,
+    this.width,
+    this.height
+);
+
+}
+else{
       ctx.fillStyle = this.color;
       ctx.fillRect(this.x, this.y, this.size, this.size);
+}
     }
   }
   function projectileHit(list, target) {
@@ -2780,9 +2876,12 @@ cpu.vx = Math.max(-cpu.speed, Math.min(cpu.speed, cpu.vx));
 
   function gameLoop() {
     function drawBackGround(){
+      
   if (bgActive) {
-    ctx.drawImage(spImg6, 0, 0, canvas.width, canvas.height);
-  } else {
+    ctx.drawImage(bgColor, 0, 0, canvas.width, canvas.height);
+  }
+  
+  else {
     ctx.drawImage(haikei, 0, 0, canvas.width, canvas.height);
   }
 }
@@ -2790,8 +2889,9 @@ ctx.clearRect(0, 0, canvas.width, canvas.height);
 drawBackGround();
 if (bgTimer > 0) {
   bgTimer--;
-  if (bgTimer === 0) {
+  if (bgTimer <= 0) {
     bgActive = false;
+    bgColor = haikei
   }
 }
   
