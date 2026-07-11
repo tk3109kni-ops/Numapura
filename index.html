@@ -419,6 +419,7 @@ z-index:10;
 <img src="special151.jpg" id="spEffect151" style="display: none;">
 <img src="special152.png" id="spEffect152" style="display: none;">
 <audio src="otowakka.mp3" id="wakkaMusic" style="display: none;" preload="auto"></audio>
+<audio src="norainutonoranekonokousou.mp3" id="remiriaMusic" style="display: none;" preload="auto"></audio>
 <img src="poisonCloud.png" id="poisonCloud" style="display: none;">
 
 <div id="mobileControls" style="
@@ -551,6 +552,7 @@ canvas.height = 1000;
   const stunImg = document.getElementById('stunEffect');
   const koImg = document.getElementById('koEffect');
   const wakkaMusic = document.getElementById('wakkaMusic');
+  const remiriaMusic = document.getElementById('remiriaMusic');
   const haikei = document.getElementById('haikei');
   const gravity = 0.5
   
@@ -1163,11 +1165,14 @@ effects.push(
 
   sp: (self, enemy) => {
     if(bgColor !== spImg6){
-      bgMusic.pause();
+      wakkaMusic.pause();
 self.damage += 50;      
 bgColor = spImg6;
 bgActive = true;
 bgTimer = 600;
+bgMusic = remiriaMusic;
+bgMusic.currentTime = 0;
+bgMusic.play();
     }
     else{
       self.stun = 300;
@@ -1882,6 +1887,7 @@ self.y -= 100;
 
   sp: (self, enemy) => {
     if(bgColor !== spImg151){
+      remiriaMusic.pause();
 self.damage += 50;      
 bgColor = spImg151;
 bgMusic = wakkaMusic;
@@ -2748,7 +2754,6 @@ document.getElementById("p2Guard").addEventListener("pointerleave",e=>{
 
 if (gameState !== "game") return;
 
-
 if (!(p1.stock <= 0 || p2.stock <= 0)) return;
 
 const rect = canvas.getBoundingClientRect();
@@ -2809,6 +2814,7 @@ function drawSelect() {
   function drawWinner() {
 
 if (p1.stock <= 0 || p2.stock <= 0) {
+  bgMusic.pause();
   effects.length = 0;
   poisonClouds.length = 0;
   hitboxes.length = 0;
