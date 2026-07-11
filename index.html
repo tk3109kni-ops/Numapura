@@ -2134,16 +2134,12 @@ if (target.guarding) {
 }
 function cancelAttack(player) {
 
-// 技中じゃないなら何もしない
 if (!player.isAttacking) return;
 
-// 攻撃状態解除
 player.isAttacking = false;
 
-// スタン解除
 player.stun = 0;
 
-// このプレイヤーのHitboxを全部消す
 hitboxes = hitboxes.filter(h => h.owner !== player);
 }
 function getKOPosition(x, y) {
@@ -2151,11 +2147,10 @@ function getKOPosition(x, y) {
 const cx = canvas.width / 2;
 const cy = canvas.height / 2;
 
-// 画面中央→撃墜位置
+
 let dx = x - cx;
 let dy = y - cy;
 
-// 長さ
 const len = Math.sqrt(dx * dx + dy * dy);
 
 if (len === 0) {
@@ -2165,13 +2160,12 @@ if (len === 0) {
 dx /= len;
 dy /= len;
 
-// 十分長く伸ばす
+
 const far = 3000;
 
 const ex = cx + dx * far;
 const ey = cy + dy * far;
 
-// 画面との交点
 let t = Infinity;
 
 if (dx > 0)
@@ -2210,7 +2204,7 @@ class KOEffect {
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
 
-    // 中央→撃墜位置への角度
+    
     this.angle = Math.atan2(y - cy, x - cx);
 
     this.frame = 0;
@@ -2267,7 +2261,7 @@ class PoisonCloud {
 
     this.frame++;
 
-    // 当たり判定
+  
     const dx = Math.abs(enemy.x - this.x);
     const dy = Math.abs(enemy.y - this.y);
 
@@ -2290,7 +2284,7 @@ class Hitbox {
   constructor(owner, offsetX, offsetY, width, height, life, damage, img, imgwidth, imgheight, knockBack, angle) {
     this.owner = owner;
 
-    // キャラからの相対位置
+  
     this.offsetX = offsetX;
     this.offsetY = offsetY;
 
@@ -2300,7 +2294,7 @@ class Hitbox {
     this.life = life;
     this.frame = 0;
 
-    // 多段ヒット間隔
+   
     this.hitInterval = 6;
     this.hitTimer = 0;
 
@@ -2322,9 +2316,7 @@ class Hitbox {
     if (this.hitTimer > 0)
       this.hitTimer--;
 
-    //=========================
-    // キャラに追従
-    //=========================
+  
 
     const x =
       this.owner.x +
@@ -2336,9 +2328,7 @@ class Hitbox {
       this.owner.height / 2 +
       this.offsetY;
 
-    //=========================
-    // 当たり判定
-    //=========================
+
 
     const dx = Math.abs(enemy.x + enemy.width / 2 - x);
     const dy = Math.abs(enemy.y + enemy.height / 2 - y);
@@ -2564,17 +2554,17 @@ else{
     if (!p1 || !p2) return;
   
    
-    if (e.key === "f" && p1.stun <= 0 && !p1.guarding) {p1.attack(p1, p2);};
+    if (e.key === "f" && p1.stun <= 0 && !p1.guarding || e.key === "F" && p1.stun <= 0 && !p1.guarding) {p1.attack(p1, p2);};
 if (e.key === "/" && p2.stun <= 0 && !p2.guarding) {p2.attack(p2, p1)};
 
-if (e.key === "g" && p1.stun <= 0 && !p1.guarding) {p1.shoot();};
+if (e.key === "g" && p1.stun <= 0 && !p1.guarding || e.key === "G" && p1.stun <= 0 && !p1.guarding) {p1.shoot();};
 if (e.key === "." && p2.stun <= 0 && !p2.guarding) {p2.shoot()};
   
 
-if (e.key === "q" && p1.stun <= 0 && !p1.guarding) {p1.spAttack(p1, p2)};
+if (e.key === "q" && p1.stun <= 0 && !p1.guarding || e.key === "Q" && p1.stun <= 0 && !p1.guarding) {p1.spAttack(p1, p2)};
 if (e.key === "ArrowDown" && p2.stun <= 0 && !p2.guarding) {p2.spAttack(p2, p1)};
 
-if (e.key === "s" && p1.stun <= 0) {
+if (e.key === "s" && p1.stun <= 0 || e.key === "S" && p1.stun <= 0) {
   p1.guarding = true;
 }
 
@@ -2586,7 +2576,7 @@ if (e.key === "Enter" && p2.stun <= 0) {
   
   document.addEventListener("keyup", e => {
     keys[e.key] = false;
-    if (e.key === "s") {
+    if (e.key === "s" || e.key === "S") {
   p1.guarding = false;
 }
 
@@ -2599,7 +2589,7 @@ if (e.key === "Enter") {
     if (!p1Choice) return;
     document.body.classList.add("gameMode");
     const stockValue = parseInt(document.getElementById("stockSelect").value);
-    p1 = new Player(750, characters[p1Choice], { left:"a", right:"d" }, false, "red");
+    p1 = new Player(750, characters[p1Choice], {left:"a", right:"d"}, false, "red");
     p1.stock = stockValue;
 
 if (gameMode === "single") {
@@ -2670,8 +2660,9 @@ const btn = document.getElementById(id);
   });
 }
 
+
 bindButton("p1Left","a");
-bindButton("p1Right","d");
+bindButton("p1Right","d")
 bindButton("p2Left","ArrowLeft");
 bindButton("p2Right","ArrowRight");
 document.getElementById("p1Jump").addEventListener("pointerdown", e => {
@@ -2814,7 +2805,9 @@ function drawSelect() {
   function drawWinner() {
 
 if (p1.stock <= 0 || p2.stock <= 0) {
+  if(bgActive){
   bgMusic.pause();
+  }
   effects.length = 0;
   poisonClouds.length = 0;
   hitboxes.length = 0;
@@ -2942,7 +2935,10 @@ if (bgTimer > 0) {
     if(!p2.isCPU){
     handleInput(p2, "ArrowLeft", "ArrowRight");
     }
-
+    handleInput(p1, "A", "D");
+    if(!p2.isCPU){
+    handleInput(p2, "ArrowLeft", "ArrowRight");
+    }
     poisonClouds.forEach(c=>{
 
 const enemy =
@@ -2958,9 +2954,13 @@ poisonClouds.filter(c=>!c.isFinished());
 if (p1 && keys["w"] && p1.jumpCount < p1.maxJumps && !p1.guarding) {
   p1.vy = -p1.jumpPower;
   p1.jumpCount++;
-  keys["w"] = false; 
+  keys["w"] = false;
 }
-
+if (p1 && keys["W"] && p1.jumpCount < p1.maxJumps && !p1.guarding) {
+  p1.vy = -p1.jumpPower;
+  p1.jumpCount++;
+  keys["W"] = false;
+}
 if (p2 && keys["ArrowUp"] && p2.jumpCount < p2.maxJumps && !p2.guarding) {
   p2.vy = -p2.jumpPower;
   p2.jumpCount++;
