@@ -1902,14 +1902,17 @@ self.stun = 300;
 
 const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
+const dxy = Math.abs(Math.sqrt(dx**2 + dy**2)/20)
 self.isAttacking = true;
 
-  if(!enemy.guarding){hitboxes.push(new Hitbox(self, 0, 0, 450, 450, 200, 10, spImg152, 450, 450, 2, 45))}
-  else{hitboxes.push(new Hitbox(self, 0, 0, 450, 450, 200, 1, spImg152, 450, 450, 2, 45))}
+  if(!enemy.guarding){
+    {hitboxes.push(new Hitbox(self, 0, 0, 450, 450, 200, 10, spImg152, 450, 450, dxy, 45))  
+  }}
+  else{hitboxes.push(new Hitbox(self, 0, 0, 450, 450, 200, 1, spImg152, 450, 450, dxy, 45))}
 
   
-}
 
+    }
   }
   }}
   class Player {
