@@ -3066,50 +3066,54 @@ bindButton("p2Left","ArrowLeft");
 bindButton("p2Right","ArrowRight");
 document.getElementById("p1Jump").addEventListener("pointerdown", e => {
   e.preventDefault();
+  if(!p1.guarding && p1.stun <= 0){
   jump(p1);
+  }
 });
 
 document.getElementById("p2Jump").addEventListener("pointerdown", e => {
   e.preventDefault();
+  if(!p2.guarding && p2.stun <= 0){
   jump(p2);
+  }
 });
 document.getElementById("p1Attack").addEventListener("pointerdown",e=>{
   e.preventDefault();
-  if(p1 && p2 && p1.stun <= 0){
+  if(p1 && p2 && p1.stun <= 0&& !p1.guarding){
     p1.attack(p1,p2);
   }
 });
 
 document.getElementById("p1Shot").addEventListener("pointerdown",e=>{
   e.preventDefault();
-  if(p1 && p2 && p1.stun <= 0){
+  if(p1 && p2 && p1.stun <= 0&& !p1.guarding){
     p1.shoot();
   }
 });
 
 document.getElementById("p1SP").addEventListener("pointerdown",e=>{
   e.preventDefault();
-  if(p1 && p2 && p1.stun <= 0){
+  if(p1 && p2 && p1.stun <= 0 && !p1.guarding){
     p1.spAttack(p1,p2);
   }
 });
 document.getElementById("p2Attack").addEventListener("pointerdown",e=>{
   e.preventDefault();
-  if(p1 && p2 && p2.stun <= 0){
+  if(p1 && p2 && p2.stun <= 0 && !p2.guarding){
     p2.attack(p2,p1);
   }
 });
 
 document.getElementById("p2Shot").addEventListener("pointerdown",e=>{
   e.preventDefault();
-  if(p1 && p2 && p2.stun <= 0){
+  if(p1 && p2 && p2.stun <= 0 && !p2.guarding){
     p2.shoot();
   }
 });
 
 document.getElementById("p2SP").addEventListener("pointerdown",e=>{
   e.preventDefault();
-  if(p1 && p2 && p2.stun <= 0){
+  if(p1 && p2 && p2.stun <= 0 && !p2.guarding){
     p2.spAttack(p2,p1);
   }
 });
