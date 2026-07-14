@@ -759,6 +759,7 @@ reimu: {
     spOffsetY: 0,
     spStun: 300,
     jumpPower: 10,
+    distance: 60,
     shot: {
     color: "red",
     speed: 8,
@@ -817,6 +818,7 @@ marisa: {
   spOffsetY: 0,
   jumpPower: 12,
   spStun: 375,
+  distance: 150,
   shot: {
     color: "yellow",
     speed: 8,
@@ -881,6 +883,7 @@ youmu: {
   spOffsetX: 0,
   spOffsetY: -30,
   jumpPower: 7,
+  distance: 60,
   shot: {
     color: "white",
     speed: 8,
@@ -998,6 +1001,7 @@ sanae: {
   spOffsetX: 0,
   spOffsetY: 0,
   jumpPower: 9,
+  distance: 150,
   shot: {
     color: "green",
     speed: 8,
@@ -1082,6 +1086,7 @@ sakuya: {
   spOffsetX: 0,
   spOffsetY: 0,
   jumpPower: 11,
+  distance: 60,
   shot: {
     color: "gray",
     speed: 2,
@@ -1178,6 +1183,7 @@ remiria: {
   spOffsetY: 0,
   jumpPower: 12,
   spStun: 375,
+  distance: 150,
   shot: {
     color: "purple",
     speed: 10,
@@ -1281,6 +1287,7 @@ huran: {
   spOffsetY: 0,
   jumpPower: 10,
   spStun: 375,
+  distance: 90,
   shot: {
     color: "crimson",
     speed: 6,
@@ -1360,6 +1367,7 @@ pache: {
   spOffsetY: 0,
   jumpPower: 8,
   spStun: 375,
+  distance: 200,
   shot: {
     color: "brown",
     speed: 8,
@@ -1481,6 +1489,7 @@ chilno: {
   spOffsetY: -200,
   jumpPower: 8,
   spStun: 375,
+  distance: 100,
   shot: {
     color: "blue",
     speed: 20,
@@ -1557,6 +1566,7 @@ aya: {
   spOffsetY: 0,
   jumpPower: 7,
   spStun: 375,
+  distance: 100,
   shot: {
     color: "black",
     speed: 12,
@@ -1659,6 +1669,7 @@ meirin: {
   spOffsetY: 0,
   jumpPower: 10,
   spStun: 375,
+  distance: 45,
   shot: {
     color: "maroon",
     speed: 5,
@@ -1773,6 +1784,7 @@ rumia: {
   spOffsetY: 0,
   jumpPower: 11,
   spStun: 375,
+  distance: 40,
   shot: {
     color: "black",
     speed: 7,
@@ -1852,6 +1864,7 @@ mokou: {
   spOffsetY: 0,
   jumpPower: 12,
   spStun: 375,
+  distance: 100,
   shot: {
     color: "red",
     speed: 13,
@@ -1894,7 +1907,7 @@ const dy = Math.abs(self.y - enemy.y);
 self.isAttacking = true;
 
   if(!enemy.guarding){hitboxes.push(new Hitbox(self, 0, 0, 200, 500, 120, 4.5, spImg131, 300, 750, 1, 90))}
-  else{hitboxes.push(new Hitbox(self, 0, 0, 200, 1000, 120, 1, spImg131, 300, 750, 1, 90))}
+  else{hitboxes.push(new Hitbox(self, 0, 0, 200, 500, 120, 1, spImg131, 300, 750, 1, 90))}
 
   
  
@@ -1918,6 +1931,7 @@ yuyuko: {
   spOffsetY: 0,
   jumpPower: 12,
   spStun: 375,
+  distance: 100,
   shot: {
     color: "mediumvioletred",
     speed: 13,
@@ -1981,6 +1995,7 @@ wakka: {
   spOffsetY: 0,
   jumpPower: 9,
   spStun: 375,
+  distance: 120,
   shot: {
     image: hitImg151,
     speed: 13,
@@ -2069,6 +2084,7 @@ arisu: {
   spOffsetY: 0,
   jumpPower: 9,
   spStun: 375,
+  distance: 100,
   shot: {
     color: "yellow",
     speed: 13,
@@ -2088,14 +2104,14 @@ arisu: {
   (self.direction === 1 && enemy.x > self.x) ||
   (self.direction === -1 && enemy.x < self.x);
 
-  if (dx < 50 && dy < 50 && isFront) {
+  if (dx < 100 && dy < 50 && isFront) {
     self.isAttacking = true;
     cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 15}
     else{enemy.damage += 5}
     applyKnockback(enemy, self.x, 7, 45);
   } 
-    const effectX = self.x + self.direction * 50;
+    const effectX = self.x + self.direction * 80;
     const effectY = self.y + self.direction * 0;
     effects.push(
   new Effect(effectX, effectY, hitImg16, self.direction, 200, 200)
@@ -2141,6 +2157,7 @@ merumetaru: {
   jumpPower: 10,
   spStun: 375,
   drawOffset: 35,
+  distance: 20,
   shot: {
     color: null,
     speed: 0,
@@ -2272,6 +2289,7 @@ this.hitHeight = char.hitHeight;
 this.hitOffsetX = char.hitOffsetX || 0;
 this.hitOffsetY = char.hitOffsetY || 0;
 this.drawOffset = char.drawOffset || 0;
+this.distance = char.distance;
 
   }
 
@@ -3213,7 +3231,7 @@ const dy = enemy.y - cpu.y;
 const dist = Math.abs(dx);
 cpu.direction = dx > 0 ? 1 : -1;
 
-if (dist > 100 && cpu.stun <= 0 && !cpu.guarding) {
+if (dist > cpu.distance && cpu.stun <= 0 && !cpu.guarding) {
   cpu.vx = dx > 0 ? cpu.speed : -cpu.speed;
 }
 
@@ -3233,7 +3251,7 @@ if (cpu.onGround && Math.random() < 0.02 && !cpu.guarding && cpu.stun <= 0) {
 
 
 
-if (dist < 80 && Math.random() < 0.2 && cpu.stun <= 0 && !cpu.guarding) {
+if (dist < cpu.distance && Math.random() < 0.2 && cpu.stun <= 0 && !cpu.guarding) {
   cpu.attack(cpu, enemy);
 }
 
