@@ -2013,8 +2013,9 @@ wakka: {
   const isFront =
   (self.direction === 1 && enemy.x > self.x) ||
   (self.direction === -1 && enemy.x < self.x);
-self.y -= 100;
+
   if (dx < 150 && dy < 200 && isFront && bgColor !== spImg151 && self.onGround) {
+    self.y -= 100;
     self.isAttacking = true;
     cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 15}
@@ -2026,6 +2027,7 @@ self.y -= 100;
 );
   }
   if(dx < 200 && dy < 400 && isFront && bgColor === spImg151 && self.onGround){
+    self.y -= 100;
     self.isAttacking = true;
     cancelAttack(enemy);
     if(!enemy.guarding){enemy.damage += 30}
@@ -2094,7 +2096,11 @@ arisu: {
     angle: 30
   },
   at: (self,enemy) =>{
-   reflectProjectiles(self);
+    reflectObjects(self, p1.projectiles);
+reflectObjects(self, p2.projectiles);
+
+reflectObjects(self, p1.orbs);
+reflectObjects(self, p2.orbs);
    
 
   if (!self || !enemy) return;
@@ -2704,6 +2710,7 @@ ctx.restore();
   class Orb {
   constructor(player, angle, Damage, image=null) {
     this.player = player;
+    this.owner = player;
     this.angle = angle;
     this.radius = 60;
 
@@ -2758,6 +2765,7 @@ else{
     ctx.fill();
 }
     
+if(enemy === this.owner) return;
     const dx = Math.abs(this.x - enemy.x);
     const dy = Math.abs(this.y - enemy.y);
 
@@ -2787,6 +2795,7 @@ else{
     this.vy = (dy / dist) * this.speed;
   }
 }
+
 class Projectile{
 constructor(x, y, dir, data, owner) {
 
@@ -2831,33 +2840,77 @@ else{
     }
   }
 
-  function reflectProjectiles(player){
+  function reflectObjects(player, list) {
 
-const enemy =
-    player === p1 ? p2 : p1;
+const range = 80;
 
-enemy.projectiles.forEach((p,i)=>{
+// 後で配列を変更するので逆順ループ
+for (let i = list.length - 1; i >= 0; i--) {
 
-    if(!p.active) return;
+    const obj = list[i];
 
-    const dx=Math.abs(p.x-player.x);
-    const dy=Math.abs(p.y-player.y);
+    if (!obj.active) continue;
 
-    if(dx<80 && dy<80){
+    // 自分のものは反射しない
+    if (obj.owner === player) continue;
 
-        p.owner=player;
-        p.vx=player.direction*Math.abs(p.vx);
+    const dx = Math.abs(obj.x - player.x);
+    const dy = Math.abs(obj.y - player.y);
 
-        p.x=player.x+player.direction*40;
-        p.y=player.y - 5;
+    if (dx < range && dy < range) {
 
-        //←ここ重要
-        player.projectiles.push(p);
-        enemy.projectiles.splice(i,1);
+        //==============================
+        // 所有者変更
+        //==============================
+        obj.owner = player;
+
+        // Orbならplayerも変更
+        if ("player" in obj) {
+            obj.player = player;
+        }
+
+        // Orbが待機中なら撃ち出す
+        if ("state" in obj && obj.state === "orbit") {
+            obj.state = "shoot";
+        }
+
+        //==============================
+        // 飛ぶ方向
+        //==============================
+        const speed =
+            obj.speed ?? Math.abs(obj.vx);
+
+        obj.vx = player.direction * speed;
+
+        if ("vy" in obj) {
+            obj.vy = 0;
+        }
+
+        //==============================
+        // 剣先へ移動
+        //==============================
+        obj.x =
+            player.x +
+            player.direction * 40;
+
+        obj.y =
+            player.y;
+
+        //==============================
+        // 配列を移す
+        //==============================
+
+        list.splice(i, 1);
+
+        if (obj instanceof Projectile) {
+            player.projectiles.push(obj);
+        }
+        else if (obj instanceof Orb) {
+            player.orbs.push(obj);
+        }
+
     }
-
-});
-
+}
 }
 function projectileHit(list,target){
 
