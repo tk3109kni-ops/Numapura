@@ -297,6 +297,7 @@ button {
     <img src="wakka.png" onclick="selectCharacter('p1','wakka')">
     <img src="arisu.png" onclick="selectCharacter('p1','arisu')">
     <img src="merumetaru.png" onclick="selectCharacter('p1','merumetaru')">
+    <img src="yukari.png" onclick="selectCharacter('p1','yukari')">
     
     <h2 id="p2Title">P2選択</h2>
     <div id="p2Select">
@@ -317,6 +318,7 @@ button {
       <img src="wakka.png" onclick="selectCharacter('p2','wakka')">
       <img src="arisu.png" onclick="selectCharacter('p2','arisu')">
       <img src="merumetaru.png" onclick="selectCharacter('p2','merumetaru')">
+      <img src="yukari.png" onclick="selectCharacter('p2','yukari')">
     </div>
     </div>
 
@@ -429,6 +431,9 @@ z-index:10;
 <img src="hit17.1.png" id="hitEffect171" style="display: none;">
 <img src="hit17.2.png" id="hitEffect172" style="display: none;">
 <img src="special17.png" id="spEffect17" style="display: none;">
+<img src="yukari.png" id="player18" style="display: none;">
+<img src="hit18.png" id="hitEffect18" style="display: none;">
+<img src="special18.png" id="spEffect18" style="display: none;">
 <audio src="otowakka.mp3" id="wakkaMusic" style="display: none;" preload="auto"></audio>
 <audio src="norainutonoranekonokousou.mp3" id="remiriaMusic" style="display: none;" preload="auto"></audio>
 <img src="poisonCloud.png" id="poisonCloud" style="display: none;">
@@ -521,6 +526,7 @@ canvas.height = 1000;
   const img15 = document.getElementById('player15');
   const img16 = document.getElementById('player16');
   const img17 = document.getElementById('player17');
+  const img18 = document.getElementById('player18');
   const hitImg = document.getElementById('hitEffect');
   const hitImg2 = document.getElementById('hitEffect2');
   const hitImg3 = document.getElementById('hitEffect3');
@@ -541,6 +547,7 @@ canvas.height = 1000;
   const hitImg16 = document.getElementById('hitEffect16');
   const hitImg171 = document.getElementById('hitEffect171');
   const hitImg172 = document.getElementById('hitEffect172');
+  const hitImg18 = document.getElementById('hitEffect18');
   const spImg1 = document.getElementById('spEffect1');
   const spImg2 = document.getElementById('spEffect2');
   const spImg3 = document.getElementById('spEffect3');
@@ -567,6 +574,7 @@ canvas.height = 1000;
   const spImg152 = document.getElementById('spEffect152');
   const spImg16 = document.getElementById('spEffect16');
   const spImg17 = document.getElementById('spEffect17');
+  const spImg18 = document.getElementById('spEffect18');
   const stunImg = document.getElementById('stunEffect');
   const koImg = document.getElementById('koEffect');
   const wakkaMusic = document.getElementById('wakkaMusic');
@@ -2234,6 +2242,79 @@ if(dx < 20 && dy < 20){
   }
   
 }
+  }
+  },
+yukari: {
+  image: img18,
+  drawWidth: 50,
+    drawHeight: 50,
+
+    hitWidth: 50,
+    hitHeight: 50,
+
+    hitOffsetX: 0,
+    hitOffsetY: 0,
+  maxJumps: 5,
+  speed: 7,
+  spOffsetX: 0,
+  spOffsetY: 0,
+  jumpPower: 12,
+  spStun: 375,
+  distance: 100,
+  shot: {
+    color: "mediumvioletred",
+    speed: 13,
+    size: 10,
+    damage: 7,
+    knockback: 3,
+    angle: 30
+  },
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+  let three = Math.floor(Math.random()*3) + 1;
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+
+  
+  if (dx < 150 && dy < 150 && isFront) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
+    if(!enemy.guarding){enemy.damage += 15}
+    else{enemy.damage += 5}
+
+    if(three === 1){
+      enemy.x += 200
+    }
+    else if(three === 2){
+      enemy.x -= 200
+    }
+    else{
+      enemy.y -= 200
+    }
+    effects.push(
+  new Effect(enemy.x, enemy.y, hitImg18, self.direction, 200, 120)
+);
+  }
+  
+},
+
+  sp: (self, enemy) => {
+self.stun = 300;
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+self.isAttacking = true;
+if(dx < 300 && dy < 300){
+  enemy.x = self.x + self.direction * 200;
+  enemy.y = self.y;
+}
+  if(!enemy.guarding){hitboxes.push(new Hitbox(self, 200, 0, 600, 600, 20, 15, spImg18, 600, 600, 2, 45))}
+  else{hitboxes.push(new Hitbox(self, 200, 0, 600, 600, 20, 5, spImg18, 600, 600, 2, 45))}
+
+
   }
   }
   }
