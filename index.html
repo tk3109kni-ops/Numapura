@@ -298,6 +298,7 @@ button {
     <img src="arisu.png" onclick="selectCharacter('p1','arisu')">
     <img src="merumetaru.png" onclick="selectCharacter('p1','merumetaru')">
     <img src="yukari.png" onclick="selectCharacter('p1','yukari')">
+    <img src="kokoro.png" onclick="selectCharacter('p1','kokoro')">
     
     <h2 id="p2Title">P2選択</h2>
     <div id="p2Select">
@@ -319,6 +320,7 @@ button {
       <img src="arisu.png" onclick="selectCharacter('p2','arisu')">
       <img src="merumetaru.png" onclick="selectCharacter('p2','merumetaru')">
       <img src="yukari.png" onclick="selectCharacter('p2','yukari')">
+      <img src="kokoro.png" onclick="selectCharacter('p2','kokoro')">
     </div>
     </div>
 
@@ -434,6 +436,15 @@ z-index:10;
 <img src="yukari.png" id="player18" style="display: none;">
 <img src="hit18.png" id="hitEffect18" style="display: none;">
 <img src="special18.png" id="spEffect18" style="display: none;">
+<img src="kokoro.png" id="player19" style="display: none;">
+<img src="hit19.1.png" id="hitEffect191" style="display: none;">
+<img src="hit19.2.png" id="hitEffect192" style="display: none;">
+<img src="hit19.3.png" id="hitEffect193" style="display: none;">
+<img src="hit19.0.png" id="hitEffect190" style="display: none;">
+<img src="special19.1.jpg" id="spEffect191" style="display: none;">
+<img src="special19.2.jpg" id="spEffect192" style="display: none;">
+<img src="special19.3.png" id="spEffect193" style="display: none;">
+<img src="special19.4.png" id="spEffect194" style="display: none;">
 <audio src="otowakka.mp3" id="wakkaMusic" style="display: none;" preload="auto"></audio>
 <audio src="norainutonoranekonokousou.mp3" id="remiriaMusic" style="display: none;" preload="auto"></audio>
 <img src="poisonCloud.png" id="poisonCloud" style="display: none;">
@@ -527,6 +538,7 @@ canvas.height = 1000;
   const img16 = document.getElementById('player16');
   const img17 = document.getElementById('player17');
   const img18 = document.getElementById('player18');
+  const img19 = document.getElementById('player19');
   const hitImg = document.getElementById('hitEffect');
   const hitImg2 = document.getElementById('hitEffect2');
   const hitImg3 = document.getElementById('hitEffect3');
@@ -548,6 +560,10 @@ canvas.height = 1000;
   const hitImg171 = document.getElementById('hitEffect171');
   const hitImg172 = document.getElementById('hitEffect172');
   const hitImg18 = document.getElementById('hitEffect18');
+  const hitImg191 = document.getElementById('hitEffect191');
+  const hitImg192 = document.getElementById('hitEffect192');
+  const hitImg193 = document.getElementById('hitEffect193');
+  const hitImg190 = document.getElementById('hitEffect190');
   const spImg1 = document.getElementById('spEffect1');
   const spImg2 = document.getElementById('spEffect2');
   const spImg3 = document.getElementById('spEffect3');
@@ -575,6 +591,10 @@ canvas.height = 1000;
   const spImg16 = document.getElementById('spEffect16');
   const spImg17 = document.getElementById('spEffect17');
   const spImg18 = document.getElementById('spEffect18');
+  const spImg191 = document.getElementById('spEffect191');
+  const spImg192 = document.getElementById('spEffect192');
+  const spImg193 = document.getElementById('spEffect193');
+  const spImg194 = document.getElementById('spEffect194');
   const stunImg = document.getElementById('stunEffect');
   const koImg = document.getElementById('koEffect');
   const wakkaMusic = document.getElementById('wakkaMusic');
@@ -2266,7 +2286,7 @@ yukari: {
     speed: 13,
     size: 10,
     damage: 7,
-    knockback: 3,
+    knockback: 8,
     angle: 30
   },
   at: (self,enemy) =>{
@@ -2315,6 +2335,139 @@ if(dx < 300 && dy < 300){
   else{hitboxes.push(new Hitbox(self, 200, 0, 600, 600, 20, 5, spImg18, 600, 600, 2, 45))}
 
 
+  }
+  },
+kokoro: {
+  image: img19,
+  drawWidth: 50,
+    drawHeight: 50,
+
+    hitWidth: 50,
+    hitHeight: 50,
+
+    hitOffsetX: 0,
+    hitOffsetY: 0,
+  maxJumps: 4,
+  speed: 3,
+  spOffsetX: 0,
+  spOffsetY: 0,
+  jumpPower: 8,
+  spStun: 375,
+  distance: 100,
+  shot: {
+    color: "black",
+    speed: 10,
+    size: 6,
+    damage: 9,
+    knockback: 5,
+    angle: 30
+  },
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+  if(dx < 40 && dy < 20 && isFront && self.omen === 0){
+    self.isAttacking = true;
+    cancelAttack(enemy);
+    enemy.damage += 1;
+    applyKnockback(enemy, self.x, 1, 45)
+    effects.push(
+  new Effect(self.x + self.direction*30, self.y, hitImg190, self.direction, 80, 80)
+);
+  }
+
+  if (dx < 150 && dy < 20 && isFront && self.omen === 1) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
+    if(!enemy.guarding){enemy.damage += 15}
+    else{enemy.damage += 5}
+
+    applyKnockback(enemy, self.x, 9, 45); 
+    effects.push(
+  new Effect(self.x + self.direction*80, self.y, hitImg191, self.direction, 200, 120)
+);
+  }
+  if (dx < 100 && dy < 100 && self.omen === 2) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
+    if(!enemy.guarding){enemy.damage += 30}
+    else{enemy.damage += 10}
+
+    applyKnockback(enemy, self.x, 3, 45); 
+    effects.push(
+  new Effect(enemy.x, enemy.y, hitImg192, self.direction, 300, 300)
+);
+  }
+  if (dx < 200 && dy < 100 && isFront && self.omen === 3) { 
+    self.isAttacking = true;
+    cancelAttack(enemy);
+    self.isWarping = true;
+
+      const dir = enemy.x > self.x ? -1 : 1;
+
+      
+      const warpX = enemy.x + dir * 50;
+      const warpY = enemy.y;
+
+      
+      self.x = warpX;
+      self.y = warpY;
+    if(!enemy.guarding){enemy.damage += 3}
+    else{enemy.damage += 1}
+
+    applyKnockback(enemy, self.x, 10, 270); 
+    self.vx = -dir * 8;
+      self.vy = -2;
+
+      setTimeout(() => {
+        self.isWarping = false;
+      }, 200);
+    effects.push(
+  new Effect(enemy.x, enemy.y, hitImg193, self.direction, 300, 300)
+);
+  }
+  
+},
+
+  sp: (self, enemy) => {
+    let three = Math.floor(Math.random()*3) + 1;
+    if(self.damage < 250 && enemy.damage < 250){
+    if(three === 1){
+      self.omen = 1;
+      effects.push(
+  new Effect(self.x, self.y, spImg191, self.direction, 50, 50)
+    );
+    }
+    else if(three === 2){
+      self.omen = 2;
+      effects.push(
+  new Effect(self.x, self.y, spImg192, self.direction, 50, 50)
+    );
+    }
+    else{
+      self.omen = 3;
+      effects.push(
+        new Effect(self.x, self.y, spImg193, self.direction, 50, 50)
+      );
+    }
+  }
+  else{
+    self.isAttacking = true;
+    cancelAttack(enemy);
+    const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  if(dx < 500 && dy < 500){
+    if(!enemy.guarding){enemy.damage += 77}
+    else{enemy.damage += 33}
+    applyKnockback(enemy, self.x, 9, 66);
+  }
+  effects.push(
+        new Effect(self.x, self.y, spImg194, self.direction, 600, 600)
+      );
+  }
   }
   }
   }
@@ -2368,6 +2521,7 @@ if(dx < 300 && dy < 300){
     this.hukkatsu = false;
     this.isAttacking = false;
     this.drawWidth = char.drawWidth;
+    this.omen = 0;
 this.drawHeight = char.drawHeight;
 
 this.hitWidth = char.hitWidth;
@@ -3415,7 +3569,7 @@ else if (cpu.damage > 50 && Math.random() < 0.01 && cpu.stun <= 0) {
 }
 
 
-if (cpu.y > stage.y + 100 && cpu.jumpCount < cpu.maxJumps) {
+if (cpu.y > stage.y + 1 && cpu.jumpCount < cpu.maxJumps) {
   cpu.vy = -cpu.jumpPower;
   cpu.jumpCount++;
 }
