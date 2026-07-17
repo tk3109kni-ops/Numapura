@@ -2631,7 +2631,8 @@ this.hitOffsetX = char.hitOffsetX || 0;
 this.hitOffsetY = char.hitOffsetY || 0;
 this.drawOffset = char.drawOffset || 0;
 this.distance = char.distance;
-
+this.aiState = "normal";
+this.aiTarget = null;
   }
 
   reset() {
@@ -3718,6 +3719,82 @@ if (cpu.y > stage.y + 1 && cpu.jumpCount < cpu.maxJumps) {
   cpu.jumpCount++;
 }
 cpu.vx = Math.max(-cpu.speed, Math.min(cpu.speed, cpu.vx));
+
+let danger = null;
+
+for(const h of hitboxes){
+
+    if(h.owner === cpu) continue;
+
+    const hx =
+        h.owner.x +
+        h.owner.width/2 +
+        h.owner.direction*h.offsetX;
+
+    const hy =
+        h.owner.y +
+        h.owner.height/2 +
+        h.offsetY;
+
+    if(
+        Math.abs(cpu.x-hx) < h.width/2+30 &&
+        Math.abs(cpu.y-hy) < h.height/2+40
+    ){
+
+        danger = h;
+        break;
+
+    }
+
+}
+if(danger && cpu.aiState=="normal"){
+
+cpu.aiState="circle";
+
+cpu.aiTarget={
+    x:
+    danger.owner.x
+    -danger.owner.direction*120,
+
+    y:
+    danger.owner.y
+};
+
+}
+if(cpu.aiState=="circle"){
+
+const tx=cpu.aiTarget.x;
+
+if(cpu.x<tx){
+
+    cpu.vx=cpu.speed;
+
+}else{
+
+    cpu.vx=-cpu.speed;
+
+}
+
+cpu.direction=
+    cpu.vx>0?1:-1;
+
+// Hitboxを飛び越える
+if(cpu.onGround){
+
+    cpu.vy=-cpu.jumpPower;
+    cpu.jumpCount++;
+
+}
+
+// 到着
+if(Math.abs(cpu.x-tx)<20){
+
+    cpu.aiState="normal";
+
+}
+
+return;
+}
 }
 
   function gameLoop() {
