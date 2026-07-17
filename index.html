@@ -299,6 +299,7 @@ button {
     <img src="merumetaru.png" onclick="selectCharacter('p1','merumetaru')">
     <img src="yukari.png" onclick="selectCharacter('p1','yukari')">
     <img src="kokoro.png" onclick="selectCharacter('p1','kokoro')">
+    <img src="reisen.png" onclick="selectCharacter('p1','reisen')">
     
     <h2 id="p2Title">P2選択</h2>
     <div id="p2Select">
@@ -321,6 +322,7 @@ button {
       <img src="merumetaru.png" onclick="selectCharacter('p2','merumetaru')">
       <img src="yukari.png" onclick="selectCharacter('p2','yukari')">
       <img src="kokoro.png" onclick="selectCharacter('p2','kokoro')">
+      <img src="reisen.png" onclick="selectCharacter('p2','reisen')">
     </div>
     </div>
 
@@ -445,6 +447,9 @@ z-index:10;
 <img src="special19.2.jpg" id="spEffect192" style="display: none;">
 <img src="special19.3.png" id="spEffect193" style="display: none;">
 <img src="special19.4.png" id="spEffect194" style="display: none;">
+<img src="reisen.png" id="player20" style="display: none;">
+<img src="hit20.png" id="hitEffect20" style="display: none;">
+<img src="special20.png" id="spEffect20" style="display: none;">
 <audio src="otowakka.mp3" id="wakkaMusic" style="display: none;" preload="auto"></audio>
 <audio src="norainutonoranekonokousou.mp3" id="remiriaMusic" style="display: none;" preload="auto"></audio>
 <img src="poisonCloud.png" id="poisonCloud" style="display: none;">
@@ -539,6 +544,7 @@ canvas.height = 1000;
   const img17 = document.getElementById('player17');
   const img18 = document.getElementById('player18');
   const img19 = document.getElementById('player19');
+  const img20 = document.getElementById('player20');
   const hitImg = document.getElementById('hitEffect');
   const hitImg2 = document.getElementById('hitEffect2');
   const hitImg3 = document.getElementById('hitEffect3');
@@ -564,6 +570,7 @@ canvas.height = 1000;
   const hitImg192 = document.getElementById('hitEffect192');
   const hitImg193 = document.getElementById('hitEffect193');
   const hitImg190 = document.getElementById('hitEffect190');
+  const hitImg20 = document.getElementById('hitEffect20');
   const spImg1 = document.getElementById('spEffect1');
   const spImg2 = document.getElementById('spEffect2');
   const spImg3 = document.getElementById('spEffect3');
@@ -595,6 +602,7 @@ canvas.height = 1000;
   const spImg192 = document.getElementById('spEffect192');
   const spImg193 = document.getElementById('spEffect193');
   const spImg194 = document.getElementById('spEffect194');
+  const spImg20 = document.getElementById('spEffect20');
   const stunImg = document.getElementById('stunEffect');
   const koImg = document.getElementById('koEffect');
   const wakkaMusic = document.getElementById('wakkaMusic');
@@ -2348,7 +2356,7 @@ kokoro: {
     hitOffsetX: 0,
     hitOffsetY: 0,
   maxJumps: 4,
-  speed: 3,
+  speed: 11,
   spOffsetX: 0,
   spOffsetY: 0,
   jumpPower: 8,
@@ -2469,6 +2477,84 @@ kokoro: {
       );
   }
   }
+  },
+reisen: {
+  image: img20,
+  drawWidth: 50,
+    drawHeight: 50,
+
+    hitWidth: 50,
+    hitHeight: 50,
+
+    hitOffsetX: 0,
+    hitOffsetY: 0,
+  maxJumps: 2,
+  speed: 10,
+  spOffsetX: 0,
+  spOffsetY: 0,
+  jumpPower: 20,
+  spStun: 375,
+  distance: 100,
+  shot: {
+    color: "red",
+    speed: 13,
+    size: 10,
+    damage: 10,
+    knockback: 10,
+    angle: 30
+  },
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+
+
+  if (dx < 100 && dy < 50 && isFront) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
+    if(!enemy.guarding){enemy.damage += 10}
+    else{enemy.damage += 5}
+
+    applyKnockback(enemy, self.x, 9, 45); 
+  }
+    const effectX = self.x + self.direction * 100;
+    const effectY = self.y + Math.abs(self.direction * 20);
+
+effects.push(
+  new Effect(effectX, effectY, hitImg20, self.direction, 100, 100)
+);
+  
+},
+
+  sp: (self, enemy) => {
+self.stun = 375;
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+self.isAttacking = true;
+if(dx < 500 && dy < 200 && isFront){
+self.redEyesTimer = 100;
+enemy.weekSpeed = enemy.speed * 0.9;
+enemy.weekJump = enemy.jumpPower * 0.9;
+enemy.speed = enemy.weekSpeed;
+enemy.jumpPower = enemy.weekJump;
+}
+
+
+  if(!enemy.guarding){hitboxes.push(new Hitbox(self, 100, 0, 500, 200, 120, 4.5, spImg20, 500, 200, 5, 20))}
+  else{hitboxes.push(new Hitbox(self, 100, 0, 500, 200, 120, 1, spImg20, 500, 200, 1, 20))}
+
+  
+ 
+
+
+}
   }
   }
 
@@ -2522,6 +2608,10 @@ kokoro: {
     this.isAttacking = false;
     this.drawWidth = char.drawWidth;
     this.omen = 0;
+    this.redEyes = false;
+    this.redEyesTimer = char.redEyesTimer;
+    this.weekSpeed = char.weekSpeed;
+    this.weekJump = char.weekJump;
 this.drawHeight = char.drawHeight;
 
 this.hitWidth = char.hitWidth;
@@ -2563,6 +2653,17 @@ this.distance = char.distance;
     this.maxJumps = this.baseMaxJumps
   }
 }
+if(this.redEyesTimer > 0){
+  this.redEyes = true;
+  this.redEyesTimer--;
+}
+
+if(this.redEyesTimer <= 0){
+  this.redEyes = false;
+  this.weekSpeed = enemy.speed;
+  this.weekJump = enemy.jumpPower;
+}
+
 if(this.stock === 1 && this.hukkatsu === true){
   this.stock++;
   this.hukkatsu = false;
