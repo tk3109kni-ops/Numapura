@@ -165,6 +165,7 @@ button {
 <div id="oneortwo" style="display: none">
 <button onclick="startSingle()">1人プレイ</button>
 <button onclick="startMulti()">2人プレイ</button>
+<button onclick="startWatch()">観戦モード</button>
 </div>
 <div id="helpScreen" style="display:none;">
   <h1>操作方法</h1>
@@ -671,9 +672,11 @@ if (gameMode === "single") {
   return;
 }
 
-if(gameMode === "multi"){
+if(gameMode === "multi" || gameMode === "watch"){
 if (p1Choice && p2Choice) {
   startGame();
+
+
 }}
 }
 
@@ -704,6 +707,14 @@ function startSingle() {
 function startMulti() {
   resetSelections();
   gameMode = "multi";
+  gameState = "select";
+  document.getElementById("selectUI").style.display = "block";
+  document.getElementById('oneortwo').style.display = "none";
+  updateSelectUI();
+}
+function startWatch(){
+  resetSelections();
+  gameMode = "watch";
   gameState = "select";
   document.getElementById("selectUI").style.display = "block";
   document.getElementById('oneortwo').style.display = "none";
@@ -2093,13 +2104,12 @@ self.stun = 300;
 
 const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
-const dxy = Math.abs(Math.sqrt(dx**2 + dy**2)/20)
 self.isAttacking = true;
 
   if(!enemy.guarding){
-    {hitboxes.push(new Hitbox(self, 0, 0, 450, 450, 200, 10, spImg152, 450, 450, dxy, 45))  
+    {hitboxes.push(new Hitbox(self, 0, 0, 450, 450, 200, 10, spImg152, 450, 450, 6, 45))  
   }}
-  else{hitboxes.push(new Hitbox(self, 0, 0, 450, 450, 200, 1, spImg152, 450, 450, dxy, 45))}
+  else{hitboxes.push(new Hitbox(self, 0, 0, 450, 450, 200, 1, spImg152, 450, 450, 6, 45))}
 
   
 
@@ -3341,25 +3351,34 @@ list.forEach(p=>{
   
     if (!p1 || !p2) return;
   
-   
-    if (e.key === "f" && p1.stun <= 0 && !p1.guarding || e.key === "F" && p1.stun <= 0 && !p1.guarding) {p1.attack(p1, p2);};
+   if(!p1.isCPU){
+    if (e.key === "f" && p1.stun <= 0 && !p1.guarding || e.key === "F" && p1.stun <= 0 && !p1.guarding) {p1.attack(p1, p2);};}
+    if(!p2.isCPU){
 if (e.key === "/" && p2.stun <= 0 && !p2.guarding) {p2.attack(p2, p1)};
-
+    }
+    if(!p1.isCPU){
 if (e.key === "g" && p1.stun <= 0 && !p1.guarding || e.key === "G" && p1.stun <= 0 && !p1.guarding) {p1.shoot();};
+    }
+    if(!p2.isCPU){
 if (e.key === "." && p2.stun <= 0 && !p2.guarding) {p2.shoot()};
+    }
   
-
+    if(!p1.isCPU){
 if (e.key === "q" && p1.stun <= 0 && !p1.guarding || e.key === "Q" && p1.stun <= 0 && !p1.guarding) {p1.spAttack(p1, p2)};
+    }
+    if(!p2.isCPU){
 if (e.key === "ArrowDown" && p2.stun <= 0 && !p2.guarding) {p2.spAttack(p2, p1)};
-
+    }
+    if(!p1.isCPU){
 if (e.key === "s" && p1.stun <= 0 || e.key === "S" && p1.stun <= 0) {
   p1.guarding = true;
 }
-
+    }
+    if(!p2.isCPU){
 if (e.key === "Enter" && p2.stun <= 0) {
   p2.guarding = true;
 }
-  
+}
   });
   
   document.addEventListener("keyup", e => {
@@ -3387,11 +3406,21 @@ const randomChar =
 
   p2 = new Player(1150, characters[randomChar], {}, true, "blue");
   p2.stock = stockValue;
-} else {
+} if(gameMode === "multi") {
   p2 = new Player(1150, characters[p2Choice], {
     left: "ArrowLeft",
     right: "ArrowRight"
   }, false, "blue");
+  p2.stock = stockValue;
+}
+if(gameMode === "watch"){
+    p1 = new Player(750, characters[p1Choice], {left:"a", right:"d"}, true, "red");
+
+    p2 = new Player(1150, characters[p2Choice], {
+    left: "ArrowLeft",
+    right: "ArrowRight"
+  }, true, "blue");
+  p1.stock = stockValue;
   p2.stock = stockValue;
 }
 document.getElementById("selectUI").style.display = "none";
@@ -3415,8 +3444,12 @@ document.getElementById("p2Controls")
 }
 if(gameMode === "multi"){
   document.getElementById("p2Controls").style.display = "block";
-}else{
+}
+if(gameMode === "single"){
   document.getElementById("p2Controls").style.display = "none";
+}
+if(gameMode === "watch"){
+  document.getElementById('mobileControls').style.display= "none";
 }
   gameState = "game";
   
@@ -3641,7 +3674,10 @@ if (cpu.onGround && Math.random() < 0.02 && !cpu.guarding && cpu.stun <= 0) {
   cpu.vy = -cpu.jumpPower;
   cpu.jumpCount++;
 }
-
+if (cpu.onGround && dy > 50 && dx < 120 && Math.random() < 0.02 && !cpu.guarding && cpu.stun <= 0) {
+  cpu.vy = -cpu.jumpPower;
+  cpu.jumpCount++;
+}
 
 
 if (dist < cpu.distance && Math.random() < 0.2 && cpu.stun <= 0 && !cpu.guarding) {
@@ -3657,8 +3693,15 @@ if (dist < 300 && Math.random() < 0.05 && cpu.stun <= 0 && !cpu.guarding) {
 if (enemy.damage > 100 && Math.random() < 0.01 && cpu.stun <= 0 && !cpu.guarding && cpu.onGround) {
   cpu.spAttack(cpu, enemy);
 }
+if(gameMode === "single"){
 if(Math.random()<0.002 && cpu.stun <= 0 && !cpu.guarding){
   cpu.spAttack(cpu, enemy);
+}
+}
+if(gameMode === "watch"){
+if(Math.random()<0.01 && cpu.stun <= 0 && !cpu.guarding){
+  cpu.spAttack(cpu, enemy);
+}
 }
 if (cpu.guarding) {
     if (Math.random() < 0.02 || enemy.stun > 0 || enemy.guarding) {
@@ -3717,18 +3760,24 @@ if (bgTimer > 0) {
       requestAnimationFrame(gameLoop);
       return;
     }
-    if (p2.isCPU) cpuControl(p2, p1);
+    if(p1.isCPU){
+    cpuControl(p1,p2);
+}
+    if (p2.isCPU){ cpuControl(p2, p1);}
   
     if (drawWinner()) {
       requestAnimationFrame(gameLoop);
       return;
     }
-   
+    if(!p1.isCPU){
     handleInput(p1, "a", "d");
+    }
     if(!p2.isCPU){
     handleInput(p2, "ArrowLeft", "ArrowRight");
     }
+    if(!p1.isCPU){
     handleInput(p1, "A", "D");
+    }
     if(!p2.isCPU){
     handleInput(p2, "ArrowLeft", "ArrowRight");
     }
