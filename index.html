@@ -89,7 +89,12 @@ body.gameMode{
 #charSelect img{
   width: 120px;
   height: 120px;
-
+}
+#p1Select img{
+  background-color: red;
+}
+#p2Select img{
+  background-color: blue;
 }
 #charSelect img:hover{
   border: solid white;
@@ -280,7 +285,7 @@ button {
   <div id="charSelect">
 
     <h2>P1選択</h2>
-    
+    <div id="p1Select">
     <img src="reimu.png" onclick="selectCharacter('p1','reimu')">
     <img src="marisa.png" onclick="selectCharacter('p1','marisa')">
     <img src="youmu.png" onclick="selectCharacter('p1','youmu')">
@@ -301,6 +306,8 @@ button {
     <img src="yukari.png" onclick="selectCharacter('p1','yukari')">
     <img src="kokoro.png" onclick="selectCharacter('p1','kokoro')">
     <img src="reisen.png" onclick="selectCharacter('p1','reisen')">
+    <img src="eirin.png" onclick="selectCharacter('p1','eirin')">
+    </div>
     
     <h2 id="p2Title">P2選択</h2>
     <div id="p2Select">
@@ -324,6 +331,7 @@ button {
       <img src="yukari.png" onclick="selectCharacter('p2','yukari')">
       <img src="kokoro.png" onclick="selectCharacter('p2','kokoro')">
       <img src="reisen.png" onclick="selectCharacter('p2','reisen')">
+      <img src="eirin.png" onclick="selectCharacter('p2','eirin')">
     </div>
     </div>
 
@@ -451,8 +459,13 @@ z-index:10;
 <img src="reisen.png" id="player20" style="display: none;">
 <img src="hit20.png" id="hitEffect20" style="display: none;">
 <img src="special20.png" id="spEffect20" style="display: none;">
+<img src="eirin.png" id="player21" style="display: none;">
+<img src="hit21.png" id="hitEffect21" style="display: none;">
+<img src="special21.png" id="spEffect21" style="display: none;">
 <audio src="otowakka.mp3" id="wakkaMusic" style="display: none;" preload="auto"></audio>
 <audio src="norainutonoranekonokousou.mp3" id="remiriaMusic" style="display: none;" preload="auto"></audio>
+<audio src="2026-07-24-123822_zfMoojTA.mp3" id="e-rin" style="display: none;" preload="auto"></audio>
+<audio src="usagigoe.mp3" id="usagi" style="display: none;" preload="auto"></audio>
 <img src="poisonCloud.png" id="poisonCloud" style="display: none;">
 
 <div id="mobileControls" style="
@@ -546,6 +559,7 @@ canvas.height = 1000;
   const img18 = document.getElementById('player18');
   const img19 = document.getElementById('player19');
   const img20 = document.getElementById('player20');
+  const img21 = document.getElementById('player21');
   const hitImg = document.getElementById('hitEffect');
   const hitImg2 = document.getElementById('hitEffect2');
   const hitImg3 = document.getElementById('hitEffect3');
@@ -572,7 +586,8 @@ canvas.height = 1000;
   const hitImg193 = document.getElementById('hitEffect193');
   const hitImg190 = document.getElementById('hitEffect190');
   const hitImg20 = document.getElementById('hitEffect20');
-  const spImg1 = document.getElementById('spEffect1');
+  const hitImg21 = document.getElementById('hitEffect21');
+ const spImg1 = document.getElementById('spEffect1');
   const spImg2 = document.getElementById('spEffect2');
   const spImg3 = document.getElementById('spEffect3');
   const spImg32 = document.getElementById('spEffect32');
@@ -604,10 +619,13 @@ canvas.height = 1000;
   const spImg193 = document.getElementById('spEffect193');
   const spImg194 = document.getElementById('spEffect194');
   const spImg20 = document.getElementById('spEffect20');
+  const spImg21 = document.getElementById('spEffect21');
   const stunImg = document.getElementById('stunEffect');
   const koImg = document.getElementById('koEffect');
   const wakkaMusic = document.getElementById('wakkaMusic');
   const remiriaMusic = document.getElementById('remiriaMusic');
+  const usagigoe = document.getElementById('usagi');
+  const eerin = document.getElementById('e-rin');
   const haikei = document.getElementById('haikei');
   const gravity = 0.5
   
@@ -2517,6 +2535,7 @@ reisen: {
   if (!self || !enemy) return;
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
+  usagigoe.play();
   const isFront =
   (self.direction === 1 && enemy.x > self.x) ||
   (self.direction === -1 && enemy.x < self.x);
@@ -2565,6 +2584,70 @@ enemy.jumpPower = enemy.weekJump;
 
 
 }
+  },
+eirin: {
+  image: img21,
+  drawWidth: 50,
+    drawHeight: 50,
+
+    hitWidth: 50,
+    hitHeight: 50,
+
+    hitOffsetX: 0,
+    hitOffsetY: 0,
+  maxJumps: 2,
+  speed: 8,
+  spOffsetX: 0,
+  spOffsetY: 0,
+  jumpPower: 12,
+  spStun: 375,
+  distance: 100,
+  shot: {
+    color: "white",
+    speed: 30,
+    size: 10,
+    damage: 5,
+    knockback: 10,
+    angle: 30
+  },
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+
+  if (dx < 150 && dy < 20 && isFront) {
+    self.isAttacking = true;
+    cancelAttack(enemy);
+    enemy.stun += 30;
+    hitboxes.push(new Hitbox(self, 100, 0, 150, 20, 20, 2, hitImg21, 150, 20, 6, 0))
+
+
+   
+  }
+  
+},
+
+  sp: (self, enemy) => {
+self.stun = 300;
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+self.isAttacking = true;
+
+  if(!enemy.guarding){hitboxes.push(new Hitbox(self, 300, 0, 600, 200, 20, 20, spImg21, 600, 300, 6, 45))}
+  else{hitboxes.push(new Hitbox(self, 300, 0, 600, 200, 20, 10, spImg21, 600, 300, 6, 45))}
+
+if(dx < 600 && dy < 200 && isFront){
+  self.stun = 0;
+  eerin.play();
+}
+  }
   }
   }
 
@@ -2637,7 +2720,7 @@ this.aiTarget = null;
 
   reset() {
     this.x = this.spawnX;
-    this.y = 100;
+    this.y = 300;
     this.vx = 0;
     this.vy = 0;
     this.damage = 0;
@@ -3737,8 +3820,8 @@ for(const h of hitboxes){
         h.offsetY;
 
     if(
-        Math.abs(cpu.x-hx) < h.width/2+30 &&
-        Math.abs(cpu.y-hy) < h.height/2+40
+        Math.abs(cpu.x-hx) < h.width/2+50 &&
+        Math.abs(cpu.y-hy) < h.height/2+60
     ){
 
         danger = h;
