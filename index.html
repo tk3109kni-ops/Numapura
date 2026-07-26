@@ -2674,7 +2674,7 @@ burakki: {
   spOffsetY: 0,
   jumpPower: 10,
   spStun: 375,
-  distance: 100,
+  distance: 250,
   shot: {
     color: "black",
     speed: 13,
@@ -2788,7 +2788,8 @@ this.hitOffsetX = char.hitOffsetX || 0;
 this.hitOffsetY = char.hitOffsetY || 0;
 this.drawOffset = char.drawOffset || 0;
 this.distance = char.distance;
-this.aiState = "normal";
+this.aiState = "approach";
+this.aiTimer = 0;
 this.aiTarget = null;
 this.meisou = 0;
   }
@@ -3614,7 +3615,6 @@ for(let i = hitboxes.length - 1; i >= 0; i--){
         h.x = player.x + player.direction * 40;
         h.y = player.y;
 
-        console.log("FlyingHitbox reflected!");
     }
 }
 }
@@ -4015,20 +4015,29 @@ function cpuControl(cpu, enemy) {
 const dx = enemy.x - cpu.x;
 const dy = enemy.y - cpu.y;
 const dist = Math.abs(dx);
+
 cpu.direction = dx > 0 ? 1 : -1;
 
 if (dist > cpu.distance && cpu.stun <= 0 && !cpu.guarding) {
   cpu.vx = dx > 0 ? cpu.speed : -cpu.speed;
 }
 
-
+if (cpu.y > stage.y + 1 && cpu.jumpCount < cpu.maxJumps) {
+  cpu.vy = -cpu.jumpPower;
+  cpu.jumpCount++;
+  return;
+}
 if (cpu.x < stage.x + 20) {
   cpu.vx = cpu.speed;
+  return;
 }
 if (cpu.x > stage.x + stage.width - 20) {
   cpu.vx = -cpu.speed;
+  return;
 }
-
+if(enemy.state === "shoot" && Math.random() < 0.2){
+  cpu.guarding = true;
+}
 
 if (cpu.onGround && Math.random() < 0.02 && !cpu.guarding && cpu.stun <= 0) {
   cpu.vy = -cpu.jumpPower;
@@ -4106,54 +4115,70 @@ for(const h of hitboxes){
     }
 
 }
-if(danger && cpu.aiState=="normal"){
+if(cpu.aiTimer <= 0){
 
-cpu.aiState="circle";
+const r = Math.random();
 
-cpu.aiTarget={
-    x:
-    danger.owner.x
-    -danger.owner.direction*120,
+if(r < 0.45){
 
-    y:
-    danger.owner.y
-};
+    cpu.aiState = "approach";
 
-}
-if(cpu.aiState=="circle"){
+}else if(r < 0.70){
 
-const tx=cpu.aiTarget.x;
+    cpu.aiState = "retreat";
 
-if(cpu.x<tx){
+}else if(r < 0.90){
 
-    cpu.vx=cpu.speed;
+    cpu.aiState = "circle";
 
 }else{
 
-    cpu.vx=-cpu.speed;
+    cpu.aiState = "idle";
 
 }
 
-cpu.direction=
-    cpu.vx>0?1:-1;
+cpu.aiTimer = 40 + Math.random()*40;
 
-// Hitboxを飛び越える
+}
+
+cpu.aiTimer--;
+if(cpu.aiState=="approach" && cpu.stun <= 0 && !cpu.guarding){
+
+cpu.vx = dx>cpu.distance
+    ? cpu.speed
+    : -cpu.speed;
+
+}
+if(cpu.aiState=="retreat" && cpu.stun <= 0 && !cpu.guarding){
+
+cpu.vx = dx>cpu.distance
+    ? -cpu.speed
+    : cpu.speed;
+
+}
+if(cpu.aiState=="idle"){
+
+cpu.vx = 0;
+
+}
+if(cpu.aiState=="circle" && cpu.stun <= 0 && !cpu.guarding){
+
+cpu.vx = dx>0
+    ? cpu.speed
+    : -cpu.speed;
+
 if(cpu.onGround){
 
-    cpu.vy=-cpu.jumpPower;
-    cpu.jumpCount++;
+    cpu.vy = -cpu.jumpPower;
 
 }
 
-// 到着
-if(Math.abs(cpu.x-tx)<20){
 
-    cpu.aiState="normal";
 
 }
 
-return;
-}
+
+
 }
 
   function gameLoop() {
