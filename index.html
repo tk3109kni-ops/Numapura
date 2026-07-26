@@ -307,6 +307,7 @@ button {
     <img src="kokoro.png" onclick="selectCharacter('p1','kokoro')">
     <img src="reisen.png" onclick="selectCharacter('p1','reisen')">
     <img src="eirin.png" onclick="selectCharacter('p1','eirin')">
+    <img src="burakki.png" onclick="selectCharacter('p1','burakki')">
     </div>
     
     <h2 id="p2Title">P2選択</h2>
@@ -332,6 +333,7 @@ button {
       <img src="kokoro.png" onclick="selectCharacter('p2','kokoro')">
       <img src="reisen.png" onclick="selectCharacter('p2','reisen')">
       <img src="eirin.png" onclick="selectCharacter('p2','eirin')">
+      <img src="burakki.png" onclick="selectCharacter('p2','burakki')">
     </div>
     </div>
 
@@ -462,10 +464,13 @@ z-index:10;
 <img src="eirin.png" id="player21" style="display: none;">
 <img src="hit21.png" id="hitEffect21" style="display: none;">
 <img src="special21.png" id="spEffect21" style="display: none;">
+<img src="burakki.png" id="player22" style="display: none;">
+<img src="hit22.png" id="hitEffect22" style="display: none;">
 <audio src="otowakka.mp3" id="wakkaMusic" style="display: none;" preload="auto"></audio>
 <audio src="norainutonoranekonokousou.mp3" id="remiriaMusic" style="display: none;" preload="auto"></audio>
 <audio src="2026-07-24-123822_zfMoojTA.mp3" id="e-rin" style="display: none;" preload="auto"></audio>
 <audio src="usagigoe.mp3" id="usagi" style="display: none;" preload="auto"></audio>
+<img src="meisou.png" id="meisou" style="display: none;">
 <img src="poisonCloud.png" id="poisonCloud" style="display: none;">
 
 <div id="mobileControls" style="
@@ -560,6 +565,7 @@ canvas.height = 1000;
   const img19 = document.getElementById('player19');
   const img20 = document.getElementById('player20');
   const img21 = document.getElementById('player21');
+  const img22 = document.getElementById('player22');
   const hitImg = document.getElementById('hitEffect');
   const hitImg2 = document.getElementById('hitEffect2');
   const hitImg3 = document.getElementById('hitEffect3');
@@ -587,6 +593,7 @@ canvas.height = 1000;
   const hitImg190 = document.getElementById('hitEffect190');
   const hitImg20 = document.getElementById('hitEffect20');
   const hitImg21 = document.getElementById('hitEffect21');
+  const hitImg22 = document.getElementById('hitEffect22');
  const spImg1 = document.getElementById('spEffect1');
   const spImg2 = document.getElementById('spEffect2');
   const spImg3 = document.getElementById('spEffect3');
@@ -622,6 +629,7 @@ canvas.height = 1000;
   const spImg21 = document.getElementById('spEffect21');
   const stunImg = document.getElementById('stunEffect');
   const koImg = document.getElementById('koEffect');
+  const meisouImg = document.getElementById('meisou'); 
   const wakkaMusic = document.getElementById('wakkaMusic');
   const remiriaMusic = document.getElementById('remiriaMusic');
   const usagigoe = document.getElementById('usagi');
@@ -2165,7 +2173,8 @@ reflectObjects(self, p2.projectiles);
 
 reflectObjects(self, p1.orbs);
 reflectObjects(self, p2.orbs);
-   
+
+reflectFlyingHitboxes(self);
 
   if (!self || !enemy) return;
   const dx = Math.abs(self.x - enemy.x);
@@ -2648,7 +2657,72 @@ if(dx < 600 && dy < 200 && isFront){
   eerin.play();
 }
   }
-  }
+  },
+burakki: {
+  image: img22,
+  drawWidth: 50,
+    drawHeight: 50,
+
+    hitWidth: 50,
+    hitHeight: 50,
+
+    hitOffsetX: 0,
+    hitOffsetY: 0,
+  maxJumps: 3,
+  speed: 8.5,
+  spOffsetX: 0,
+  spOffsetY: 0,
+  jumpPower: 10,
+  spStun: 375,
+  distance: 100,
+  shot: {
+    color: "black",
+    speed: 13,
+    size: 10,
+    damage: 10,
+    knockback: 10,
+    angle: 30
+  },
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+  self.isAttacking = true;
+  hitboxes.push(new FlyingHitbox(self, self.x, self.y, self.direction*(10+ self.meisou*5), 0, 50 + self.meisou*25, 50+ self.meisou*25, 200, 10+self.meisou*10, hitImg22, 50 + self.meisou*25, 50 + self.meisou*25, 3 + self.meisou*2, 15))
+  self.meisou = 0;
+  
+  
+},
+
+  sp: (self, enemy) => {
+self.stun = 80;
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+self.isAttacking = true;
+self.meisou += 1
+if(dx < 200 && dy < 200 && isFront){
+  cancelAttack(enemy);
+  applyKnockback(enemy, self.x, 10, 30);
+}
+effects.push(
+  new Effect(self.x, self.y, meisouImg, self.direction, 120, 120)
+);
+
+  
+
+  
+ 
+
+
+}
+}
   }
 
   class Player {
@@ -2716,6 +2790,7 @@ this.drawOffset = char.drawOffset || 0;
 this.distance = char.distance;
 this.aiState = "normal";
 this.aiTarget = null;
+this.meisou = 0;
   }
 
   reset() {
@@ -2757,6 +2832,8 @@ if(this.redEyesTimer <= 0){
   this.weekSpeed = enemy.speed;
   this.weekJump = enemy.jumpPower;
 }
+
+
 
 if(this.stock === 1 && this.hukkatsu === true){
   this.stock++;
@@ -3048,10 +3125,22 @@ class PoisonCloud {
   }
 }
 class Hitbox {
-  constructor(owner, offsetX, offsetY, width, height, life, damage, img, imgwidth, imgheight, knockBack, angle) {
+  constructor(
+    owner,
+    offsetX,
+    offsetY,
+    width,
+    height,
+    life,
+    damage,
+    img,
+    imgwidth,
+    imgheight,
+    knockBack,
+    angle
+  ) {
     this.owner = owner;
 
-  
     this.offsetX = offsetX;
     this.offsetY = offsetY;
 
@@ -3061,7 +3150,6 @@ class Hitbox {
     this.life = life;
     this.frame = 0;
 
-   
     this.hitInterval = 6;
     this.hitTimer = 0;
 
@@ -3069,73 +3157,232 @@ class Hitbox {
     this.damage = damage;
     this.imgwidth = imgwidth;
     this.imgheight = imgheight;
+
     this.knockBack = knockBack;
-    this.angle = angle
+    this.angle = angle;
+    this.reflectable = false;
   }
 
   update(enemy) {
+
+    // 技キャンセル
     if (!this.owner.isAttacking) {
-    this.frame = this.life;
-    return;
-}
+      this.frame = this.life;
+      return;
+    }
+
     this.frame++;
 
     if (this.hitTimer > 0)
       this.hitTimer--;
 
-  
+    //======================
+    // キャラに追従
+    //======================
 
-    const x =
+    this.x =
       this.owner.x +
       this.owner.width / 2 +
       this.owner.direction * this.offsetX;
 
-    const y =
+    this.y =
       this.owner.y +
       this.owner.height / 2 +
       this.offsetY;
 
+    this.hit(enemy);
 
+    this.draw();
+  }
 
-    const dx = Math.abs(enemy.x + enemy.width / 2 - x);
-    const dy = Math.abs(enemy.y + enemy.height / 2 - y);
+  hit(enemy){
 
-    if (
-      dx < this.width / 2 &&
-      dy < this.height / 2 &&
+    const dx =
+      Math.abs(enemy.x + enemy.width/2 - this.x);
+
+    const dy =
+      Math.abs(enemy.y + enemy.height/2 - this.y);
+
+    if(
+      dx < this.width/2 &&
+      dy < this.height/2 &&
       this.hitTimer <= 0
-    ) {
-      enemy.damage += this.damage
+    ){
+
+      enemy.damage += this.damage;
+
       cancelAttack(enemy);
-    applyKnockback(enemy, this.owner.x, this.knockBack, this.angle);
-    this.hitTimer = this.hitInterval;
+
+      applyKnockback(
+        enemy,
+        this.owner.x,
+        this.knockBack,
+        this.angle
+      );
+
+      this.hitTimer = this.hitInterval;
+
     }
-    
+
+  }
+
+  draw(){
+
     ctx.save();
 
-ctx.translate(x, y);
+    ctx.translate(this.x,this.y);
 
-if (this.owner.direction === 1) {
-    ctx.scale(-1, 1);
+    if(this.owner.direction===1){
+      ctx.scale(-1,1);
+    }
+
+    ctx.drawImage(
+      this.img,
+      -this.imgwidth/2,
+      -this.imgheight/2,
+      this.imgwidth,
+      this.imgheight
+    );
+
+    ctx.restore();
+
+  }
+
+  isFinished(){
+    return this.frame>=this.life;
+  }
+}
+class FlyingHitbox {
+
+constructor(
+  owner,
+  x,
+  y,
+  vx,
+  vy,
+  width,
+  height,
+  life,
+  damage,
+  img,
+  imgwidth,
+  imgheight,
+  knockBack,
+  angle
+){
+
+  this.owner = owner;
+
+  this.x = x;
+  this.y = y;
+
+  this.vx = vx;
+  this.vy = vy;
+
+  this.width = width;
+  this.height = height;
+
+  this.life = life;
+  this.frame = 0;
+
+  this.hitInterval = 6;
+  this.hitTimer = 0;
+
+  this.img = img;
+
+  this.damage = damage;
+
+  this.imgwidth = imgwidth;
+  this.imgheight = imgheight;
+
+  this.knockBack = knockBack;
+  this.angle = angle;
+  this.reflectable = true;
+  this.active = true;
+
 }
 
-ctx.drawImage(
+update(enemy){
+
+  this.frame++;
+
+  if(this.hitTimer>0)
+    this.hitTimer--;
+
+  this.x += this.vx;
+  this.y += this.vy;
+
+  this.hit(enemy);
+
+  this.draw();
+
+}
+
+hit(enemy){
+
+  const dx =
+    Math.abs(enemy.x+enemy.width/2-this.x);
+
+  const dy =
+    Math.abs(enemy.y+enemy.height/2-this.y);
+
+  if(
+    dx < this.width/2 &&
+    dy < this.height/2 &&
+    this.hitTimer<=0
+  ){
+
+    enemy.damage += this.damage;
+
+    cancelAttack(enemy);
+
+    applyKnockback(
+      enemy,
+      this.x,
+      this.knockBack,
+      this.angle
+    );
+
+    this.hitTimer=this.hitInterval;
+
+  }
+
+}
+
+draw(){
+
+  ctx.save();
+
+  ctx.translate(this.x,this.y);
+
+  if(this.vx<0){
+    ctx.scale(-1,1);
+  }
+
+  ctx.drawImage(
     this.img,
-    -this.imgwidth / 2,
-    -this.imgheight / 2,
+    -this.imgwidth/2,
+    -this.imgheight/2,
     this.imgwidth,
     this.imgheight
-);
+  );
 
-ctx.restore();
+  ctx.restore();
 
+}
 
-    
-  }
+isFinished(){
 
-  isFinished() {
-    return this.frame >= this.life;
-  }
+  return (
+    this.frame>=this.life ||
+    this.x<-300 ||
+    this.x>canvas.width+300 ||
+    this.y<-300 ||
+    this.y>canvas.height+300
+  );
+
+}
+
 }
   class Orb {
   constructor(player, angle, Damage, image=null) {
@@ -3274,14 +3521,14 @@ else{
 
 const range = 80;
 
-// 後で配列を変更するので逆順ループ
+
 for (let i = list.length - 1; i >= 0; i--) {
 
     const obj = list[i];
 
     if (!obj.active) continue;
 
-    // 自分のものは反射しない
+ 
     if (obj.owner === player) continue;
 
     const dx = Math.abs(obj.x - player.x);
@@ -3289,24 +3536,21 @@ for (let i = list.length - 1; i >= 0; i--) {
 
     if (dx < range && dy < range) {
 
-        //==============================
-        // 所有者変更
-        //==============================
+  
         obj.owner = player;
 
-        // Orbならplayerも変更
+    
         if ("player" in obj) {
             obj.player = player;
         }
 
-        // Orbが待機中なら撃ち出す
+    
         if ("state" in obj && obj.state === "orbit") {
             obj.state = "shoot";
         }
 
-        //==============================
-        // 飛ぶ方向
-        //==============================
+
+    
         const speed =
             obj.speed ?? Math.abs(obj.vx);
 
@@ -3316,19 +3560,15 @@ for (let i = list.length - 1; i >= 0; i--) {
             obj.vy = 0;
         }
 
-        //==============================
-        // 剣先へ移動
-        //==============================
         obj.x =
             player.x +
             player.direction * 40;
 
         obj.y =
             player.y;
+            
+            
 
-        //==============================
-        // 配列を移す
-        //==============================
 
         list.splice(i, 1);
 
@@ -3339,6 +3579,42 @@ for (let i = list.length - 1; i >= 0; i--) {
             player.orbs.push(obj);
         }
 
+    }
+}
+}
+function reflectFlyingHitboxes(player){
+
+const range = 80;
+
+for(let i = hitboxes.length - 1; i >= 0; i--){
+
+    const h = hitboxes[i];
+
+
+    if(!(h instanceof FlyingHitbox)) continue;
+
+    if(!h.active) continue;
+
+    if(h.owner === player) continue;
+
+    const dx = Math.abs(h.x - player.x);
+    const dy = Math.abs(h.y - player.y);
+
+    if(dx < range && dy < range){
+
+        h.owner = player;
+
+        const speed = Math.hypot(h.vx, h.vy);
+
+        h.vx = player.direction * speed;
+        h.vy = 0;
+
+        h.angle = player.direction === 1 ? 45 : 135;
+
+        h.x = player.x + player.direction * 40;
+        h.y = player.y;
+
+        console.log("FlyingHitbox reflected!");
     }
 }
 }
