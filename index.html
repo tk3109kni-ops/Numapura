@@ -172,6 +172,19 @@ button {
 <button onclick="startMulti()">2人プレイ</button>
 <button onclick="startWatch()">観戦モード</button>
 </div>
+<div id="stageUI" style="display:none">
+
+  <h2>ステージを選択</h2>
+  
+  <button onclick="selectStage('normal')">
+  終点化
+  </button>
+  
+  <button onclick="selectStage('platform')">
+  戦場
+  </button>
+  
+  </div>
 <div id="helpScreen" style="display:none;">
   <h1>操作方法</h1>
   <p>p1: wでジャンプ、 aで左、dで右、fで近接、gで遠距離、qで必殺技、sでガード。</p>
@@ -309,6 +322,7 @@ button {
     <img src="eirin.png" onclick="selectCharacter('p1','eirin')">
     <img src="burakki.png" onclick="selectCharacter('p1','burakki')">
     <img src="nitori.png" onclick="selectCharacter('p1','nitori')">
+    <img src="kabigon.png" onclick="selectCharacter('p1','kabigon')">
     </div>
     
     <h2 id="p2Title">P2選択</h2>
@@ -336,6 +350,7 @@ button {
       <img src="eirin.png" onclick="selectCharacter('p2','eirin')">
       <img src="burakki.png" onclick="selectCharacter('p2','burakki')">
       <img src="nitori.png" onclick="selectCharacter('p2','nitori')">
+      <img src="kabigon.png" onclick="selectCharacter('p2','kabigon')">
     </div>
     </div>
 
@@ -473,12 +488,17 @@ z-index:10;
 <img src="hit232.png" id="hitEffect232" style="display: none;">
 <img src="hit233.png" id="hitEffect233" style="display: none;">
 <img src="special23.png" id="spEffect23" style="display: none;">
+<img src="kabigon.png" id="player24" style="display: none;">
+<img src="kabigonsleeping.png" id="player24a" style="display: none;">
+<img src="hit241.png" id="hitEffect241" style="display: none;">
+<img src="hit242.png" id="hitEffect242" style="display: none;">
 <audio src="otowakka.mp3" id="wakkaMusic" style="display: none;" preload="auto"></audio>
 <audio src="norainutonoranekonokousou.mp3" id="remiriaMusic" style="display: none;" preload="auto"></audio>
 <audio src="2026-07-24-123822_zfMoojTA.mp3" id="e-rin" style="display: none;" preload="auto"></audio>
 <audio src="usagigoe.mp3" id="usagi" style="display: none;" preload="auto"></audio>
 <img src="meisou.png" id="meisou" style="display: none;">
 <img src="poisonCloud.png" id="poisonCloud" style="display: none;">
+
 
 <div id="mobileControls" style="
   display:none;
@@ -574,6 +594,8 @@ canvas.height = 1000;
   const img21 = document.getElementById('player21');
   const img22 = document.getElementById('player22');
   const img23 = document.getElementById('player23');
+  const img24 = document.getElementById('player24');
+  const imgSleeping = document.getElementById('player24a');
   const hitImg = document.getElementById('hitEffect');
   const hitImg2 = document.getElementById('hitEffect2');
   const hitImg3 = document.getElementById('hitEffect3');
@@ -605,6 +627,8 @@ canvas.height = 1000;
   const hitImg231 = document.getElementById('hitEffect231');
   const hitImg232 = document.getElementById('hitEffect232');
   const hitImg233 = document.getElementById('hitEffect233');
+  const hitImg241 = document.getElementById('hitEffect241');
+  const hitImg242 = document.getElementById('hitEffect242');
   const spImg1 = document.getElementById('spEffect1');
   const spImg2 = document.getElementById('spEffect2');
   const spImg3 = document.getElementById('spEffect3');
@@ -659,6 +683,7 @@ canvas.height = 1000;
   let effects = [];
   let poisonClouds = [];
   let hitboxes = [];
+  let stageType = "normal";
   let bgMusic = null;
   let bgColor = "#87ceeb";  
   let bgActive = false;   
@@ -717,7 +742,18 @@ if (p1Choice && p2Choice) {
 
 }}
 }
+function selectStage(type){
 
+stageType = type;
+
+document.getElementById("stageUI").style.display = "none";
+document.getElementById("selectUI").style.display = "block";
+
+gameState = "select";
+
+updateSelectUI();
+
+}
 function resetSelections(){
   p1Choice = null;
   p2Choice = null;
@@ -733,30 +769,41 @@ function updateSelectUI() {
     document.getElementById("p2Select").style.display = "block";
   }
 }
-function startSingle() {
-  resetSelections();
-  gameMode = "single";
-  gameState = "select";
-  document.getElementById("selectUI").style.display = "block";
-  document.getElementById('oneortwo').style.display = "none";
-  updateSelectUI();
-}
+function startSingle(){
 
-function startMulti() {
-  resetSelections();
-  gameMode = "multi";
-  gameState = "select";
-  document.getElementById("selectUI").style.display = "block";
-  document.getElementById('oneortwo').style.display = "none";
-  updateSelectUI();
+resetSelections();
+
+gameMode = "single";
+gameState = "stage";
+
+document.getElementById("oneortwo").style.display = "none";
+document.getElementById("stageUI").style.display = "block";
+document.getElementById("selectUI").style.display = "none";
+
+}
+function startMulti(){
+
+resetSelections();
+
+gameMode = "multi";
+gameState = "stage";
+
+document.getElementById("oneortwo").style.display = "none";
+document.getElementById("stageUI").style.display = "block";
+document.getElementById("selectUI").style.display = "none";
+
 }
 function startWatch(){
-  resetSelections();
-  gameMode = "watch";
-  gameState = "select";
-  document.getElementById("selectUI").style.display = "block";
-  document.getElementById('oneortwo').style.display = "none";
-  updateSelectUI();
+
+resetSelections();
+
+gameMode = "watch";
+gameState = "stage";
+
+document.getElementById("oneortwo").style.display = "none";
+document.getElementById("stageUI").style.display = "block";
+document.getElementById("selectUI").style.display = "none";
+
 }
 function checkOrientation() {
   const isPortrait = window.innerHeight > window.innerWidth;
@@ -2782,10 +2829,10 @@ nitori:{
   shot: {
     color: "blue",
     speed: 13,
-    size: 8,
-    damage: 7,
-    knockback: 9,
-    angle: 90
+    size: 10,
+    damage: 13,
+    knockback: 4,
+    angle: 20
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -2828,6 +2875,66 @@ hitboxes.push(new FlyingHitbox(self, enemy.x, enemy.y - 350, 0, 18, 200 , 200, 2
  
 
 
+}
+
+},
+kabigon:{
+  image: img24,
+  drawWidth: 100,
+    drawHeight: 100,
+
+    hitWidth: 100,
+    hitHeight: 100,
+
+    hitOffsetX: 0,
+    hitOffsetY: 0,
+  maxJumps: 2,
+  speed: 4,
+  spOffsetX: 0,
+  spOffsetY: 0,
+  jumpPower: 13,
+  spStun: 375,
+  distance: 50,
+  shot: {
+    image: hitImg241,
+    speed: 13,
+    width: 50,
+    height: 50,
+    damage: 7,
+    knockback: 9,
+    angle: 90
+  },
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+  self.isAttacking = true;
+  if(dx < 50 && dy < 50){
+    cancelAttack(enemy);
+    if(!enemy.guarding){enemy.damage += 30}
+    else{enemy.damage += 10}
+    applyKnockback(enemy, self.x, 9, 45);
+    effects.push(new Effect(self.x + self.direction * 50, self.y, hitImg242, self.direction, 50, 50))
+  }
+  
+  
+},
+
+  sp: (self, enemy) => {
+self.stun = 200;
+self.sleeping = true;
+self.sleepingTimer = 300;
+self.sleepingImage = imgSleeping;
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+self.isAttacking = true;
+  
 }
 
 }
@@ -2900,6 +3007,9 @@ this.aiState = "approach";
 this.aiTimer = 0;
 this.aiTarget = null;
 this.meisou = 0;
+this.sleeping = false;
+this.sleepingTimer = 0;
+this.sleepingImage = null;
   }
 
   reset() {
@@ -2911,6 +3021,7 @@ this.meisou = 0;
     this.stun = false;
     this.isAttacking = false;
     this.mode = "normal";
+    this.sleepingTimer = 0;
   }
 
   update(enemy) {
@@ -2941,9 +3052,29 @@ if(this.redEyesTimer <= 0){
   this.weekSpeed = enemy.speed;
   this.weekJump = enemy.jumpPower;
 }
-
-
-
+if(this.sleeping){
+  this.image = this.sleepingImage;
+}
+if(this.sleepingTimer > 0){
+  this.sleepingTimer--;
+  this.stun = 1;
+  if(this.sleepingTimer % 60 === 0){
+    if(this.damage >= 20){this.damage -= 20}
+    else{this.damage = 0}
+    if(Math.abs(enemy.x - this.x) < 200 && Math.abs(enemy.y - this.y) < 200){
+      enemy.damage += 30;
+      applyKnockback(enemy, this.x, 7, 45);
+    }
+  }
+  
+}
+if(this.sleepingTimer <= 0){
+  this.sleeping = false;
+  this.stun = 0;
+  if(this.image === imgSleeping){
+  this.image = img24;
+  }
+}
 if(this.stock === 1 && this.hukkatsu === true){
   this.stock++;
   this.hukkatsu = false;
@@ -2957,11 +3088,12 @@ if(this.stock === 1 && this.hukkatsu === true){
     this.orbs.forEach(o => o.update(enemy));
 
     checkFloor(this, stage);
+    if(stageType==="platform"){
     platforms.forEach(p=>{
 
 checkFloor(this, p);
 
-});
+});}
     function checkFloor(player, floor){
 
 if(
@@ -4101,8 +4233,8 @@ function drawSelect() {
   function drawStage() {
     ctx.fillStyle = "#654321";
     ctx.fillRect(stage.x, stage.y, stage.width, stage.height);
+    if(stageType === "platform"){
     platforms.forEach(p=>{
-
 ctx.fillRect(
     p.x,
     p.y,
@@ -4111,6 +4243,7 @@ ctx.fillRect(
 );
 
 });
+    }
   }
   
   function drawWinner() {
