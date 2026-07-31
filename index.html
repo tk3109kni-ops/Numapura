@@ -492,9 +492,18 @@ z-index:10;
 <img src="kabigonsleeping.png" id="player24a" style="display: none;">
 <img src="hit241.png" id="hitEffect241" style="display: none;">
 <img src="hit242.png" id="hitEffect242" style="display: none;">
+<img src="ultra1.png" id="ultraEffect1" style="display: none;">
+<img src="ultrablue.png" id="ultraEffectBlue" style="display: none;">
+<img src="ultraorange.png" id="ultraEffectYellow" style="display: none;">
+<img src="ultrared.png" id="ultraEffectRed" style="display: none;">
+<img src="ultra3.png" id="ultraEffect3" style="display: none;">
+<img src="ultra4.png" id="ultraEffect4" style="display: none;">
+<img src="ultra5.png" id="ultraEffect5" style="display: none;">
+<img src="hit5ultra.png" id="hitEffect5ultra" style="display: none;">
 <audio src="otowakka.mp3" id="wakkaMusic" style="display: none;" preload="auto"></audio>
 <audio src="norainutonoranekonokousou.mp3" id="remiriaMusic" style="display: none;" preload="auto"></audio>
 <audio src="2026-07-24-123822_zfMoojTA.mp3" id="e-rin" style="display: none;" preload="auto"></audio>
+<audio src="za-warudo-toki-wo-tomare_WJVdsYt.mp3" id="zawaarudo" style="display: none;" preload="auto"></audio>
 <audio src="usagigoe.mp3" id="usagi" style="display: none;" preload="auto"></audio>
 <img src="meisou.png" id="meisou" style="display: none;">
 <img src="poisonCloud.png" id="poisonCloud" style="display: none;">
@@ -601,6 +610,7 @@ canvas.height = 1000;
   const hitImg3 = document.getElementById('hitEffect3');
   const hitImg4 = document.getElementById('hitEffect4');
   const hitImg5 = document.getElementById('hitEffect5');
+  const hitImg5ultra = document.getElementById('hitEffect5ultra');
   const hitImg6 = document.getElementById('hitEffect6');
   const hitImg7 = document.getElementById('hitEffect7');
   const hitImg8 = document.getElementById('hitEffect8');
@@ -664,10 +674,18 @@ canvas.height = 1000;
   const spImg21 = document.getElementById('spEffect21');
   const spImg23 = document.getElementById('spEffect23');
   const stunImg = document.getElementById('stunEffect');
+  const ultraImg1 = document.getElementById('ultraEffect1');
+  const redStar = document.getElementById('ultraEffectRed');
+  const blueStar = document.getElementById('ultraEffectBlue');
+  const yellowStar = document.getElementById('ultraEffectYellow');
+  const ultraImg3 = document.getElementById('ultraEffect3');
+  const ultraImg4 = document.getElementById('ultraEffect4');
+  const ultraImg5 = document.getElementById('ultraEffect5');
   const koImg = document.getElementById('koEffect');
   const meisouImg = document.getElementById('meisou'); 
   const wakkaMusic = document.getElementById('wakkaMusic');
   const remiriaMusic = document.getElementById('remiriaMusic');
+  const zawaarudo = document.getElementById('zawaarudo');
   const usagigoe = document.getElementById('usagi');
   const eerin = document.getElementById('e-rin');
   const haikei = document.getElementById('haikei');
@@ -950,6 +968,7 @@ effects.push(
   
 },
 sp: (self, enemy) => {
+  if(!self.ultraAt){
 self.stun = 300;
 
 const dx = Math.abs(self.x - enemy.x);
@@ -959,7 +978,33 @@ const powerup = 7 + self.damage / 50;
 self.isAttacking=true;
   if(!enemy.guarding){hitboxes.push(new Hitbox(self, 0, 0, 250 + self.damage/2, 250+self.damage/2, 100, 7, spImg1, 250+self.damage/2, 250+self.damage/2, 7, 45))}
   else{hitboxes.push(new Hitbox(self, 0, 0, 250 + self.damage/2, 250+self.damage/2, 100, 4, spImg1, 250+self.damage/2, 250+self.damage/2, 7, 45))}
+  }
+  else {
+
+self.stun = 400;
+
+self.isAttacking = true;
+
+cancelAttack(enemy);
+
+
+self.ultraAtGage = 0;
+
+
+self.ultraActive = true;
+self.ultraTimer = 0;
+
+
+
+finalSmashCamera(self);
+self.ultraCameraActive = true;
+
+hitboxes.push(new FlyingHitbox(self, enemy.x, enemy.y - 200, 0, 0, 300, 600, 400, 20, ultraImg1, 500, 600, 3, 90));
+
 }
+self.ultraAt = false;
+}
+
   },
 marisa: {
   image: img2,
@@ -1003,6 +1048,7 @@ marisa: {
     
     applyKnockback(enemy, self.x, 6, 60);
   }
+  console.log(self.ultraAtGage);
     const effectX = self.x + self.direction * 100;
     const effectY = self.y + Math.abs(self.direction * 20);
 
@@ -1012,20 +1058,150 @@ effects.push(
   
 },
 
-  sp: (self, enemy) => {
-self.stun = 375;
+sp: (self, enemy) => {
 
-const dx = Math.abs(self.x - enemy.x);
-const dy = Math.abs(self.y - enemy.y);
+if (!self.ultraAt) {
 
-const isFront =
-  (self.direction === 1 && enemy.x > self.x) ||
-  (self.direction === -1 && enemy.x < self.x);
-self.isAttacking=true;
-  if(!enemy.guarding){hitboxes.push(new Hitbox(self, 400, 0, 800, 80, 120, 10, spImg2, 800, 150, 8, 30))}
-  else{hitboxes.push(new Hitbox(self, 400, 0, 800, 80, 120, 4, spImg2, 800, 150, 8, 30))}
+    // =========================
+    // 通常必殺技
+    // =========================
 
+    self.stun = 375;
+
+    self.isAttacking = true;
+
+    if (!enemy.guarding) {
+        hitboxes.push(
+            new Hitbox(
+                self,
+                400, 0,
+                800, 80,
+                120,
+                10,
+                spImg2,
+                800, 150,
+                8,
+                30
+            )
+        );
+    } else {
+        hitboxes.push(
+            new Hitbox(
+                self,
+                400, 0,
+                800, 80,
+                120,
+                4,
+                spImg2,
+                800, 150,
+                8,
+                30
+            )
+        );
+    }
+
+} else {
+
+    self.isAttacking = true;
+
+    cancelAttack(enemy);
+
+
+    self.ultraAtGage = 0;
+
+
+    self.ultraActive = true;
+    self.ultraTimer = 0;
+
+    
+    self.x =
+        canvas.width / 2 -
+        self.width / 2;
+
+    self.y =
+        stage.y - 250;
+    
+
+    finalSmashCamera(self);
+    self.ultraCameraActive = true;
 }
+}, 
+ultra: (self) => {
+
+if (!self.ultraActive) return;
+
+    if (self.ultraCameraActive) {
+        return;
+    }
+
+
+if (self.ultraTimer >= 400) {
+
+    self.ultraActive = false;
+    self.ultraAt = false;
+
+    return;
+}
+
+
+self.x =
+    canvas.width / 2 -
+    self.width / 2;
+
+self.y =
+    stage.y - 250;
+    self.vx = 0;
+    self.vy = 0;
+
+
+const angle =
+    Math.random() * Math.PI * 2;
+
+const speed = 5;
+
+const vx =
+    Math.cos(angle) * speed;
+
+const vy =
+    Math.sin(angle) * speed;
+
+const ultraStars = [
+    redStar,
+    blueStar,
+    yellowStar
+];
+
+const ultraImg2 =
+    ultraStars[
+        Math.floor(
+            Math.random() *
+            ultraStars.length
+        )
+    ];
+
+hitboxes.push(
+    new FlyingHitbox(
+        self,
+        self.x + self.width / 2,
+        self.y + self.height / 2,
+        vx,
+        vy,
+        80,
+        80,
+        400,
+        10,
+        ultraImg2,
+        100,
+        100,
+        3,
+        45
+    )
+);
+
+
+
+self.ultraTimer++;
+},
 },
 youmu: {
   image: img3,
@@ -1076,6 +1252,7 @@ effects.push(
 },
 
   sp: (self, enemy) => {
+    if(!self.ultraAt){
     if (self.damage <= 400){
 
     self.stun = 100;
@@ -1142,7 +1319,57 @@ effects.push(
     effects.push(
       new Effect(effectX, effectY, spImg32, self.direction, 2000, 1600)
   )
-    }
+    }}
+    else{
+      self.stun = 400;
+
+    self.isAttacking = true;
+
+    cancelAttack(enemy);
+
+
+    self.ultraAtGage = 0;
+
+
+    self.ultraActive = true;
+    self.ultraTimer = 0;
+
+    
+
+    finalSmashCamera(self);
+    self.ultraCameraActive = true;
+
+    self.isWarping = true;
+
+      const dir = enemy.x > self.x ? -1 : 1;
+
+      
+      const warpX = enemy.x + dir * 50;
+      const warpY = enemy.y;
+
+      
+      self.x = warpX;
+      self.y = warpY;
+
+      
+    enemy.damage += 200
+ 
+      applyKnockback(enemy, self.x, 30, 30);
+
+
+      self.vx = -dir * 8;
+      self.vy = -2;
+
+      setTimeout(() => {
+        self.isWarping = false;
+      }, 200);
+    
+
+    effects.push(
+      new Effect(enemy.x, enemy.y, ultraImg3, self.direction, 800, 800)
+    );
+  }
+  self.ultraAt = false;
   }
 },
 sanae: {
@@ -1174,7 +1401,7 @@ sanae: {
   at: (self,enemy) =>{
   if (!self || !enemy) return;
   self.stun = 30;
-
+  console.log(self.x, self.y);
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
   const isFront =
@@ -1200,6 +1427,7 @@ effects.push(
 },
 
   sp: (self, enemy) => {
+    if(!self.ultraAt){
 self.stun = 375;
 
 const dx = Math.abs(self.x - enemy.x);
@@ -1229,6 +1457,32 @@ effects.push(
   new Effect(effectX, effectY, spImg4, self.direction, 400, 400)
 );
 }
+else {
+
+self.stun = 400;
+
+self.isAttacking = true;
+
+cancelAttack(enemy);
+
+
+self.ultraAtGage = 0;
+
+
+self.ultraActive = true;
+self.ultraTimer = 0;
+
+
+
+finalSmashCamera(self);
+self.ultraCameraActive = true;
+
+hitboxes.push(new FlyingHitbox(self, 1900, -300, -16, 10, 1200, 1200, 1000, 50, ultraImg4, 1200, 1200, 5, 45));
+
+}
+self.ultraAt = false;
+}
+
 },
 sakuya: {
   image: img5,
@@ -1256,9 +1510,10 @@ sakuya: {
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
+
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
-
+if(!self.theWorld){
   if (dx < 60 && dy < 60) {
     self.isAttacking = true;
     cancelAttack(enemy);
@@ -1274,10 +1529,25 @@ sakuya: {
 effects.push(
   new Effect(effectX, effectY, hitImg5, self.direction, 80, 60)
 );
-  
+}
+else{
+  console.log(self.ultraTimer);
+  if(dx < 200 && dy < 200){
+    self.isAttacking = true;
+    cancelAttack(enemy);
+    enemy.damage += 40;
+  }
+  const effectX = self.x + self.direction * 30;
+    const effectY = self.y + Math.abs(self.direction * 20);
+
+effects.push(
+  new Effect(effectX, effectY, hitImg5ultra, self.direction, 200, 200)
+);
+}
 },
 
   sp: (self, enemy) => {
+  if(!self.ultraAt){
     if (enemy.stun <= 0){
 self.damage += 40;
 
@@ -1320,8 +1590,38 @@ const effectY = enemy.y + enemy.height / 2;
 effects.push(
   new Effect(effectX, effectY, spImg52, self.direction, 200, 200)
 );
+}}
+else{
+
+self.isAttacking = true;
+zawaarudo.play();
+cancelAttack(enemy);
+self.theWorld = true;
+
+self.ultraAtGage = 0;
+self.ultraActive = true;
+self.ultraTimer = 0;
+
+
+
+finalSmashCamera(self);
+self.ultraCameraActive = true;
+
 }
+self.ultraAt = false;
+if(self.ultraTimer >= 300){
+  self.theWorld = false;
+}
+self.ultraTimer++;
 },
+ultra:(self) => {
+  if(self.ultraTimer >= 300){
+  self.theWorld = false;
+}
+
+self.ultraAt = false;
+self.ultraTimer++;
+}
 
   
 
@@ -1692,7 +1992,7 @@ const dx = Math.abs(self.x - enemy.x);
 const dy = Math.abs(self.y - enemy.y);
 
 
-if (dx < 300 && dy < 500) {
+if (dx < 300 && dy < 300) {
   self.isAttacking = true;
   cancelAttack(enemy);
   if(!enemy.guarding){enemy.damage += 85}
@@ -2897,9 +3197,9 @@ kabigon:{
   distance: 50,
   shot: {
     image: hitImg241,
-    speed: 7,
-    width: 100,
-    height: 100,
+    speed: 9,
+    width: 90,
+    height: 90,
     damage: 13,
     knockback: 7,
     angle: 20
@@ -3010,6 +3310,13 @@ this.meisou = 0;
 this.sleeping = false;
 this.sleepingTimer = 0;
 this.sleepingImage = null;
+this.ultraAt = false;
+this.ultraAtGage = 0;
+this.ultraTimer = 0;
+this.ultraActive = false;
+this.ultraCameraActive = false;
+this.ultraAction = char.ultra;
+this.theWorld = false;
   }
 
   reset() {
@@ -3042,6 +3349,18 @@ this.sleepingImage = null;
     this.maxJumps = this.baseMaxJumps
   }
 }
+if(this.theWorld){
+  enemy.stun = 1;
+  enemy.vx = 0;
+  enemy.vy = 0;
+  hitboxes.push(new Hitbox(this, -100, 0, 50, 100, 300 - this.ultraTimer, 0, ultraImg5, 75, 150, 0, 0));
+}
+if (this.ultraActive && this.ultraAction) {
+    this.ultraAction(this);
+}
+if(!this.ultraAt){
+  resetGameCamera();
+}
 if(this.redEyesTimer > 0){
   this.redEyes = true;
   this.redEyesTimer--;
@@ -3070,10 +3389,15 @@ if(this.sleepingTimer > 0){
 }
 if(this.sleepingTimer <= 0){
   this.sleeping = false;
-  this.stun = 0;
   if(this.image === imgSleeping){
   this.image = img24;
   }
+}
+if(!this.ultraAt){
+  this.ultraAtGage += (this.damage / 100) + 1;
+}
+if(this.ultraAtGage >= 3000){
+  this.ultraAt = true;
 }
 if(this.stock === 1 && this.hukkatsu === true){
   this.stock++;
@@ -4401,6 +4725,41 @@ cpu.vx = dx>0
 
 
 }
+let camera = {
+    x: canvas.width / 2,
+    y: canvas.height / 2,
+
+    scale: 1,
+    targetScale: 1,
+
+    follow: null,     
+    timer: 0
+};
+
+function finalSmashCamera(player, scale = 2, duration = 30){
+
+camera.follow = player;
+camera.targetScale = scale;
+camera.timer = duration;
+
+// カメラ演出中は攻撃しない
+player.ultraCameraActive = true;
+
+setTimeout(() => {
+
+    // カメラズーム終了
+    player.ultraCameraActive = false;
+
+    // ここから最後の切り札開始
+    player.ultraActive = true;
+    player.ultraTimer = 0;
+
+}, duration * (1000 / 30));
+}
+function resetGameCamera(){
+  camera.x = canvas.width/2;
+  camera.y = canvas.height/2;
+}
 
   function gameLoop() {
     function drawBackGround(){
@@ -4429,6 +4788,41 @@ if (bgTimer > 0) {
   }
 }
 
+if (camera.follow) {
+
+camera.x =
+    camera.follow.x +
+    camera.follow.width / 2;
+
+camera.y =
+    camera.follow.y +
+    camera.follow.height / 2;
+
+camera.timer--;
+
+if (camera.timer <= 0) {
+
+    const player = camera.follow;
+
+    camera.follow = null;
+    camera.targetScale = 1;
+
+    player.ultraCameraActive = false;
+
+    player.ultraActive = true;
+    player.ultraTimer = 0;
+}
+}
+
+camera.scale += (camera.targetScale - camera.scale) * 0.18;
+
+ctx.save();
+
+ctx.translate(canvas.width/2, canvas.height/2);
+
+ctx.scale(camera.scale, camera.scale);
+
+ctx.translate(-camera.x, -camera.y);
 
 
 
@@ -4523,8 +4917,7 @@ hitboxes.filter(h => !h.isFinished());
     projectileHit(p1.projectiles, p2);
     projectileHit(p2.projectiles, p1);
 
-   
-
+    ctx.restore();
     requestAnimationFrame(gameLoop);
   }
   window.onload = () =>{ 
