@@ -968,6 +968,7 @@ effects.push(
   
 },
 sp: (self, enemy) => {
+  if(!canUseSpecial(self)) return;
   if(!self.ultraAt){
 self.stun = 300;
 
@@ -991,7 +992,6 @@ cancelAttack(enemy);
 self.ultraAtGage = 0;
 
 
-self.ultraActive = true;
 self.ultraTimer = 0;
 
 
@@ -1059,7 +1059,7 @@ effects.push(
 },
 
 sp: (self, enemy) => {
-
+  if(!canUseSpecial(self)) return;
 if (!self.ultraAt) {
 
     // =========================
@@ -1135,7 +1135,7 @@ if (!self.ultraActive) return;
     }
 
 
-if (self.ultraTimer >= 400) {
+if (self.ultraTimer >= 280) {
 
     self.ultraActive = false;
     self.ultraAt = false;
@@ -1252,6 +1252,7 @@ effects.push(
 },
 
   sp: (self, enemy) => {
+    if(!canUseSpecial(self)) return;
     if(!self.ultraAt){
     if (self.damage <= 400){
 
@@ -1330,8 +1331,6 @@ effects.push(
 
     self.ultraAtGage = 0;
 
-
-    self.ultraActive = true;
     self.ultraTimer = 0;
 
     
@@ -1370,6 +1369,7 @@ effects.push(
     );
   }
   self.ultraAt = false;
+  self.ultraActive = false;
   }
 },
 sanae: {
@@ -1427,6 +1427,7 @@ effects.push(
 },
 
   sp: (self, enemy) => {
+    if(!canUseSpecial(self)) return;
     if(!self.ultraAt){
 self.stun = 375;
 
@@ -1468,8 +1469,6 @@ cancelAttack(enemy);
 
 self.ultraAtGage = 0;
 
-
-self.ultraActive = true;
 self.ultraTimer = 0;
 
 
@@ -1481,6 +1480,7 @@ hitboxes.push(new FlyingHitbox(self, 1900, -300, -16, 10, 1200, 1200, 1000, 50, 
 
 }
 self.ultraAt = false;
+self.ultraActive = false;
 }
 
 },
@@ -1547,6 +1547,7 @@ effects.push(
 },
 
   sp: (self, enemy) => {
+    if(!canUseSpecial(self)) return;
   if(!self.ultraAt){
     if (enemy.stun <= 0){
 self.damage += 40;
@@ -1611,6 +1612,7 @@ self.ultraCameraActive = true;
 self.ultraAt = false;
 if(self.ultraTimer >= 300){
   self.theWorld = false;
+  self.ultraActive = false;
 }
 self.ultraTimer++;
 },
@@ -3659,6 +3661,13 @@ class KOEffect {
     return this.frame > this.life;
   }
 }
+function canUseSpecial(player) {
+
+if (p1 && p1.ultraActive) return false;
+if (p2 && p2.ultraActive) return false;
+
+return true;
+}
 class PoisonCloud {
   constructor(x, y, owner) {
     this.x = x;
@@ -4676,7 +4685,7 @@ if(r < 0.45){
 
     cpu.aiState = "approach";
 
-}else if(r < 0.70){
+}else if(r < 0.70 && enemy.stun <= 0){
 
     cpu.aiState = "retreat";
 
