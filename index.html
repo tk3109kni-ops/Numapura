@@ -501,6 +501,7 @@ z-index:10;
 <img src="ultra5.png" id="ultraEffect5" style="display: none;">
 <img src="hit5ultra.png" id="hitEffect5ultra" style="display: none;">
 <img src="ultra6.png" id="ultraEffect6" style="display: none;">
+<img src="ultra7.png" id="ultraEffect7" style="display: none;">
 <audio src="otowakka.mp3" id="wakkaMusic" style="display: none;" preload="auto"></audio>
 <audio src="norainutonoranekonokousou.mp3" id="remiriaMusic" style="display: none;" preload="auto"></audio>
 <audio src="2026-07-24-123822_zfMoojTA.mp3" id="e-rin" style="display: none;" preload="auto"></audio>
@@ -683,6 +684,7 @@ canvas.height = 1000;
   const ultraImg4 = document.getElementById('ultraEffect4');
   const ultraImg5 = document.getElementById('ultraEffect5');
   const ultraImg6 = document.getElementById('ultraEffect6');
+  const ultraImg7 = document.getElementById('ultraEffect7');
   const koImg = document.getElementById('koEffect');
   const meisouImg = document.getElementById('meisou'); 
   const wakkaMusic = document.getElementById('wakkaMusic');
@@ -1611,19 +1613,14 @@ finalSmashCamera(self);
 self.ultraCameraActive = true;
 
 }
-self.ultraAt = false;
-if(self.ultraTimer >= 300){
-  self.theWorld = false;
-  self.ultraActive = false;
-}
-self.ultraTimer++;
 },
 ultra:(self) => {
   if(self.ultraTimer >= 300){
   self.theWorld = false;
+  self.ultraActive = false;
+  self.ultraAt = false;
 }
 
-self.ultraAt = false;
 self.ultraTimer++;
 }
 
@@ -1698,6 +1695,7 @@ effects.push(
 },
 
   sp: (self, enemy) => {
+    if(!canUseSpecial(self)) return;
     if(!self.ultraAt){
     if(bgColor !== spImg6){
       wakkaMusic.pause();
@@ -1781,7 +1779,7 @@ const vy =
 hitboxes.push(
     new FlyingHitbox(
         self,
-        self.x + self.width / 2,
+        self.x + self.width / 2 + self.direction* 50,
         self.y + self.height / 2,
         vx,
         vy,
@@ -1793,7 +1791,7 @@ hitboxes.push(
         100,
         100,
         5,
-        45
+        25
     ));
 
 self.ultraTimer++;
@@ -1850,6 +1848,8 @@ effects.push(
 },
 
 sp: (self, enemy) => {
+if(!canUseSpecial(self)) return;
+if(!self.ultraAt){
 if(self.damage < 200){
 if (self.orbs.length === 0) {
   for (let i = 0; i < 5 + 2 * (5 - self.stock); i++) {
@@ -1877,7 +1877,73 @@ else{
 effects.push(
   new Effect(effectX, effectY, spImg7, self.direction, 400, 400)
 );
+}}
+else{
+  self.isAttacking = true;
+
+cancelAttack(enemy);
+
+
+self.ultraAtGage = 0;
+
+
+self.ultraActive = true;
+self.ultraTimer = 0;
+
+
+finalSmashCamera(self);
+self.ultraCameraActive = true;
+
+
 }
+},
+ultra: (self) => {
+
+if(!self.ultraActive) return;
+
+if(self.ultraTimer >= 200){
+  self.ultraActive = false;
+  self.ultraAt = false;
+  self.ultraSword = false;
+  return
+}
+if(!self.ultraSword){
+
+    const centerX =
+        self.x + self.width / 2;
+
+    const centerY =
+        self.y + self.height / 2;
+
+    const sword =
+        new FlyingHitbox(
+            self,
+            centerX,
+            centerY,
+            0,
+            0,
+            200,
+            700,
+            300,
+            30,
+            ultraImg7,
+            600,
+            600,
+            10,
+            45
+        );
+    sword.rotating = true;
+
+    sword.rotationAngle = -Math.PI / 2;
+
+    sword.rotationSpeed = 0.5;
+    sword.rotationRadius = 200;
+
+    self.ultraSword = sword;
+
+    hitboxes.push(sword);
+}
+self.ultraTimer ++;
 }},
 pache: {
   image: img8,
@@ -3465,7 +3531,7 @@ if(this.sleepingTimer <= 0){
 if(!this.ultraAt){
   this.ultraAtGage += (this.damage / 100) + 1;
 }
-if(this.ultraAtGage >= 3000){
+if(this.ultraAtGage >= 300){
   this.ultraAt = true;
 }
 if(this.stock === 1 && this.hukkatsu === true){
@@ -3951,21 +4017,66 @@ constructor(
   this.reflectable = true;
   this.active = true;
 
+  this.rotating = false;
+
+this.rotationAngle = 0;
+this.rotationSpeed = 0;
+this.rotationRadius = 0;
+
+this.rotationOffsetX = 0;
+this.rotationOffsetY = 0;
+
 }
 
 update(enemy){
 
-  this.frame++;
+this.frame++;
 
-  if(this.hitTimer>0)
-    this.hitTimer--;
+if(this.hitTimer > 0)
+  this.hitTimer--;
+
+// =========================
+// 回転タイプ
+// =========================
+
+if(this.rotating){
+
+  const centerX =
+    this.owner.x + this.owner.width / 2;
+
+  const centerY =
+    this.owner.y + this.owner.height / 2;
+
+  // 角度を進める
+  this.rotationAngle += this.rotationSpeed;
+
+  // 円周上の位置
+  this.x =
+    centerX +
+    Math.cos(this.rotationAngle) *
+    this.rotationRadius;
+
+  this.y =
+    centerY +
+    Math.sin(this.rotationAngle) *
+    this.rotationRadius;
+
+}
+
+// =========================
+// 通常のFlyingHitbox
+// =========================
+
+else{
 
   this.x += this.vx;
   this.y += this.vy;
 
-  this.hit(enemy);
+}
 
-  this.draw();
+this.hit(enemy);
+
+this.draw();
 
 }
 
@@ -4002,23 +4113,34 @@ hit(enemy){
 
 draw(){
 
-  ctx.save();
+ctx.save();
 
-  ctx.translate(this.x,this.y);
+ctx.translate(this.x, this.y);
 
-  if(this.vx<0){
-    ctx.scale(-1,1);
+if(this.rotating){
+
+  // 剣を回転させる
+  ctx.rotate(this.rotationAngle);
+
+}
+else{
+
+  // 今まで通り
+  if(this.vx < 0){
+    ctx.scale(-1, 1);
   }
 
-  ctx.drawImage(
-    this.img,
-    -this.imgwidth/2,
-    -this.imgheight/2,
-    this.imgwidth,
-    this.imgheight
-  );
+}
 
-  ctx.restore();
+ctx.drawImage(
+  this.img,
+  -this.imgwidth / 2,
+  -this.imgheight / 2,
+  this.imgwidth,
+  this.imgheight
+);
+
+ctx.restore();
 
 }
 
