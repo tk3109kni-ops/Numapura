@@ -3407,7 +3407,7 @@ koishi: {
   spOffsetY: 0,
   jumpPower: 8,
   spStun: 375,
-  distance: 70,
+  distance: 270,
   double: {
     enabled: true,
     partner: "satori",
@@ -3499,6 +3499,7 @@ satori: {
     switchDoubleCharacter(self);
   },
   at: (self,enemy) =>{
+    self.stun = 30;
   if (!self || !enemy) return;
   const dx = Math.abs(self.x - enemy.x);
   const dy = Math.abs(self.y - enemy.y);
@@ -3506,7 +3507,7 @@ satori: {
   (self.direction === 1 && enemy.x > self.x) ||
   (self.direction === -1 && enemy.x < self.x);
   self.isAttacking = true;
-  hitboxes.push(new FlyingHitbox(self, enemy.x + enemy.direction * 400, enemy.y - 400, enemy.direction*-40, 40, 100, 100, 200, 8, hitImg26, 100, 100, 4, 45))
+  hitboxes.push(new FlyingHitbox(self, enemy.x + enemy.direction * 400, enemy.y - 400, enemy.direction*-40, 40, 100, 100, 200, 8, hitImg26, 100, 100, 4, 10))
   
   
 },
@@ -5115,6 +5116,9 @@ if (dist < 300 && Math.random() < 0.05 && cpu.stun <= 0 && !cpu.guarding) {
 
 if (enemy.damage > 100 && Math.random() < 0.01 && cpu.stun <= 0 && !cpu.guarding && cpu.onGround) {
   cpu.spAttack(cpu, enemy);
+}
+if(Math.random() < 0.01 && cpu.stun <= 0){
+  cpu.ability(cpu, enemy);
 }
 if(gameMode === "single"){
 if(Math.random()<0.002 && cpu.stun <= 0 && !cpu.guarding){
