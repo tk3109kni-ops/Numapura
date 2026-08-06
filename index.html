@@ -323,6 +323,7 @@ button {
     <img src="burakki.png" onclick="selectCharacter('p1','burakki')">
     <img src="nitori.png" onclick="selectCharacter('p1','nitori')">
     <img src="kabigon.png" onclick="selectCharacter('p1','kabigon')">
+    <img src="koishi.png" onclick="selectCharacter('p1','koishi')">
     </div>
     
     <h2 id="p2Title">P2選択</h2>
@@ -351,6 +352,7 @@ button {
       <img src="burakki.png" onclick="selectCharacter('p2','burakki')">
       <img src="nitori.png" onclick="selectCharacter('p2','nitori')">
       <img src="kabigon.png" onclick="selectCharacter('p2','kabigon')">
+      <img src="koishi.png" onclick="selectCharacter('p2','koishi')">
     </div>
     </div>
 
@@ -502,6 +504,14 @@ z-index:10;
 <img src="hit5ultra.png" id="hitEffect5ultra" style="display: none;">
 <img src="ultra6.png" id="ultraEffect6" style="display: none;">
 <img src="ultra7.png" id="ultraEffect7" style="display: none;">
+<img src="koishi.png" id="player25" style="display: none;">
+<img src="satori.png" id="player26" style="display: none;">
+<img src="hit251.png" id="hitEffect251" style="display: none;">
+<img src="hit252.png" id="hitEffect252" style="display: none;">
+<img src="special25.png" id="spEffect25" style="display: none;">
+<img src="hit26.png" id="hitEffect26" style="display: none;">
+<img src="special261.png" id="spEffect261" style="display: none;">
+<img src="special262.png" id="spEffect262" style="display: none;">
 <audio src="otowakka.mp3" id="wakkaMusic" style="display: none;" preload="auto"></audio>
 <audio src="norainutonoranekonokousou.mp3" id="remiriaMusic" style="display: none;" preload="auto"></audio>
 <audio src="2026-07-24-123822_zfMoojTA.mp3" id="e-rin" style="display: none;" preload="auto"></audio>
@@ -607,6 +617,8 @@ canvas.height = 1000;
   const img23 = document.getElementById('player23');
   const img24 = document.getElementById('player24');
   const imgSleeping = document.getElementById('player24a');
+  const img25 = document.getElementById('player25');
+  const img26 = document.getElementById('player26');
   const hitImg = document.getElementById('hitEffect');
   const hitImg2 = document.getElementById('hitEffect2');
   const hitImg3 = document.getElementById('hitEffect3');
@@ -641,6 +653,9 @@ canvas.height = 1000;
   const hitImg233 = document.getElementById('hitEffect233');
   const hitImg241 = document.getElementById('hitEffect241');
   const hitImg242 = document.getElementById('hitEffect242');
+  const hitImg251 = document.getElementById('hitEffect251');
+  const hitImg252 = document.getElementById('hitEffect252');
+  const hitImg26 = document.getElementById('hitEffect26');
   const spImg1 = document.getElementById('spEffect1');
   const spImg2 = document.getElementById('spEffect2');
   const spImg3 = document.getElementById('spEffect3');
@@ -675,6 +690,9 @@ canvas.height = 1000;
   const spImg20 = document.getElementById('spEffect20');
   const spImg21 = document.getElementById('spEffect21');
   const spImg23 = document.getElementById('spEffect23');
+  const spImg25 = document.getElementById('spEffect25');
+  const spImg261 = document.getElementById('spEffect261');
+  const spImg262 = document.getElementById('spEffect262');
   const stunImg = document.getElementById('stunEffect');
   const ultraImg1 = document.getElementById('ultraEffect1');
   const redStar = document.getElementById('ultraEffectRed');
@@ -3212,7 +3230,7 @@ burakki: {
   (self.direction === 1 && enemy.x > self.x) ||
   (self.direction === -1 && enemy.x < self.x);
   self.isAttacking = true;
-  hitboxes.push(new FlyingHitbox(self, self.x, self.y, self.direction*(10+ self.meisou*5), 0, 50 + self.meisou*25, 50+ self.meisou*25, 200, 10+self.meisou*10, hitImg22, 50 + self.meisou*25, 50 + self.meisou*25, 3 + self.meisou*2, 15))
+  hitboxes.push(new FlyingHitbox(self, self.x, self.y, self.direction*(10+ self.meisou*5), 0, 50 + self.meisou*25, 50+ self.meisou*25, 200, 10+self.meisou*10, hitImg22, 50 + self.meisou*25, 50 + self.meisou*25, 3 + self.meisou*2, 10))
   self.meisou = 0;
   
   
@@ -3372,6 +3390,147 @@ self.isAttacking = true;
   
 }
 
+},
+koishi: {
+  image: img25,
+  drawWidth: 50,
+    drawHeight: 50,
+
+    hitWidth: 50,
+    hitHeight: 50,
+
+    hitOffsetX: 0,
+    hitOffsetY: 0,
+  maxJumps: 8,
+  speed: 12,
+  spOffsetX: 0,
+  spOffsetY: 0,
+  jumpPower: 8,
+  spStun: 375,
+  distance: 70,
+  double: {
+    enabled: true,
+    partner: "satori",
+    form: "koishi"
+},
+  shot: {
+    color: "green",
+    speed: 15,
+    size: 8,
+    damage: 8,
+    knockback: 3,
+    angle: 30
+  },
+  ability: (self, enemy) =>{
+    switchDoubleCharacter(self);
+  },
+  at: (self,enemy) =>{
+    self.x += self.direction*-50;
+  if (!self || !enemy) return;
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+  self.isAttacking = true;
+  hitboxes.push(new FlyingHitbox(self, self.x + self.direction*30, self.y + 25, 0, 0, 30, 30, 10, 10, hitImg252, 30, 30, 4, 15))
+  
+  hitboxes.push(new FlyingHitbox(self, self.x, self.y + 25, self.direction*30, 0, 100, 30, 200, 10, hitImg251, 30, 30, 4, 15))
+  
+  
+},
+
+  sp: (self, enemy) => {
+self.stun = 80;
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+self.isAttacking = true;
+  cancelAttack(enemy);
+  cancelAttack(self);
+  reflectObjects(self, p1.projectiles);
+reflectObjects(self, p2.projectiles);
+
+reflectObjects(self, p1.orbs);
+reflectObjects(self, p2.orbs);
+
+reflectFlyingHitboxes(self);
+hitboxes.push(new FlyingHitbox(self, self.x + self.direction*80, self.y - 25, 0, 0, 100, 200, 200, 10, spImg25, 100, 200, 12, 0));
+  
+ 
+
+
+}
+},
+satori: {
+  image: img26,
+  drawWidth: 50,
+    drawHeight: 50,
+
+    hitWidth: 50,
+    hitHeight: 50,
+
+    hitOffsetX: 0,
+    hitOffsetY: 0,
+  maxJumps: 3,
+  speed: 8,
+  spOffsetX: 0,
+  spOffsetY: 0,
+  jumpPower: 12,
+  spStun: 375,
+  distance: 250,
+  double: {
+    enabled: true,
+    partner: "koishi",
+    form: "satori"
+},
+  shot: {
+    color: "pink",
+    speed: 8,
+    size: 15,
+    damage: 12,
+    knockback: 8,
+    angle: 30
+  },
+  ability: (self, enemy) =>{
+    switchDoubleCharacter(self);
+  },
+  at: (self,enemy) =>{
+  if (!self || !enemy) return;
+  const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+  const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+  self.isAttacking = true;
+  hitboxes.push(new FlyingHitbox(self, enemy.x + enemy.direction * 400, enemy.y - 400, enemy.direction*-40, 40, 100, 100, 200, 8, hitImg26, 100, 100, 9, 45))
+  
+  
+},
+
+  sp: (self, enemy) => {
+self.stun = 200;
+
+const dx = Math.abs(self.x - enemy.x);
+const dy = Math.abs(self.y - enemy.y);
+const isFront =
+  (self.direction === 1 && enemy.x > self.x) ||
+  (self.direction === -1 && enemy.x < self.x);
+self.isAttacking = true;
+  cancelAttack(enemy);
+
+  const canon = (new FlyingHitbox(self, self.x, self.y - 100, self.direction*10, 0, 100, 80, 200, 40, spImg261, 80, 80, 12, 45))
+  canon.gravity = 0.3;
+  
+  hitboxes.push(canon);
+  
+ 
+
+
+}
 }
   }
 
@@ -3381,7 +3540,8 @@ self.isAttacking = true;
     this.image = char.image;
     this.spAttack = char.sp;
     this.attack = char.at;
-
+    this.ability  = char.ability;
+    this.abilityCooldown = 0;
     this.spOffsetX = char.spOffsetX*SCALE.player || 0;
     this.spOffsetY = char.spOffsetY*SCALE.player || 0;
 
@@ -3426,9 +3586,9 @@ self.isAttacking = true;
     this.drawWidth = char.drawWidth*SCALE.player;
     this.omen = 0;
     this.redEyes = false;
-    this.redEyesTimer = char.redEyesTimer;
-    this.weekSpeed = char.weekSpeed;
+    this.redEyesTimer = 0;
     this.weekJump = char.weekJump;
+    this.weekSpeed = char.weekSpeed;
 this.drawHeight = char.drawHeight*SCALE.player;
 
 this.hitWidth = char.hitWidth*SCALE.player;
@@ -3452,6 +3612,7 @@ this.ultraActive = false;
 this.ultraCameraActive = false;
 this.ultraAction = char.ultra;
 this.theWorld = false;
+this.double = char.double || null;
   }
 
   reset() {
@@ -3531,12 +3692,15 @@ if(this.sleepingTimer <= 0){
 if(!this.ultraAt){
   this.ultraAtGage += (this.damage / 100) + 1;
 }
-if(this.ultraAtGage >= 300){
+if(this.ultraAtGage >= 4000){
   this.ultraAt = true;
 }
 if(this.stock === 1 && this.hukkatsu === true){
   this.stock++;
   this.hukkatsu = false;
+}
+if(this.abilityCooldown > 0){
+  this.abilityCooldown--;
 }
 
     this.vy += gravity;
@@ -3605,7 +3769,81 @@ effects.push(
 
     this.draw();
   }
+  setCharacter(char) {
 
+
+this.image = char.image;
+
+this.attack = char.at;
+this.spAttack = char.sp;
+this.ability = char.ability;
+this.ultraAction = char.ultra;
+
+
+
+this.drawWidth =
+    char.drawWidth * SCALE.player;
+
+this.drawHeight =
+    char.drawHeight * SCALE.player;
+
+this.hitWidth =
+    char.hitWidth * SCALE.player;
+
+this.hitHeight =
+    char.hitHeight * SCALE.player;
+
+this.hitOffsetX =
+    char.hitOffsetX * SCALE.player || 0;
+
+this.hitOffsetY =
+    char.hitOffsetY * SCALE.player || 0;
+
+this.drawOffset =
+    char.drawOffset * SCALE.player || 0;
+
+
+
+this.maxJumps = char.maxJumps;
+
+this.speed = char.speed;
+this.baseSpeed = char.speed;
+
+this.jumpPower = char.jumpPower;
+this.baseJumpPower = char.jumpPower;
+
+this.gravity = char.gravity;
+
+
+
+this.spOffsetX =
+    char.spOffsetX * SCALE.player || 0;
+
+this.spOffsetY =
+    char.spOffsetY * SCALE.player || 0;
+
+this.spStun = char.spStun;
+
+this.distance =
+    char.distance * SCALE.player;
+
+this.shotData = char.shot;
+
+
+
+this.color = char.color;
+
+this.weekJump = char.weekJump;
+this.weekSpeed = char.weekSpeed;
+
+
+
+this.mode = "normal";
+this.modeTimer = char.modeTimer;
+
+this.baseMaxJumps = char.maxJumps;
+this.double = char.double || null;
+}
   draw() {
     ctx.save();
 
@@ -3749,6 +3987,32 @@ const angle = Math.atan2(
     deathY - centerY,
     deathX - centerX
 );
+function useAbility(player, enemy) {
+
+if (!player) return;
+
+if (!player.ability) return;
+
+if (player.abilityCooldown > 0) return;
+
+player.ability(player, enemy);
+
+}
+function switchDoubleCharacter(player) {
+
+if (!player.double) return;
+if (!player.double.enabled) return;
+if(player.abilityCooldown > 0) return;
+
+const partner =
+    characters[player.double.partner];
+
+if (!partner) return;
+
+player.setCharacter(partner);
+player.abilityCooldown = 30;
+
+}
 class KOEffect {
   constructor(x, y, img) {
     this.x = x;
@@ -4025,7 +4289,8 @@ this.rotationRadius = 0;
 
 this.rotationOffsetX = 0;
 this.rotationOffsetY = 0;
-
+this.direction = 1;
+this.gravity = 0;
 }
 
 update(enemy){
@@ -4068,7 +4333,7 @@ if(this.rotating){
 // =========================
 
 else{
-
+  this.vy += this.gravity;
   this.x += this.vx;
   this.y += this.vy;
 
@@ -4126,19 +4391,18 @@ if(this.rotating){
 else{
 
   // 今まで通り
-  if(this.vx < 0){
+  if(this.vx < 0 || this.owner.direction === -1){
     ctx.scale(-1, 1);
   }
 
 }
-
 ctx.drawImage(
-  this.img,
-  -this.imgwidth / 2,
-  -this.imgheight / 2,
-  this.imgwidth,
-  this.imgheight
-);
+    this.img,
+    -this.imgwidth/2,
+    -this.imgheight/2,
+    this.imgwidth,
+    this.imgheight
+  );
 
 ctx.restore();
 
@@ -4497,9 +4761,11 @@ if (e.key === "." && p2.stun <= 0 && !p2.guarding) {p2.shoot()};
   
     if(!p1.isCPU){
 if (e.key === "q" && p1.stun <= 0 && !p1.guarding || e.key === "Q" && p1.stun <= 0 && !p1.guarding) {p1.spAttack(p1, p2)};
+if (e.key === "q" && p1.stun <= 0 && p1.guarding || e.key === "Q" && p1.stun <= 0 && p1.guarding){p1.ability(p1, p2)};
     }
     if(!p2.isCPU){
 if (e.key === "ArrowDown" && p2.stun <= 0 && !p2.guarding) {p2.spAttack(p2, p1)};
+if (e.key === "ArrowDown" && p2.stun <= 0 && p2.guarding){p2.ability(p2,p1)};
     }
     if(!p1.isCPU){
 if (e.key === "s" && p1.stun <= 0 || e.key === "S" && p1.stun <= 0) {
@@ -4650,6 +4916,9 @@ document.getElementById("p1SP").addEventListener("pointerdown",e=>{
   if(p1 && p2 && p1.stun <= 0 && !p1.guarding){
     p1.spAttack(p1,p2);
   }
+  if(p1 && p2 && p1.stun <= 0 && p1.guarding){
+    p1.ability(p1, p2);
+  }
 });
 document.getElementById("p2Attack").addEventListener("pointerdown",e=>{
   e.preventDefault();
@@ -4669,6 +4938,9 @@ document.getElementById("p2SP").addEventListener("pointerdown",e=>{
   e.preventDefault();
   if(p1 && p2 && p2.stun <= 0 && !p2.guarding){
     p2.spAttack(p2,p1);
+  }
+  if(p1 && p2 && p2.stun <= 0 && p2.guarding){
+    p2.ability(p2, p1);
   }
 });
 
