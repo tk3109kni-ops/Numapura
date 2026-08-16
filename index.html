@@ -967,6 +967,10 @@ reimu: {
     knockback: 3,
     angle: 30
   },
+  ability:(self,enemy)=> {
+    self.damage += 10;
+    cancelAttack(enemy);
+  },
 at: (self,enemy) =>{
   if (!self || !enemy) return;
   const dx = Math.abs(self.x - enemy.x);
@@ -1009,14 +1013,9 @@ self.stun = 400;
 self.isAttacking = true;
 
 cancelAttack(enemy);
-
-
+self.ultraActive = true;
 self.ultraAtGage = 0;
-
-
 self.ultraTimer = 0;
-
-
 
 finalSmashCamera(self);
 self.ultraCameraActive = true;
@@ -1024,7 +1023,14 @@ self.ultraCameraActive = true;
 hitboxes.push(new FlyingHitbox(self, enemy.x, enemy.y - 200, 0, 0, 300, 600, 400, 20, ultraImg1, 500, 600, 3, 90));
 
 }
-self.ultraAt = false;
+},
+ultra:(self) => {
+  if(self.ultraTimer >= 100){
+  self.ultraActive = false;
+  self.ultraAt = false;
+}
+
+self.ultraTimer++;
 }
 
   },
@@ -1052,6 +1058,14 @@ marisa: {
     damage: 9,
     knockback: 5,
     angle: 30
+  },
+  ability:(self,enemy)=> {
+    self.damage += 10;
+    const dx = Math.abs(self.x - enemy.x);
+  const dy = Math.abs(self.y - enemy.y);
+    if(dx < 300 && dy < 300){
+    applyKnockback(enemy, self, 7, 0);
+    }
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -1249,8 +1263,11 @@ youmu: {
     knockback: 15,
     angle: 30
   },
-
   spStun: 100,
+  ability:(self,enemy)=> {
+    self.damage += 10;
+    enemy.stun += 20;
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
   const dx = Math.abs(self.x - enemy.x);
@@ -1390,9 +1407,15 @@ effects.push(
       new Effect(enemy.x, enemy.y, ultraImg3, self.direction, 800, 800)
     );
   }
-  self.ultraAt = false;
+  },
+  ultra:(self) => {
+  if(self.ultraTimer >= 10){
   self.ultraActive = false;
-  }
+  self.ultraAt = false;
+}
+
+self.ultraTimer++;
+}
 },
 sanae: {
   image: img4,
@@ -1418,7 +1441,10 @@ sanae: {
     knockback: 5,
     angle: 30
   },
-
+  ability:(self,enemy)=> {
+reflectObjects(self, p1.projectiles);
+reflectObjects(self, p2.projectiles);
+  },
   spStun: 375,
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -1501,8 +1527,14 @@ self.ultraCameraActive = true;
 hitboxes.push(new FlyingHitbox(self, 1900, -300, -16, 10, 1200, 1200, 1000, 50, ultraImg4, 1200, 1200, 5, 45));
 
 }
-self.ultraAt = false;
-self.ultraActive = false;
+},
+ultra:(self) => {
+  if(self.ultraTimer >= 100){
+  self.ultraActive = false;
+  self.ultraAt = false;
+}
+
+self.ultraTimer++;
 }
 
 },
@@ -1529,6 +1561,10 @@ sakuya: {
     damage: 3,
     knockback: 15,
     angle: 25
+  },
+  ability:(self,enemy)=> {
+    self.damage -= 10;
+    enemy.damage -= 10;
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -1669,6 +1705,10 @@ remiria: {
     damage: 4,
     knockback: 3,
     angle: 30
+  },
+  ability:(self,enemy)=> {
+    self.jumpCount = 0;
+    self.damage += 15
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -1840,6 +1880,9 @@ huran: {
     knockback: 8,
     angle: 30
   },
+  ability:(self,enemy)=> {
+   enemy.guarding = false;
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
   const dx = Math.abs(self.x - enemy.x);
@@ -1988,6 +2031,11 @@ pache: {
     knockback: 8,
     angle: 8
   },
+  ability:(self,enemy)=> {
+    self.damage = enemy.damage;
+    enemy.damage += 1;
+    
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
   const dx = Math.abs(self.x - enemy.x);
@@ -2110,6 +2158,11 @@ chilno: {
     knockback: 5,
     angle: 30
   },
+  ability:(self,enemy)=> {
+    self.canUseInStun = true;
+    self.stun = 0;
+    enemy.stun = 0;
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
   const dx = Math.abs(self.x - enemy.x);
@@ -2186,6 +2239,12 @@ aya: {
     damage: 9,
     knockback: 5,
     angle: 30
+  },
+  ability:(self,enemy)=> {
+    if(self.mode === "boost"){
+    self.damage -= 10;
+    self.mode = "normal";
+    }
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -2289,6 +2348,9 @@ meirin: {
     damage: 12,
     knockback: 5,
     angle: 30
+  },
+  ability:(self,enemy)=> {
+    enemy.guarding = true;
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -2405,6 +2467,9 @@ rumia: {
     knockback: 2,
     angle: 30
   },
+  ability:(self,enemy)=> {
+    enemy.speed *= 0.95;
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
   const dx = Math.abs(self.x - enemy.x);
@@ -2485,6 +2550,12 @@ mokou: {
     knockback: 10,
     angle: 30
   },
+  ability:(self,enemy)=> {
+    if(self.stock === 1 && self.damage > 400){
+      self.damage = 0;
+
+    }
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
   const dx = Math.abs(self.x - enemy.x);
@@ -2552,6 +2623,9 @@ yuyuko: {
     knockback: 3,
     angle: 30
   },
+  ability:(self,enemy)=> {
+    enemy.jumpCount += 1;
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
   const dx = Math.abs(self.x - enemy.x);
@@ -2616,6 +2690,9 @@ wakka: {
     damage: 7,
     knockback: 3,
     angle: 30
+  },
+  ability:(self,enemy)=> {
+    self.bigTimer = 100;
   },
   at: (self,enemy) =>{
 
@@ -2706,6 +2783,9 @@ arisu: {
     knockback: 3,
     angle: 30
   },
+  ability:(self,enemy)=> {
+    self.jumpPowerTimer = 100;
+  },
   at: (self,enemy) =>{
     reflectObjects(self, p1.projectiles);
 reflectObjects(self, p2.projectiles);
@@ -2783,6 +2863,11 @@ merumetaru: {
     damage: 0,
     knockback: 0,
     angle: 0
+  },
+  ability:(self,enemy)=> {
+    self.damage += 20;
+    self.stun = 0;
+    self.canUseInStun = true;
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -2873,6 +2958,14 @@ yukari: {
     knockback: 8,
     angle: 30
   },
+  ability:(self,enemy)=> {
+    if(stageType==="platform"){
+      stageType=!"platform"
+    }
+    else{
+      stageType="platform";
+    }
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
   let three = Math.floor(Math.random()*3) + 1;
@@ -2945,6 +3038,9 @@ kokoro: {
     damage: 9,
     knockback: 5,
     angle: 30
+  },
+  ability:(self,enemy) => {
+    self.omen = 0;
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -3079,6 +3175,14 @@ reisen: {
     knockback: 10,
     angle: 30
   },
+  ability:(self,enemy) => {
+    if(enemy.direction === 1){
+      enemy.direction = -1
+    }
+    else{
+      enemy.direction = 1
+    }
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
   const dx = Math.abs(self.x - enemy.x);
@@ -3158,6 +3262,10 @@ eirin: {
     knockback: 10,
     angle: 30
   },
+  ability:(self,enemy) => {
+    self.jumpCount = 0;
+    enemy.jumpCount = 0;
+  },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
   const dx = Math.abs(self.x - enemy.x);
@@ -3221,6 +3329,12 @@ burakki: {
     damage: 10,
     knockback: 10,
     angle: 30
+  },
+  ability:(self,enemy) => {
+    if(self.meisou > 0){
+      self.damage -= self.meisou*15;
+      self.meisou = 0;
+    }
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -3286,6 +3400,16 @@ nitori:{
     damage: 7,
     knockback: 9,
     angle: 90
+  },
+  ability:(self, enemy)=> {
+    if(self.damage > 200){
+      self.damage -= 15
+      self.stun = 30
+    }
+    else{
+      enemy.damage -= 10
+      enemy.stun += 30
+    }
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -3356,6 +3480,10 @@ kabigon:{
     damage: 13,
     knockback: 7,
     angle: 20
+  },
+  ability:(self,enemy)=> {
+    reflectObjects(self, p1.projectiles)
+    reflectObjects(self, p2.projectiles)
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -3614,6 +3742,9 @@ this.ultraCameraActive = false;
 this.ultraAction = char.ultra;
 this.theWorld = false;
 this.double = char.double || null;
+this.canUseInStun = false;
+this.bigTimer = 0;
+this.jumpPowerTimer = 0;
   }
 
   reset() {
@@ -3652,6 +3783,25 @@ if(this.theWorld){
   enemy.vy = 0;
   hitboxes.push(new Hitbox(this, -100, 0, 50, 100, 300 - this.ultraTimer, 0, ultraImg5, 75, 150, 0, 0));
 }
+if(this.bigTimer > 0){
+      this.drawHeight = 200;
+      this.drawWidth = 200;
+      this.bigTimer--;
+    }
+else{
+      this.drawHeight = 50;
+      this.drawWidth = 50;
+    }
+if(this.jumpPowerTimer > 0){
+      this.jumpPower = 18;
+      this.jumpPowerTimer--;
+    }
+else{
+      this.jumpPower = this.jumpPower;
+      if(this.jumpPower === 18){
+        this.jumpPower = 9;
+      }
+    }
 if (this.ultraActive && this.ultraAction) {
     this.ultraAction(this);
 }
@@ -3693,7 +3843,7 @@ if(this.sleepingTimer <= 0){
 if(!this.ultraAt){
   this.ultraAtGage += (this.damage / 100) + 1;
 }
-if(this.ultraAtGage >= 4000){
+if(this.ultraAtGage >= 300){
   this.ultraAt = true;
 }
 if(this.stock === 1 && this.hukkatsu === true){
@@ -5117,7 +5267,7 @@ if (dist < 300 && Math.random() < 0.05 && cpu.stun <= 0 && !cpu.guarding) {
 if (enemy.damage > 100 && Math.random() < 0.01 && cpu.stun <= 0 && !cpu.guarding && cpu.onGround) {
   cpu.spAttack(cpu, enemy);
 }
-if(Math.random() < 0.01 && cpu.stun <= 0){
+if(Math.random() < 0.01 && cpu.stun <= 0 || Math.random() < 0.01 && cpu.stun > 0 && cpu.canUseInStun === true){
   cpu.ability(cpu, enemy);
 }
 if(gameMode === "single"){
