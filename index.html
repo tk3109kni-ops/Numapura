@@ -512,6 +512,13 @@ z-index:10;
 <img src="hit26.png" id="hitEffect26" style="display: none;">
 <img src="special261.png" id="spEffect261" style="display: none;">
 <img src="special262.png" id="spEffect262" style="display: none;">
+<img src="ability1.png" id="abEffect1" style="display: none;">
+<img src="ability2.png" id="abEffect2" style="display: none;">
+<img src="ability3.png" id="abEffect3" style="display: none;">
+<img src="ability4.png" id="abEffect4" style="display: none;">
+<img src="ability5.png" id="abEffect5" style="display: none;">
+<img src="ability6.png" id="abEffect6" style="display: none;">
+<img src="ability7.png" id="abEffect7" style="display: none;">
 <audio src="otowakka.mp3" id="wakkaMusic" style="display: none;" preload="auto"></audio>
 <audio src="norainutonoranekonokousou.mp3" id="remiriaMusic" style="display: none;" preload="auto"></audio>
 <audio src="2026-07-24-123822_zfMoojTA.mp3" id="e-rin" style="display: none;" preload="auto"></audio>
@@ -703,6 +710,13 @@ canvas.height = 1000;
   const ultraImg5 = document.getElementById('ultraEffect5');
   const ultraImg6 = document.getElementById('ultraEffect6');
   const ultraImg7 = document.getElementById('ultraEffect7');
+  const abImg1 = document.getElementById('abEffect1');
+  const abImg2 = document.getElementById('abEffect2');
+  const abImg3 = document.getElementById('abEffect3');
+  const abImg4 = document.getElementById('abEffect4');
+  const abImg5 = document.getElementById('abEffect5');
+  const abImg6 = document.getElementById('abEffect6');
+  const abImg7 = document.getElementById('abEffect7');
   const koImg = document.getElementById('koEffect');
   const meisouImg = document.getElementById('meisou'); 
   const wakkaMusic = document.getElementById('wakkaMusic');
@@ -970,6 +984,7 @@ reimu: {
   ability:(self,enemy)=> {
     self.damage += 10;
     cancelAttack(enemy);
+    effects.push(new Effect(enemy.x + enemy.drawWidth/2, enemy.y + enemy.drawHeight/2, abImg1, self.direction, enemy.drawWidth+20, enemy.drawHeight+20));
   },
 at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -1066,6 +1081,8 @@ marisa: {
     if(dx < 300 && dy < 300){
     applyKnockback(enemy, self, 7, 0);
     }
+    effects.push(new Effect(self.x + self.direction* 100, self.y, abImg2, -self.direction, 200, 200));
+
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -1267,6 +1284,8 @@ youmu: {
   ability:(self,enemy)=> {
     self.damage += 10;
     enemy.stun += 20;
+    effects.push(new Effect(self.x, self.y+self.drawHeight/2, abImg3, self.direction, 120, 120));
+
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -1444,6 +1463,8 @@ sanae: {
   ability:(self,enemy)=> {
 reflectObjects(self, p1.projectiles);
 reflectObjects(self, p2.projectiles);
+effects.push(new Effect(self.x, self.y + self.drawHeight/2, abImg4, self.direction, 200, 200));
+
   },
   spStun: 375,
   at: (self,enemy) =>{
@@ -1565,6 +1586,8 @@ sakuya: {
   ability:(self,enemy)=> {
     self.damage -= 10;
     enemy.damage -= 10;
+    effects.push(new Effect(enemy.x, enemy.y + 20, abImg5, self.direction, 80, 80));
+    effects.push(new Effect(self.x, self.y + 20, abImg5, self.direction, 80, 80));
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -1708,7 +1731,8 @@ remiria: {
   },
   ability:(self,enemy)=> {
     self.jumpCount = 0;
-    self.damage += 15
+    self.damage += 15;
+    effects.push(new Effect(self.x, self.y+self.drawHeight/2, abImg6, self.direction, 100, 100));
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -1882,6 +1906,7 @@ huran: {
   },
   ability:(self,enemy)=> {
    enemy.guarding = false;
+   effects.push(new Effect(enemy.x, enemy.y+enemy.drawHeight/2, abImg7, self.direction, 300, 300));
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -2034,7 +2059,8 @@ pache: {
   ability:(self,enemy)=> {
     self.damage = enemy.damage;
     enemy.damage += 1;
-    
+    effects.push(new Effect(enemy.x, enemy.y+enemy.drawHeight/2, abImg6, self.direction, 120, 120));
+    effects.push(new Effect(self.x, self.y+self.drawHeight/2, abImg6, self.direction, 120, 120));
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -3843,7 +3869,7 @@ if(this.sleepingTimer <= 0){
 if(!this.ultraAt){
   this.ultraAtGage += (this.damage / 100) + 1;
 }
-if(this.ultraAtGage >= 300){
+if(this.ultraAtGage >= 4000){
   this.ultraAt = true;
 }
 if(this.stock === 1 && this.hukkatsu === true){
@@ -4922,10 +4948,16 @@ if (e.key === "ArrowDown" && p2.stun <= 0 && p2.guarding){p2.ability(p2,p1)};
 if (e.key === "s" && p1.stun <= 0 || e.key === "S" && p1.stun <= 0) {
   p1.guarding = true;
 }
+if(e.key === "s" && p1.stun > 0 && p1.canUseInStun || e.key === "S" && p1.stun > 0 && p1.canUseInStun){
+  p1.ability();
+}
     }
     if(!p2.isCPU){
 if (e.key === "Enter" && p2.stun <= 0) {
   p2.guarding = true;
+}
+if(e.key === "Enter" && p2.stun > 0 && p2.canUseInStun){
+  p2.ability();
 }
 }
   });
@@ -5223,8 +5255,9 @@ const dx = enemy.x - cpu.x;
 const dy = enemy.y - cpu.y;
 const dist = Math.abs(dx);
 
+if(cpu.stun <= 0){
 cpu.direction = dx > 0 ? 1 : -1;
-
+}
 if (dist > cpu.distance && cpu.stun <= 0 && !cpu.guarding) {
   cpu.vx = dx > 0 ? cpu.speed : -cpu.speed;
 }
