@@ -111,11 +111,11 @@ button {
   touch-action: none;
 }
 #selectUI{
-  position:absolute;
+  align-items: center;
   width:100%;
   height:100%;
-  overflow-y:auto;
   background:black;
+  text-align: center;
 }
 #mobileControls.singleMode{
   display:block;
@@ -519,6 +519,12 @@ z-index:10;
 <img src="ability5.png" id="abEffect5" style="display: none;">
 <img src="ability6.png" id="abEffect6" style="display: none;">
 <img src="ability7.png" id="abEffect7" style="display: none;">
+<img src="ability9.png" id="abEffect9" style="display: none;">
+<img src="ability11.png" id="abEffect11" style="display: none;">
+<img src="ability13.png" id="abEffect13" style="display: none;">
+<img src="ability14.png" id="abEffect14" style="display: none;">
+<img src="ability16.png" id="abEffect16" style="display: none;">
+<img src="ability20.png" id="abEffect20" style="display: none;">
 <audio src="otowakka.mp3" id="wakkaMusic" style="display: none;" preload="auto"></audio>
 <audio src="norainutonoranekonokousou.mp3" id="remiriaMusic" style="display: none;" preload="auto"></audio>
 <audio src="2026-07-24-123822_zfMoojTA.mp3" id="e-rin" style="display: none;" preload="auto"></audio>
@@ -717,6 +723,12 @@ canvas.height = 1000;
   const abImg5 = document.getElementById('abEffect5');
   const abImg6 = document.getElementById('abEffect6');
   const abImg7 = document.getElementById('abEffect7');
+  const abImg9 = document.getElementById('abEffect9');
+  const abImg11 = document.getElementById('abEffect11');
+  const abImg13 = document.getElementById('abEffect13');
+  const abImg14 = document.getElementById('abEffect14');
+  const abImg16 = document.getElementById('abEffect16');
+  const abImg20 = document.getElementById('abEffect20');
   const koImg = document.getElementById('koEffect');
   const meisouImg = document.getElementById('meisou'); 
   const wakkaMusic = document.getElementById('wakkaMusic');
@@ -726,7 +738,11 @@ canvas.height = 1000;
   const eerin = document.getElementById('e-rin');
   const haikei = document.getElementById('haikei');
   const gravity = 0.5
-  
+  const titleBackgrounds = [
+    {url:"背景.png", weight:90, size:"cover", position:"center center", repeat:"no-repeat"},
+    {url:"haikeiExtra.png", weight: 7, size:"cover", position:"center center", repeat:"no-repeat"},
+    {url:"背景S.png", weight: 3, size:"cover", position:"center center", repeat:"no-repeat"}
+  ]
   let gameState = "select";
   let p1Choice = null;
   let p2Choice = null;
@@ -748,6 +764,7 @@ canvas.height = 1000;
   if (window.innerWidth < 900) {
     enterFullscreen();
   }
+  changeTitleBackground();
 }           
 function showHelp() {
   document.getElementById("titleScreen").style.display = "none";
@@ -766,7 +783,6 @@ document.getElementById("oneortwo").style.display = "none";
 document.getElementById("selectUI").style.display = "none";
 document.getElementById("game").style.display = "none";
 gameState = "select";
-
 p1 = null;
 p2 = null;
 p1Choice = null;
@@ -858,6 +874,37 @@ document.getElementById("oneortwo").style.display = "none";
 document.getElementById("stageUI").style.display = "block";
 document.getElementById("selectUI").style.display = "none";
 
+}
+function changeTitleBackground() {
+
+const totalWeight = titleBackgrounds.reduce(
+  (sum, bg) => sum + bg.weight,
+  0
+);
+
+let random = Math.random() * totalWeight;
+
+for (const bg of titleBackgrounds) {
+
+  random -= bg.weight;
+
+  if (random < 0) {
+
+    document.body.style.backgroundImage =
+      `url("${bg.url}")`;
+
+    document.body.style.backgroundSize =
+      bg.size;
+
+    document.body.style.backgroundPosition =
+      bg.position;
+
+    document.body.style.backgroundRepeat =
+      bg.repeat;
+
+    return;
+  }
+}
 }
 function checkOrientation() {
   const isPortrait = window.innerHeight > window.innerWidth;
@@ -1586,8 +1633,8 @@ sakuya: {
   ability:(self,enemy)=> {
     self.damage -= 10;
     enemy.damage -= 10;
-    effects.push(new Effect(enemy.x, enemy.y + 20, abImg5, self.direction, 80, 80));
-    effects.push(new Effect(self.x, self.y + 20, abImg5, self.direction, 80, 80));
+    effects.push(new Effect(enemy.x, enemy.y + 20, abImg5, self.direction, 100, 100));
+    effects.push(new Effect(self.x, self.y + 20, abImg5, self.direction, 100, 100));
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -2175,6 +2222,7 @@ chilno: {
   spOffsetY: -200,
   jumpPower: 8,
   spStun: 375,
+  canUseInStun: 1,
   distance: 100,
   shot: {
     color: "blue",
@@ -2185,9 +2233,11 @@ chilno: {
     angle: 30
   },
   ability:(self,enemy)=> {
-    self.canUseInStun = true;
-    self.stun = 0;
-    enemy.stun = 0;
+    self.stun = 1;
+    enemy.stun = 1;
+    applyKnockback(self, self.x, 7, 45);
+    effects.push(new Effect(self.x, self.y+self.drawHeight/2, abImg9, self.direction, 100, 100));
+    effects.push(new Effect(enemy.x, enemy.y+enemy.drawHeight/2, abImg9, self.direction, 100, 100));
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -2271,6 +2321,7 @@ aya: {
     self.damage -= 10;
     self.mode = "normal";
     }
+    effects.push(new Effect(self.x, self.y+self.drawHeight/2, abImg5, self.direction, 100, 100));
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -2377,6 +2428,7 @@ meirin: {
   },
   ability:(self,enemy)=> {
     enemy.guarding = true;
+    effects.push(new Effect(enemy.x, enemy.y+enemy.drawHeight/2, abImg11, self.direction, 100, 160));
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -2495,6 +2547,10 @@ rumia: {
   },
   ability:(self,enemy)=> {
     enemy.speed *= 0.95;
+    if(enemy.speed < 3){
+      enemy.speed*=1.2
+    }
+    effects.push(new Effect(enemy.x, enemy.y+enemy.drawHeight/2, abImg6, self.direction, 120, 120));
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -2577,9 +2633,9 @@ mokou: {
     angle: 30
   },
   ability:(self,enemy)=> {
-    if(self.stock === 1 && self.damage > 400){
+    if(self.stock === 1 && self.damage >= 400){
       self.damage = 0;
-
+      effects.push(new Effect(self.x, self.y+self.drawHeight/2, abImg13, self.direction, 800, 800));
     }
   },
   at: (self,enemy) =>{
@@ -2651,6 +2707,8 @@ yuyuko: {
   },
   ability:(self,enemy)=> {
     enemy.jumpCount += 1;
+    self.stun = 30;
+    effects.push(new Effect(enemy.x, enemy.y+enemy.drawHeight/2, abImg14, self.direction, 300, 300));
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -2811,6 +2869,7 @@ arisu: {
   },
   ability:(self,enemy)=> {
     self.jumpPowerTimer = 100;
+    effects.push(new Effect(self.x, self.y + self.drawHeight/2, abImg16, self.direction, 150, 150));
   },
   at: (self,enemy) =>{
     reflectObjects(self, p1.projectiles);
@@ -2880,6 +2939,7 @@ merumetaru: {
   spOffsetY: 0,
   jumpPower: 10,
   spStun: 375,
+  canUseInStun: 1,
   drawOffset: 35,
   distance: 20,
   shot: {
@@ -2893,7 +2953,7 @@ merumetaru: {
   ability:(self,enemy)=> {
     self.damage += 20;
     self.stun = 0;
-    self.canUseInStun = true;
+    effects.push(new Effect(self.x, self.y+self.drawHeight/2, abImg14, self.direction, 300, 300));
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -3208,6 +3268,7 @@ reisen: {
     else{
       enemy.direction = 1
     }
+    effects.push(new Effect(enemy.x, enemy.y, abImg20, self.direction, 100, 100));
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -3291,6 +3352,8 @@ eirin: {
   ability:(self,enemy) => {
     self.jumpCount = 0;
     enemy.jumpCount = 0;
+    effects.push(new Effect(enemy.x, enemy.y+enemy.drawHeight/2, abImg14, self.direction, 100, 100));
+    effects.push(new Effect(self.x, self.y+self.drawHeight/2, abImg14, self.direction, 100, 100));
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -3360,6 +3423,7 @@ burakki: {
     if(self.meisou > 0){
       self.damage -= self.meisou*15;
       self.meisou = 0;
+      effects.push(new Effect(self.x, self.y+self.drawHeight/2, abImg5, self.direction, 200, 200));
     }
   },
   at: (self,enemy) =>{
@@ -3431,10 +3495,12 @@ nitori:{
     if(self.damage > 200){
       self.damage -= 15
       self.stun = 30
+      effects.push(new Effect(self.x, self.y+self.drawHeight/2, abImg5, self.direction, 200, 200));
     }
     else{
       enemy.damage -= 10
       enemy.stun += 30
+      effects.push(new Effect(enemy.x, enemy.y+enemy.drawHeight/2, abImg5, self.direction, 200, 200));
     }
   },
   at: (self,enemy) =>{
@@ -3508,8 +3574,9 @@ kabigon:{
     angle: 20
   },
   ability:(self,enemy)=> {
-    reflectObjects(self, p1.projectiles)
-    reflectObjects(self, p2.projectiles)
+    reflectObjects(self, p1.projectiles);
+    reflectObjects(self, p2.projectiles);
+    effects.push(new Effect(self.x, self.y+self.drawHeight/2, abImg4, self.direction, 300, 300));
   },
   at: (self,enemy) =>{
   if (!self || !enemy) return;
@@ -3768,7 +3835,7 @@ this.ultraCameraActive = false;
 this.ultraAction = char.ultra;
 this.theWorld = false;
 this.double = char.double || null;
-this.canUseInStun = false;
+this.canUseInStun = char.canUseInStun || null;
 this.bigTimer = 0;
 this.jumpPowerTimer = 0;
   }
@@ -4269,7 +4336,7 @@ class PoisonCloud {
 
     if (dx < this.width/2 && dy < this.height/2) {
       if(this.frame%10==0){
-      enemy.damage += 1;
+      enemy.damage += 3;
 
       }
     }
@@ -4947,19 +5014,21 @@ if (e.key === "ArrowDown" && p2.stun <= 0 && p2.guarding){p2.ability(p2,p1)};
     if(!p1.isCPU){
 if (e.key === "s" && p1.stun <= 0 || e.key === "S" && p1.stun <= 0) {
   p1.guarding = true;
+}}
+if(!p1.isCPU){
+if(e.key === "s" && p1.stun > 0 && p1.canUseInStun === 1 || e.key === "S" && p1.stun > 0 && p1.canUseInStun === 1){
+  p1.ability(p1, p2);
 }
-if(e.key === "s" && p1.stun > 0 && p1.canUseInStun || e.key === "S" && p1.stun > 0 && p1.canUseInStun){
-  p1.ability();
 }
-    }
     if(!p2.isCPU){
 if (e.key === "Enter" && p2.stun <= 0) {
   p2.guarding = true;
-}
-if(e.key === "Enter" && p2.stun > 0 && p2.canUseInStun){
-  p2.ability();
-}
-}
+}}
+if(!p2.isCPU){
+if(e.key === "Enter" && p2.stun > 0 && p2.canUseInStun === 1){
+  p2.ability(p2,p1);
+}}
+
   });
   
   document.addEventListener("keyup", e => {
@@ -5129,13 +5198,21 @@ document.getElementById("p2SP").addEventListener("pointerdown",e=>{
 
 document.getElementById("p1Guard").addEventListener("pointerdown",e=>{
   e.preventDefault();
-  if(p1 && p2 && p1.stun <= 0)
+  if(p1 && p2 && p1.stun <= 0){
   p1.guarding = true;
+  }
+  else if(p1 && p2 && p1.stun > 0 && p1.canUseInStun === 1){
+    p1.ability(p1,p2);
+  }
 })
 document.getElementById("p2Guard").addEventListener("pointerdown",e=>{
   e.preventDefault();
-  if(p1 && p2 && p2.stun <= 0)
+  if(p1 && p2 && p2.stun <= 0){
   p2.guarding = true;
+  }
+  else if(p1 && p2 && p2.stun > 0 && p2.canUseInStun === 1){
+    p2.ability(p2,p1);
+  }
 })
 document.getElementById("p1Guard").addEventListener("pointerup",e=>{
   e.preventDefault();
@@ -5243,7 +5320,6 @@ if (p1.stock <= 0 || p2.stock <= 0) {
   document.getElementById("resultScreen").style.display = "flex";
   document.getElementById("winnerText").innerText = winner;
   document.getElementById("mobileControls").style.display = "none";
-
   return true;
 }
 
