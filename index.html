@@ -843,7 +843,7 @@ function updateSelectUI() {
 function startSingle(){
 
 resetSelections();
-
+resetTitleBackground()
 gameMode = "single";
 gameState = "stage";
 
@@ -855,7 +855,7 @@ document.getElementById("selectUI").style.display = "none";
 function startMulti(){
 
 resetSelections();
-
+resetTitleBackground()
 gameMode = "multi";
 gameState = "stage";
 
@@ -867,7 +867,7 @@ document.getElementById("selectUI").style.display = "none";
 function startWatch(){
 
 resetSelections();
-
+resetTitleBackground()
 gameMode = "watch";
 gameState = "stage";
 
@@ -900,12 +900,16 @@ for (const bg of titleBackgrounds) {
     document.body.style.backgroundPosition =
       bg.position;
 
-    document.body.style.backgroundRepeat =
-      bg.repeat;
 
     return;
   }
 }
+}
+function resetTitleBackground() {
+  document.body.style.backgroundImage = "";
+  document.body.style.backgroundSize = "";
+  document.body.style.backgroundPosition = "";
+  document.body.style.backgroundRepeat = "";
 }
 function checkOrientation() {
   const isPortrait = window.innerHeight > window.innerWidth;
